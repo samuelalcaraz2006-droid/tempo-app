@@ -1,5 +1,5 @@
 const CACHE_NAME = 'tempo-v2'
-const PRECACHE = ['/', '/index.html']
+const PRECACHE = ['/tempo-app/', '/tempo-app/index.html']
 
 // Assets statiques : JS, CSS, fonts, images
 const STATIC_EXTS = /\.(js|css|woff2?|ttf|svg|png|webp|ico)(\?.*)?$/
