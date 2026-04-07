@@ -71,13 +71,18 @@ export default function AdminApp({ onLogoClick }) {
   const handleKycConfirm = async () => {
     if (!kycConfirm || !user) return
     setKycLoading(true)
-    const { error } = await supabase
-      .from('workers')
-      .update({ id_verified: true, siret_verified: true, rc_pro_verified: true, kyc_completed_at: new Date().toISOString() })
-      .eq('id', kycConfirm.id)
+    try {
+      const { error: updateError } = await supabase
+        .from('workers')
+        .update({ id_verified: true, siret_verified: true, rc_pro_verified: true, kyc_completed_at: new Date().toISOString() })
+        .eq('id', kycConfirm.id)
 
-    if (!error) {
-      await Promise.all([
+      if (updateError) {
+        console.error('[KYC] update error:', updateError.message)
+        return
+      }
+
+      const [auditRes, notifRes] = await Promise.allSettled([
         logAuditAction({
           actorId: user.id,
           action: 'kyc_approve_all',
@@ -91,14 +96,21 @@ export default function AdminApp({ onLogoClick }) {
         }),
         supabase.rpc('notify_kyc_decision', { p_worker_id: kycConfirm.id, p_approved: true }),
       ])
+
+      if (auditRes.status === 'rejected') console.error('[KYC] audit log failed:', auditRes.reason)
+      if (notifRes.status === 'rejected') console.error('[KYC] notification failed:', notifRes.reason)
+
       setUsers(prev => prev.map(p =>
         p.id === kycConfirm.id
           ? { ...p, worker: { ...p.worker, id_verified: true, siret_verified: true, rc_pro_verified: true } }
           : p
       ))
+    } catch (err) {
+      console.error('[KYC] handleKycConfirm error:', err)
+    } finally {
+      setKycLoading(false)
+      setKycConfirm(null)
     }
-    setKycLoading(false)
-    setKycConfirm(null)
   }
 
   const handleKycApproveField = async (u, fieldKey) => {

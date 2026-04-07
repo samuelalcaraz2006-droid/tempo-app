@@ -270,7 +270,13 @@ export const subscribeToMissions = (callback) => {
     .subscribe()
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export const subscribeToNotifications = (userId, callback) => {
+  if (!userId || !UUID_RE.test(userId)) {
+    console.error('[subscribeToNotifications] userId invalide:', userId)
+    return null
+  }
   return supabase
     .channel(`notifs_${userId}`)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, callback)

@@ -54,7 +54,12 @@ export default function SignatureCanvas({ onSave, label = 'Signature' }) {
 
   const save = () => {
     if (!hasDrawn) return
-    const dataUrl = canvasRef.current.toDataURL('image/png')
+    const dataUrl = canvasRef.current.toDataURL('image/jpeg', 0.8)
+    // ~360×140 JPEG 80% ≈ 15-30 KB — refuser si anomalie
+    if (dataUrl.length > 200000) {
+      console.warn('[SignatureCanvas] dataUrl trop volumineux:', dataUrl.length)
+      return
+    }
     onSave(dataUrl)
   }
 

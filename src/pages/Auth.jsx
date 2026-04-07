@@ -46,11 +46,9 @@ export default function Auth({ onNavigate }) {
     const { error } = await login({ email: form.email, password: form.password })
     setLoading(false)
     if (error) {
-      if (error.message.includes('Invalid login') || error.message.includes('invalid_credentials')) {
-        setError('Email ou mot de passe incorrect.')
-      } else {
-        setError(error.message)
-      }
+      const isCredentialError = error.message.includes('Invalid login') || error.message.includes('invalid_credentials')
+      setError(isCredentialError ? 'Email ou mot de passe incorrect.' : 'Erreur d\'authentification. Veuillez réessayer.')
+      if (!isCredentialError) console.error('[Auth] login error:', error.message)
     }
   }
 
@@ -62,8 +60,12 @@ export default function Auth({ onNavigate }) {
       redirectTo: window.location.origin,
     })
     setLoading(false)
-    if (error) setError(error.message)
-    else setSuccess('Email envoyé ! Vérifiez votre boîte mail pour réinitialiser votre mot de passe.')
+    if (error) {
+      console.error('[Auth] reset error:', error.message)
+      setError('Impossible d\'envoyer l\'email. Vérifiez l\'adresse ou réessayez.')
+    } else {
+      setSuccess('Email envoyé ! Vérifiez votre boîte mail pour réinitialiser votre mot de passe.')
+    }
   }
 
   const handleRegister = async (e) => {
@@ -81,8 +83,12 @@ export default function Auth({ onNavigate }) {
       companyName: form.companyName,
     })
     setLoading(false)
-    if (error) setError(error.message)
-    else setSuccess('Compte créé ! Vérifiez votre email pour confirmer votre inscription.')
+    if (error) {
+      console.error('[Auth] register error:', error.message)
+      setError('Impossible de créer le compte. Vérifiez vos informations ou réessayez.')
+    } else {
+      setSuccess('Compte créé ! Vérifiez votre email pour confirmer votre inscription.')
+    }
   }
 
   return (

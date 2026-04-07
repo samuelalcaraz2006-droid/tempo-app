@@ -79,16 +79,20 @@ export const AuthProvider = ({ children }) => {
   // c'est getSession() (effet 3) ou SIGNED_OUT (effet 1) qui gèrent ce cas.
   // Évite la race condition où loading passe à false avant que getSession
   // n'ait confirmé l'absence de session.
+  // loadProfile est stable (useCallback sans deps) — exclure de la liste
+  // pour éviter que chaque re-render de loadProfile relance l'effet.
   useEffect(() => {
     if (!user) return
 
+    let cancelled = false
     const run = async () => {
       await loadProfile(user.id)
-      setLoading(false)
+      if (!cancelled) setLoading(false)
     }
 
     run()
-  }, [user?.id, loadProfile]) // eslint-disable-line react-hooks/exhaustive-deps
+    return () => { cancelled = true }
+  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── 3. Session initiale au chargement ─────────────────────
   useEffect(() => {
@@ -121,7 +125,18 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = async () => {
-    await supabase.auth.signOut()
+    // Nettoyer les donnees utilisateur du localStorage
+    const tempoKeys = Object.keys(localStorage).filter(k => k.startsWith('tempo_'))
+    tempoKeys.forEach(k => localStorage.removeItem(k))
+    try {
+      await supabase.auth.signOut()
+    } catch (err) {
+      console.error('[AuthContext] logout error:', err)
+      // Forcer le reset local meme si signOut echoue
+      setUser(null)
+      setProfile(null)
+      setRoleData(null)
+    }
   }
 
   const refreshRoleData = async () => {
