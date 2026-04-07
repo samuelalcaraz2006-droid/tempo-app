@@ -15,10 +15,13 @@ export default function SignatureCanvas({ onSave, label = 'Signature' }) {
   }, [])
 
   const getPos = (e) => {
-    const rect = canvasRef.current.getBoundingClientRect()
+    const canvas = canvasRef.current
+    const rect = canvas.getBoundingClientRect()
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
     const clientX = e.touches ? e.touches[0].clientX : e.clientX
     const clientY = e.touches ? e.touches[0].clientY : e.clientY
-    return { x: clientX - rect.left, y: clientY - rect.top }
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY }
   }
 
   const start = (e) => {
@@ -57,11 +60,17 @@ export default function SignatureCanvas({ onSave, label = 'Signature' }) {
 
   return (
     <div>
-      <div style={{ fontSize: 13, fontWeight: 500, color: '#6E6E6B', marginBottom: 6 }}>{label}</div>
+      <div style={{ fontSize: 13, fontWeight: 500, color: '#6E6E6B', marginBottom: 6 }} id="sig-label">{label}</div>
+      <p style={{ fontSize: 11, color: '#9A9A96', marginBottom: 6, marginTop: 0 }}>
+        Dessinez votre signature dans la zone ci-dessous, puis cliquez sur « Valider la signature ».
+      </p>
       <canvas
         ref={canvasRef}
         width={360}
         height={140}
+        role="img"
+        aria-label={`Zone de signature — ${label}. Dessinez votre signature à la souris ou au doigt.`}
+        aria-describedby="sig-instructions"
         onMouseDown={start}
         onMouseMove={draw}
         onMouseUp={stop}
@@ -73,14 +82,29 @@ export default function SignatureCanvas({ onSave, label = 'Signature' }) {
           width: '100%', maxWidth: 360, height: 140,
           border: '1.5px dashed var(--g3)', borderRadius: 10,
           background: 'var(--g1)', cursor: 'crosshair', touchAction: 'none',
+          display: 'block',
         }}
       />
+      <span id="sig-instructions" style={{ display: 'none' }}>
+        Utilisez la souris ou votre doigt pour dessiner votre signature dans cette zone.
+        Cliquez sur Effacer pour recommencer, puis sur Valider la signature pour confirmer.
+      </span>
+      {hasDrawn && (
+        <div role="status" aria-live="polite" style={{ fontSize: 11, color: 'var(--gr)', marginTop: 4 }}>
+          Signature dessinée — cliquez sur « Valider la signature » pour confirmer.
+        </div>
+      )}
       <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-        <button onClick={clear} style={{ padding: '6px 14px', fontSize: 12, border: '1px solid var(--g2)', borderRadius: 8, background: 'var(--wh)', cursor: 'pointer', color: 'var(--g4)' }}>
+        <button onClick={clear} aria-label="Effacer la signature" style={{ padding: '6px 14px', fontSize: 12, border: '1px solid var(--g2)', borderRadius: 8, background: 'var(--wh)', cursor: 'pointer', color: 'var(--g4)' }}>
           Effacer
         </button>
-        <button onClick={save} disabled={!hasDrawn}
-          style={{ padding: '6px 14px', fontSize: 12, border: 'none', borderRadius: 8, background: hasDrawn ? '#059669' : '#E8E8E5', color: hasDrawn ? '#fff' : '#8A8A86', cursor: hasDrawn ? 'pointer' : 'default', fontWeight: 500 }}>
+        <button
+          onClick={save}
+          disabled={!hasDrawn}
+          aria-disabled={!hasDrawn}
+          aria-label={hasDrawn ? 'Valider la signature' : 'Valider la signature (dessinez d\'abord)'}
+          style={{ padding: '6px 14px', fontSize: 12, border: 'none', borderRadius: 8, background: hasDrawn ? 'var(--gr)' : 'var(--g2)', color: hasDrawn ? '#fff' : 'var(--g4)', cursor: hasDrawn ? 'pointer' : 'default', fontWeight: 500 }}
+        >
           Valider la signature
         </button>
       </div>

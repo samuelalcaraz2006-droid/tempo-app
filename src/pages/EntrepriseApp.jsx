@@ -1,54 +1,17 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { Moon, Sun, Download, PenLine, MessageCircle, RefreshCw, X } from 'lucide-react'
 import { useAuth } from '../contexts/useAuth'
-import { supabase, getCompanyMissions, createMission, getMissionApplications, getCompanyInvoices, getNotifications, updateApplicationStatus, assignWorkerToMission, completeMission, createRating, cancelMission, getMessages, sendMessage, subscribeToMessages, saveContract } from '../lib/supabase'
-
+import { supabase, getCompanyMissions, createMission, getMissionApplications, getCompanyInvoices, getNotifications, updateApplicationStatus, assignWorkerToMission, completeMission, createRating, cancelMission, getMessages, sendMessage, subscribeToMessages, saveContract, createInvoice } from '../lib/supabase'
 import { isPushSupported, requestPushPermission, sendLocalNotification, getPermissionStatus } from '../lib/pushNotifications'
 import { useI18n } from '../contexts/I18nContext'
+import { formatDate, formatAmount, SECTOR_LABELS } from '../lib/formatters'
+import RatingModal from '../components/RatingModal'
+import { useToast } from '../hooks/useToast'
+import { useDarkMode } from '../hooks/useDarkMode'
 
 const ContractModal = lazy(() => import('../components/ContractModal'))
 
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : '—'
-const formatAmount = (n) => n ? `${parseFloat(n).toFixed(0)} €` : '—'
-
-const STAR_LABELS = ['', 'Insuffisant', 'Passable', 'Bien', 'Très bien', 'Excellent !']
-
-const RatingModal = ({ rateeName, onSubmit, onClose, loading }) => {
-  const [score, setScore] = React.useState(0)
-  const [hover, setHover] = React.useState(0)
-  const [comment, setComment] = React.useState('')
-  return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.55)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, padding:20 }}>
-      <div style={{ background:'var(--wh)', borderRadius:16, padding:28, maxWidth:400, width:'100%', boxShadow:'0 20px 60px rgba(0,0,0,.2)' }}>
-        <div style={{ fontSize:18, fontWeight:600, marginBottom:4 }}>Évaluer la mission</div>
-        <div style={{ fontSize:13, color:'var(--g4)', marginBottom:24 }}>Comment s'est passée la collaboration avec <strong>{rateeName}</strong> ?</div>
-        <div style={{ display:'flex', gap:6, justifyContent:'center', marginBottom:8 }}>
-          {[1,2,3,4,5].map(i => (
-            <button key={i} onClick={() => setScore(i)} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(0)}
-              style={{ fontSize:40, background:'none', border:'none', cursor:'pointer', color: i <= (hover || score) ? 'var(--am)' : 'var(--g2)', transition:'color .1s', padding:0, lineHeight:1 }}>
-              ★
-            </button>
-          ))}
-        </div>
-        {(hover || score) > 0 && (
-          <div style={{ textAlign:'center', fontSize:13, color:'var(--or)', fontWeight:500, marginBottom:16, minHeight:20 }}>
-            {STAR_LABELS[hover || score]}
-          </div>
-        )}
-        <textarea className="input" rows={3} style={{ resize:'none', marginBottom:16 }}
-          placeholder="Commentaire optionnel..." value={comment} onChange={e => setComment(e.target.value)} />
-        <div style={{ display:'flex', gap:10 }}>
-          <button className="btn-secondary" style={{ flex:1, justifyContent:'center' }} onClick={onClose} disabled={loading}>Plus tard</button>
-          <button className="btn-primary" style={{ flex:2, justifyContent:'center' }} disabled={!score || loading} onClick={() => onSubmit(score, comment)}>
-            {loading ? 'Envoi...' : 'Envoyer l\'évaluation'}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
 const SECTORS = ['logistique','btp','industrie','hotellerie','proprete']
-const SECTOR_LABELS = { logistique:'Logistique', btp:'BTP', industrie:'Industrie', hotellerie:'Hôtellerie', proprete:'Propreté' }
 const STATUS_STYLES = {
   draft:     ['badge-gray','Brouillon'],
   open:      ['badge-blue','Publiée'],
@@ -75,7 +38,6 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
   const [loading, setLoading]     = useState(true)
   const [publishing, setPublishing] = useState(false)
   const [published, setPublished] = useState(false)
-  const [toast, setToast]         = useState(null)
   const [selectedMissionId, setSelectedMissionId] = useState(null)
   const [candidates, setCandidates] = useState([])
   const [actionLoading, setActionLoading] = useState({})
@@ -97,7 +59,7 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
   const [signedContracts, setSignedContracts] = useState(() => {
     try { return JSON.parse(localStorage.getItem('tempo_signed_contracts_e') || '[]') } catch { return [] }
   })
-  const [darkMode, setDarkMode]           = useState(() => localStorage.getItem('tempo_dark_mode') === '1')
+  const { darkMode, toggleDarkMode } = useDarkMode()
 
   const company = roleData
   const displayName = company?.name || profile?.email || '—'
@@ -110,23 +72,20 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
   })
   const setF = (k,v) => setForm(f => ({...f,[k]:v}))
 
-  const showToast = (msg, type='success') => {
-    setToast({ msg, type })
-    setTimeout(() => setToast(null), 3000)
-  }
+  const { toast, showToast } = useToast()
 
   const loadData = useCallback(async () => {
     if (!user?.id) return
     setLoading(true)
     try {
-      const [mRes, iRes, nRes] = await Promise.all([
+      const [mRes, iRes, nRes] = await Promise.allSettled([
         getCompanyMissions(user.id),
         getCompanyInvoices(user.id),
         getNotifications(user.id),
       ])
-      if (mRes.data) setMissions(mRes.data)
-      if (iRes.data) setInvoices(iRes.data)
-      if (nRes.data) setNotifs(nRes.data)
+      if (mRes.status === 'fulfilled' && mRes.value.data) setMissions(mRes.value.data)
+      if (iRes.status === 'fulfilled' && iRes.value.data) setInvoices(iRes.value.data)
+      if (nRes.status === 'fulfilled' && nRes.value.data) setNotifs(nRes.value.data)
     } finally {
       setLoading(false)
     }
@@ -161,17 +120,27 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
       showToast('Veuillez remplir tous les champs obligatoires', 'error')
       return
     }
+    const parsedDate = new Date(form.start_date)
+    if (isNaN(parsedDate.getTime())) {
+      showToast('La date de début est invalide', 'error')
+      return
+    }
+    const hourlyRate = parseFloat(form.hourly_rate)
+    if (isNaN(hourlyRate) || hourlyRate <= 0) {
+      showToast('Le taux horaire doit être un nombre positif', 'error')
+      return
+    }
     setPublishing(true)
     const { data, error } = await createMission({
       company_id: user.id,
-      title: form.title,
+      title: form.title.trim(),
       sector: form.sector,
-      hourly_rate: parseFloat(form.hourly_rate),
+      hourly_rate: hourlyRate,
       total_hours: form.total_hours ? parseFloat(form.total_hours) : null,
-      start_date: new Date(form.start_date).toISOString(),
-      city: form.city,
-      address: form.address,
-      description: form.description,
+      start_date: parsedDate.toISOString(),
+      city: form.city.trim(),
+      address: form.address?.trim() || '',
+      description: form.description?.trim() || '',
       required_skills: form.required_skills,
       required_certs: form.required_certs,
       urgency: form.urgency,
@@ -188,7 +157,8 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
 
   const loadCandidates = async (missionId) => {
     setSelectedMissionId(missionId)
-    const { data } = await getMissionApplications(missionId)
+    const { data, error } = await getMissionApplications(missionId)
+    if (error) showToast('Erreur lors du chargement des candidatures', 'error')
     if (data) setCandidates(data)
     setScreen('candidatures')
   }
@@ -196,12 +166,12 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
   const handleAccept = async (candidate) => {
     const key = candidate.id
     setActionLoading(s => ({ ...s, [key]: 'accepting' }))
-    const [appRes] = await Promise.all([
+    const [appRes, assignRes] = await Promise.all([
       updateApplicationStatus(candidate.id, 'accepted'),
       assignWorkerToMission(selectedMissionId, candidate.workers?.id || candidate.worker_id),
     ])
     setActionLoading(s => ({ ...s, [key]: null }))
-    if (appRes.error) { showToast('Erreur lors de l\'acceptation', 'error'); return }
+    if (appRes.error || assignRes.error) { showToast('Erreur lors de l\'acceptation', 'error'); return }
     setCandidates(prev => prev.map(c => c.id === candidate.id ? { ...c, status: 'accepted' } : c))
     setMissions(prev => prev.map(m => m.id === selectedMissionId ? { ...m, status: 'matched' } : m))
     showToast(`${candidate.workers?.first_name} accepté — contrat en cours de génération !`)
@@ -218,17 +188,24 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
   const handleCompleteMission = async (missionId, workerId, workerName) => {
     setActionLoading(s => ({ ...s, [missionId]: 'completing' }))
     const { error } = await completeMission(missionId)
-    setActionLoading(s => ({ ...s, [missionId]: null }))
-    if (error) { showToast('Erreur lors de la complétion', 'error'); return }
+    if (error) { showToast('Erreur lors de la complétion', 'error'); setActionLoading(s => ({ ...s, [missionId]: null })); return }
     setMissions(prev => prev.map(m => m.id === missionId ? { ...m, status: 'completed' } : m))
-    showToast('Mission marquée comme terminée !')
+    // Génération automatique de la facture
+    const mission = missions.find(m => m.id === missionId)
+    if (mission && workerId) {
+      const amountTtc = Math.round((mission.hourly_rate || 0) * (mission.total_hours || 0) * 100) / 100
+      const workerPayout = Math.round(amountTtc * 0.78 * 100) / 100
+      await createInvoice({ workerPayout, amountTtc, workerId, companyId: user.id, missionId })
+    }
+    setActionLoading(s => ({ ...s, [missionId]: null }))
+    showToast('Mission terminée — facture générée !')
     setRatingModal({ missionId, rateeId: workerId, rateeName: workerName })
   }
 
   const handleRatingSubmit = async (score, comment) => {
     if (!ratingModal) return
     setRatingLoading(true)
-    await createRating({
+    const { error } = await createRating({
       missionId: ratingModal.missionId,
       raterId: user.id,
       ratedId: ratingModal.rateeId,
@@ -237,6 +214,7 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
       comment,
     })
     setRatingLoading(false)
+    if (error) { showToast('Erreur lors de l\'envoi de l\'évaluation', 'error'); return }
     setRatingModal(null)
     showToast('Évaluation envoyée — merci !')
   }
@@ -310,14 +288,6 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
     showToast('Export CSV téléchargé')
   }
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light')
-  }, [darkMode])
-
-  const toggleDarkMode = () => {
-    setDarkMode(prev => { const n = !prev; localStorage.setItem('tempo_dark_mode', n ? '1' : '0'); return n })
-  }
-
   const handleCancel = async () => {
     if (!cancelModal) return
     setActionLoading(s => ({ ...s, [cancelModal]: 'cancelling' }))
@@ -333,7 +303,8 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
   const openChat = async (partnerId, partnerName, missionId) => {
     setChatPartner({ id: partnerId, name: partnerName })
     setChatMissionId(missionId)
-    const { data } = await getMessages(user.id, partnerId, missionId)
+    const { data, error } = await getMessages(user.id, partnerId, missionId)
+    if (error) showToast('Erreur lors du chargement des messages', 'error')
     setChatMessages(data || [])
     setScreen('chat')
   }
@@ -341,10 +312,11 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
   const handleSendMessage = async () => {
     if (!chatInput.trim() || !chatPartner) return
     setSendingMsg(true)
-    const { data } = await sendMessage({ senderId: user.id, receiverId: chatPartner.id, missionId: chatMissionId, content: chatInput.trim() })
+    const { data, error } = await sendMessage({ senderId: user.id, receiverId: chatPartner.id, missionId: chatMissionId, content: chatInput.trim() })
+    setSendingMsg(false)
+    if (error) { showToast('Erreur lors de l\'envoi du message', 'error'); return }
     if (data) setChatMessages(prev => [...prev, data])
     setChatInput('')
-    setSendingMsg(false)
   }
 
   const handleSignContract = async (signatureData) => {
@@ -396,7 +368,7 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
   return (
     <div style={{ minHeight:'100vh', background:'var(--wh)', display:'flex', flexDirection:'column' }}>
       {toast && (
-        <div className="toast" style={{ position:'fixed', top:16, right:16, zIndex:999, background:toast.type==='error'?'var(--rd)':'var(--gr)', color:'#fff', borderRadius:10, padding:'12px 18px', fontSize:13, fontWeight:500, boxShadow:'0 4px 16px rgba(0,0,0,.15)' }}>
+        <div className="toast" style={{ position:'fixed', top:16, right:16, zIndex:999, background:toast.type==='error'?'var(--rd)':toast.type==='warn'?'#D97706':'var(--gr)', color:'#fff', borderRadius:10, padding:'12px 18px', fontSize:13, fontWeight:500, boxShadow:'0 4px 16px rgba(0,0,0,.15)' }}>
           {toast.msg}
         </div>
       )}

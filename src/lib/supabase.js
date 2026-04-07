@@ -88,7 +88,19 @@ export const updateCompanyProfile = async (userId, updates) => {
 }
 
 // ── Helpers missions ──────────────────────────
-export const getMissions = async ({ status = 'open', sector, limit = 20, offset = 0 } = {}) => {
+export const getMissions = async ({
+  status = 'open',
+  sector,
+  urgency,
+  rateMin,
+  rateMax,
+  durationMin,
+  durationMax,
+  startAfter,
+  startBefore,
+  limit = 20,
+  offset = 0,
+} = {}) => {
   let query = supabase
     .from('missions')
     .select('*, companies(name, city, rating_avg, rating_count)')
@@ -97,6 +109,13 @@ export const getMissions = async ({ status = 'open', sector, limit = 20, offset 
 
   if (status) query = query.eq('status', status)
   if (sector) query = query.eq('sector', sector)
+  if (urgency && urgency !== 'tous') query = query.eq('urgency', urgency)
+  if (rateMin) query = query.gte('hourly_rate', parseFloat(rateMin))
+  if (rateMax) query = query.lte('hourly_rate', parseFloat(rateMax))
+  if (durationMin) query = query.gte('total_hours', parseFloat(durationMin))
+  if (durationMax) query = query.lte('total_hours', parseFloat(durationMax))
+  if (startAfter) query = query.gte('start_date', startAfter)
+  if (startBefore) query = query.lte('start_date', startBefore)
 
   const { data, error } = await query
   return { data, error }
@@ -293,17 +312,17 @@ export const completeMission = async (missionId) => {
 export const getConversations = async (userId) => {
   const { data, error } = await supabase
     .from('messages')
-    .select('*')
+    .select('id, sender_id, receiver_id, mission_id, content, created_at, read_at')
     .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
     .order('created_at', { ascending: false })
+    .limit(200)
   if (!data) return { data: [], error }
-  // Group by conversation partner
+  // Group by conversation partner — keep only the latest message per conversation
   const convMap = {}
   data.forEach(m => {
     const partnerId = m.sender_id === userId ? m.receiver_id : m.sender_id
     const key = [m.mission_id, partnerId].join('_')
-    if (!convMap[key]) convMap[key] = { partnerId, missionId: m.mission_id, lastMessage: m, messages: [] }
-    convMap[key].messages.push(m)
+    if (!convMap[key]) convMap[key] = { partnerId, missionId: m.mission_id, lastMessage: m }
   })
   return { data: Object.values(convMap), error }
 }
@@ -337,9 +356,11 @@ export const subscribeToMessages = (userId, callback) => {
 
 // ── Helpers cancellation / disputes ──────────
 export const cancelMission = async (missionId, reason) => {
+  const updates = { status: 'cancelled' }
+  if (reason) updates.description = `[ANNULÉE] ${reason}`
   const { data, error } = await supabase
     .from('missions')
-    .update({ status: 'cancelled', description: reason ? `[ANNULÉE] ${reason}` : undefined })
+    .update(updates)
     .eq('id', missionId)
     .select()
     .single()
@@ -381,5 +402,192 @@ export const getContract = async (missionId) => {
     .select('*')
     .eq('mission_id', missionId)
     .maybeSingle()
+  return { data, error }
+}
+
+export const getSignedContractsByWorker = async (workerId) => {
+  const { data, error } = await supabase
+    .from('contracts')
+    .select('mission_id')
+    .eq('worker_id', workerId)
+    .not('worker_signed_at', 'is', null)
+  return { data: data?.map(c => c.mission_id) || [], error }
+}
+
+export const getSignedContractsByCompany = async (companyId) => {
+  const { data, error } = await supabase
+    .from('contracts')
+    .select('mission_id')
+    .eq('company_id', companyId)
+    .not('company_signed_at', 'is', null)
+  return { data: data?.map(c => c.mission_id) || [], error }
+}
+
+// ── Helpers facturation ───────────────────────────────────────
+export const createInvoice = async ({ workerPayout, amountTtc, workerId, companyId, contractId, missionId }) => {
+  const invoiceNumber = `INV-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`
+  const { data, error } = await supabase
+    .from('invoices')
+    .insert({
+      invoice_number: invoiceNumber,
+      worker_id: workerId,
+      company_id: companyId,
+      contract_id: contractId || null,
+      mission_id: missionId || null,
+      worker_payout: workerPayout,
+      amount_ttc: amountTtc,
+      status: 'draft',
+    })
+    .select()
+    .single()
+  return { data, error }
+}
+
+export const updateInvoiceStatus = async (invoiceId, status) => {
+  const { data, error } = await supabase
+    .from('invoices')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', invoiceId)
+    .select()
+    .single()
+  return { data, error }
+}
+
+// ── KYC Documents ────────────────────────────────────────────
+/**
+ * Upload un document KYC dans Supabase Storage.
+ * Chemin : kyc-documents/{userId}/{docType}/{timestamp}_{filename}
+ * Retourne l'URL publique signée valable 1h (pour affichage admin).
+ */
+export const uploadKycDocument = async (userId, docType, file) => {
+  const ext = file.name.split('.').pop()
+  const path = `${userId}/${docType}/${Date.now()}.${ext}`
+  const { error: upErr } = await supabase.storage
+    .from('kyc-documents')
+    .upload(path, file, { upsert: true })
+  if (upErr) return { url: null, path: null, error: upErr }
+
+  // Générer une URL signée longue durée (7 jours) pour le stockage en DB
+  const { data: signed, error: signErr } = await supabase.storage
+    .from('kyc-documents')
+    .createSignedUrl(path, 60 * 60 * 24 * 7)
+  return { url: signed?.signedUrl || null, path, error: signErr }
+}
+
+/**
+ * Générer une URL signée courte durée pour qu'un admin consulte un document.
+ */
+export const getKycSignedUrl = async (path, expiresIn = 3600) => {
+  const { data, error } = await supabase.storage
+    .from('kyc-documents')
+    .createSignedUrl(path, expiresIn)
+  return { url: data?.signedUrl || null, error }
+}
+
+/**
+ * Extraire le chemin de storage depuis une signed URL stockée en DB.
+ * Les signed URLs Supabase contiennent le path après /object/sign/kyc-documents/
+ */
+export const extractKycStoragePath = (signedUrl) => {
+  if (!signedUrl) return null
+  try {
+    const u = new URL(signedUrl)
+    const match = u.pathname.match(/\/object\/sign\/kyc-documents\/(.+)/)
+    return match ? match[1].split('?')[0] : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Mettre à jour les URLs de documents KYC du travailleur + marquer la soumission.
+ */
+export const submitKycDocuments = async (userId, docs) => {
+  // docs = { id_doc_url?, siret_doc_url?, rc_pro_url? }
+  const hasAny = Object.values(docs).some(Boolean)
+  const { data, error } = await supabase
+    .from('workers')
+    .update({
+      ...docs,
+      ...(hasAny ? { kyc_submitted_at: new Date().toISOString() } : {}),
+      kyc_rejection_reason: null, // reset si re-soumission
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', userId)
+    .select()
+    .single()
+  return { data, error }
+}
+
+/**
+ * Approuver un champ KYC spécifique (admin seulement).
+ * field : 'id_verified' | 'siret_verified' | 'rc_pro_verified'
+ */
+export const approveKycField = async (workerId, field, actorId) => {
+  const update = { [field]: true, updated_at: new Date().toISOString() }
+
+  // Si les 3 champs seront vérifiés après cette action, marquer kyc_completed_at
+  const { data: w } = await supabase.from('workers').select('id_verified,siret_verified,rc_pro_verified').eq('id', workerId).single()
+  const willComplete =
+    (field === 'id_verified' || w?.id_verified) &&
+    (field === 'siret_verified' || w?.siret_verified) &&
+    (field === 'rc_pro_verified' || w?.rc_pro_verified)
+  if (willComplete) update.kyc_completed_at = new Date().toISOString()
+
+  const { data, error } = await supabase.from('workers').update(update).eq('id', workerId).select().single()
+
+  if (!error) {
+    await logAuditAction({
+      actorId,
+      action: `kyc_approve_${field}`,
+      targetId: workerId,
+      targetType: 'worker',
+      payload: { field, kyc_completed: willComplete },
+    })
+    if (willComplete) {
+      await supabase.rpc('notify_kyc_decision', { p_worker_id: workerId, p_approved: true })
+    }
+  }
+  return { data, error }
+}
+
+/**
+ * Rejeter le KYC d'un travailleur avec une raison (admin seulement).
+ */
+export const rejectKyc = async (workerId, reason, actorId) => {
+  const { data, error } = await supabase
+    .from('workers')
+    .update({
+      id_verified: false,
+      siret_verified: false,
+      rc_pro_verified: false,
+      kyc_completed_at: null,
+      kyc_rejection_reason: reason,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', workerId)
+    .select()
+    .single()
+
+  if (!error) {
+    await logAuditAction({
+      actorId,
+      action: 'kyc_reject',
+      targetId: workerId,
+      targetType: 'worker',
+      payload: { reason },
+    })
+    await supabase.rpc('notify_kyc_decision', { p_worker_id: workerId, p_approved: false, p_reason: reason })
+  }
+  return { data, error }
+}
+
+// ── Journal d'audit ───────────────────────────────────────────
+export const logAuditAction = async ({ actorId, action, targetId, targetType, payload = {} }) => {
+  const { data, error } = await supabase
+    .from('audit_log')
+    .insert({ actor_id: actorId, action, target_id: targetId, target_type: targetType, payload })
+    .select()
+    .single()
   return { data, error }
 }

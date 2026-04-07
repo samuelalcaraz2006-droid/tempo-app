@@ -110,7 +110,7 @@ export default function Auth({ onNavigate }) {
           <div className="card" style={{ padding:24 }}>
             <div style={{ fontSize:18, fontWeight:600, marginBottom:20 }}>Connexion à TEMPO</div>
             {success && <div style={{ background:'var(--gr-l)', border:'1px solid #D1FAE5', borderRadius:8, padding:'10px 14px', fontSize:13, color:'var(--gr-d)', marginBottom:14 }}>{success}</div>}
-            {error && <div style={{ background:'var(--rd-l)', border:'1px solid #FECACA', borderRadius:8, padding:'10px 14px', fontSize:13, color:'#991B1B', marginBottom:14 }}>{error}</div>}
+            {error && <div style={{ background:'var(--rd-l)', border:'1px solid #FECACA', borderRadius:8, padding:'10px 14px', fontSize:13, color:'var(--rd)', marginBottom:14 }}>{error}</div>}
             <form onSubmit={handleLogin}>
               <Field form={form} set={set} label="Email" id="email" type="email" placeholder="votre@email.fr" required />
               <Field form={form} set={set} label="Mot de passe" id="password" type="password" placeholder="••••••••" required />
@@ -138,14 +138,20 @@ export default function Auth({ onNavigate }) {
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
               <button onClick={() => setRole('travailleur')} style={{ border:'1.5px solid var(--g2)', borderRadius:14, padding:'24px 16px', background:'var(--wh)', cursor:'pointer', transition:'all .15s', textAlign:'center' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(255,85,0,.08)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}>
+                onMouseLeave={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}
+                onFocus={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(255,85,0,.15)' }}
+                onBlur={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}
+                aria-label="Je suis travailleur — auto-entrepreneur cherchant des missions">
                 <div style={{ fontSize:28, marginBottom:8 }}>👷</div>
                 <div style={{ fontSize:15, fontWeight:600, marginBottom:4 }}>Travailleur</div>
                 <div style={{ fontSize:12, color:'var(--g4)', lineHeight:1.5 }}>Je cherche des missions en tant qu'auto-entrepreneur</div>
               </button>
               <button onClick={() => setRole('entreprise')} style={{ border:'1.5px solid var(--g2)', borderRadius:14, padding:'24px 16px', background:'var(--wh)', cursor:'pointer', transition:'all .15s', textAlign:'center' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(255,85,0,.08)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}>
+                onMouseLeave={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}
+                onFocus={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(255,85,0,.15)' }}
+                onBlur={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}
+                aria-label="Je suis entreprise — je publie des missions et cherche des talents">
                 <div style={{ fontSize:28, marginBottom:8 }}>🏢</div>
                 <div style={{ fontSize:15, fontWeight:600, marginBottom:4 }}>Entreprise</div>
                 <div style={{ fontSize:12, color:'var(--g4)', lineHeight:1.5 }}>Je publie des missions et cherche des talents qualifiés</div>
@@ -177,7 +183,7 @@ export default function Auth({ onNavigate }) {
               {step === 2 && 'Vérification de votre statut auto-entrepreneur'}
               {step === 3 && 'Créez vos identifiants de connexion'}
             </div>
-            {error && <div style={{ background:'var(--rd-l)', border:'1px solid #FECACA', borderRadius:8, padding:'10px 14px', fontSize:13, color:'#991B1B', marginBottom:14 }}>{error}</div>}
+            {error && <div style={{ background:'var(--rd-l)', border:'1px solid #FECACA', borderRadius:8, padding:'10px 14px', fontSize:13, color:'var(--rd)', marginBottom:14 }}>{error}</div>}
             {success && <div style={{ background:'var(--gr-l)', border:'1px solid #D1FAE5', borderRadius:8, padding:'10px 14px', fontSize:13, color:'var(--gr-d)', marginBottom:14 }}>{success}</div>}
             <form onSubmit={step < 3 ? (e) => { e.preventDefault(); setStep(s => s+1) } : handleRegister}>
               {step === 1 && <>
@@ -202,14 +208,14 @@ export default function Auth({ onNavigate }) {
                 <Field form={form} set={set} label="Ville" id="city" placeholder="Lyon" required />
                 <div style={{ marginBottom:12 }}>
                   <label className="label">Rayon de recherche missions : <strong>{form.radiusKm} km</strong></label>
-                  <input type="range" min={5} max={50} step={5} value={form.radiusKm} onChange={e => set('radiusKm', e.target.value)} style={{ width:'100%' }} />
+                  <input type="range" min={5} max={50} step={5} value={form.radiusKm} onChange={e => set('radiusKm', e.target.value)} style={{ width:'100%' }} aria-label={`Rayon de recherche : ${form.radiusKm} km`} aria-valuenow={form.radiusKm} aria-valuemin={5} aria-valuemax={50} />
                 </div>
               </>}
               {step === 3 && <>
                 <Field form={form} set={set} label="Email" id="email" type="email" placeholder="marc@email.fr" required />
                 <Field form={form} set={set} label="Mot de passe" id="password" type="password" placeholder="8 caractères minimum" required minLength={8} />
                 <Field form={form} set={set} label="Confirmer le mot de passe" id="confirmPassword" type="password" placeholder="••••••••" required />
-                <div style={{ background:'#FFF2EE', border:'1px solid #FED7AA', borderRadius:8, padding:'9px 12px', fontSize:12, color:'var(--or-d)', marginBottom:12, lineHeight:1.5 }}>
+                <div style={{ background:'var(--or-l)', border:'1px solid var(--or-ll, #FED7AA)', borderRadius:8, padding:'9px 12px', fontSize:12, color:'var(--or-d)', marginBottom:12, lineHeight:1.5 }}>
                   Après inscription, vous devrez uploader votre pièce d'identité et certifications pour activer votre profil TEMPO Vérifié.
                 </div>
               </>}
@@ -226,7 +232,7 @@ export default function Auth({ onNavigate }) {
             <button onClick={() => setRole(null)} style={{ fontSize:13, color:'var(--g4)', background:'none', border:'none', cursor:'pointer', marginBottom:16, display:'flex', alignItems:'center', gap:4 }}>‹ Retour</button>
             <div style={{ fontSize:16, fontWeight:600, marginBottom:4 }}>Créer un compte Entreprise</div>
             <div style={{ fontSize:13, color:'var(--g4)', marginBottom:18 }}>Accès gratuit · Commission 8% par mission réalisée</div>
-            {error && <div style={{ background:'var(--rd-l)', border:'1px solid #FECACA', borderRadius:8, padding:'10px 14px', fontSize:13, color:'#991B1B', marginBottom:14 }}>{error}</div>}
+            {error && <div style={{ background:'var(--rd-l)', border:'1px solid #FECACA', borderRadius:8, padding:'10px 14px', fontSize:13, color:'var(--rd)', marginBottom:14 }}>{error}</div>}
             {success && <div style={{ background:'var(--gr-l)', border:'1px solid #D1FAE5', borderRadius:8, padding:'10px 14px', fontSize:13, color:'var(--gr-d)', marginBottom:14 }}>{success}</div>}
             <form onSubmit={handleRegister}>
               <Field form={form} set={set} label="Nom de l'entreprise" id="companyName" placeholder="Amazon Logistics" required />
@@ -254,7 +260,7 @@ export default function Auth({ onNavigate }) {
             <button onClick={() => { setMode('login'); setError(''); setSuccess('') }} style={{ fontSize:13, color:'var(--g4)', background:'none', border:'none', cursor:'pointer', marginBottom:16, display:'flex', alignItems:'center', gap:4 }}>‹ Retour</button>
             <div style={{ fontSize:18, fontWeight:600, marginBottom:4 }}>Mot de passe oublié</div>
             <div style={{ fontSize:13, color:'var(--g4)', marginBottom:18 }}>Entrez votre email pour recevoir un lien de réinitialisation</div>
-            {error   && <div style={{ background:'var(--rd-l)', border:'1px solid #FECACA', borderRadius:8, padding:'10px 14px', fontSize:13, color:'#991B1B', marginBottom:14 }}>{error}</div>}
+            {error   && <div style={{ background:'var(--rd-l)', border:'1px solid #FECACA', borderRadius:8, padding:'10px 14px', fontSize:13, color:'var(--rd)', marginBottom:14 }}>{error}</div>}
             {success && <div style={{ background:'var(--gr-l)', border:'1px solid #D1FAE5', borderRadius:8, padding:'10px 14px', fontSize:13, color:'var(--gr-d)', marginBottom:14 }}>{success}</div>}
             {!success && (
               <form onSubmit={handleReset}>

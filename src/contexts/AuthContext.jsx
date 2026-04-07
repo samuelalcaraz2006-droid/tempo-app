@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useRef, useState } from 'react'
+import React, { createContext, useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 export const AuthContext = createContext(null)
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   const isRecovery = useRef(false)
 
   // ── Chargement du profil (séparé de onAuthStateChange) ────
-  const loadProfile = async (userId) => {
+  const loadProfile = useCallback(async (userId) => {
     try {
       const { data: prof, error } = await supabase
         .from('profiles')
@@ -32,8 +32,10 @@ export const AuthProvider = ({ children }) => {
         const { data } = await supabase.from('companies').select('*').eq('id', userId).maybeSingle()
         setRoleData(data ?? null)
       }
-    } catch (_) {}
-  }
+    } catch (err) {
+      console.error('[AuthContext] loadProfile error:', err)
+    }
+  }, [])
 
   // ── 1. onAuthStateChange : met à jour UNIQUEMENT user ─────
   useEffect(() => {
@@ -73,21 +75,20 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   // ── 2. Quand user change → charger le profil ─────────────
+  // Note : ne pas appeler setLoading(false) quand user est null ici —
+  // c'est getSession() (effet 3) ou SIGNED_OUT (effet 1) qui gèrent ce cas.
+  // Évite la race condition où loading passe à false avant que getSession
+  // n'ait confirmé l'absence de session.
   useEffect(() => {
-    if (user === null && !loading) return  // pas connecté, rien à faire
+    if (!user) return
 
     const run = async () => {
-      if (user) {
-        await loadProfile(user.id)
-      } else {
-        setProfile(null)
-        setRoleData(null)
-      }
+      await loadProfile(user.id)
       setLoading(false)
     }
 
     run()
-  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user?.id, loadProfile]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── 3. Session initiale au chargement ─────────────────────
   useEffect(() => {

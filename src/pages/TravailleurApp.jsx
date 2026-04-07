@@ -1,60 +1,24 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { Bell, Moon, Sun, Search, X, Menu, Map, Heart, PenLine, MessageCircle, Star as StarIcon } from 'lucide-react'
 import { useAuth } from '../contexts/useAuth'
-import { supabase, getMissions, applyToMission, getWorkerApplications, getWorkerInvoices, getNotifications, markNotifsRead, setWorkerAvailability, subscribeToMissions, subscribeToNotifications, getWorkerMissions, createRating, getConversations, getMessages, sendMessage, subscribeToMessages, withdrawApplication, saveContract } from '../lib/supabase'
+import { supabase, getMissions, applyToMission, getWorkerApplications, getWorkerInvoices, getNotifications, markNotifsRead, setWorkerAvailability, subscribeToMissions, subscribeToNotifications, getWorkerMissions, createRating, getConversations, getMessages, sendMessage, subscribeToMessages, withdrawApplication, saveContract, getSignedContractsByWorker, uploadKycDocument, submitKycDocuments } from '../lib/supabase'
 import { computeMatchScore } from '../lib/matching'
 import { isPushSupported, requestPushPermission, sendLocalNotification, getPermissionStatus } from '../lib/pushNotifications'
 import { useI18n } from '../contexts/I18nContext'
+import { formatDate, formatAmount, SECTOR_LABELS } from '../lib/formatters'
+import RatingModal from '../components/RatingModal'
+import { useToast } from '../hooks/useToast'
+import { useDarkMode } from '../hooks/useDarkMode'
 
 const MissionsMap = lazy(() => import('../components/MissionsMap'))
 const ContractModal = lazy(() => import('../components/ContractModal'))
 
 const Star = ({ n }) => <span style={{ color:'var(--am)', fontSize:12 }}>{'★'.repeat(Math.round(n))}{'☆'.repeat(5-Math.round(n))}</span>
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : '—'
-const formatAmount = (n) => n ? `${parseFloat(n).toFixed(0)} €` : '—'
-const SECTOR_LABELS = { logistique:'Logistique', btp:'BTP', industrie:'Industrie', hotellerie:'Hôtellerie', proprete:'Propreté' }
-
-const STAR_LABELS = ['', 'Insuffisant', 'Passable', 'Bien', 'Très bien', 'Excellent !']
 const APP_STATUS = {
   pending:  { label:'En attente', cls:'badge-blue' },
   accepted: { label:'✓ Accepté', cls:'badge-green' },
   rejected: { label:'✗ Refusé', cls:'badge-gray' },
   active:   { label:'En cours', cls:'badge-orange' },
-}
-
-const RatingModal = ({ companyName, onSubmit, onClose, loading }) => {
-  const [score, setScore] = React.useState(0)
-  const [hover, setHover] = React.useState(0)
-  const [comment, setComment] = React.useState('')
-  return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.55)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, padding:20 }}>
-      <div style={{ background:'var(--wh)', borderRadius:16, padding:28, maxWidth:400, width:'100%', boxShadow:'0 20px 60px rgba(0,0,0,.2)' }}>
-        <div style={{ fontSize:18, fontWeight:600, marginBottom:4 }}>Évaluer la mission</div>
-        <div style={{ fontSize:13, color:'var(--g4)', marginBottom:24 }}>Comment s'est passée la collaboration avec <strong>{companyName}</strong> ?</div>
-        <div style={{ display:'flex', gap:6, justifyContent:'center', marginBottom:8 }}>
-          {[1,2,3,4,5].map(i => (
-            <button key={i} onClick={() => setScore(i)} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(0)}
-              style={{ fontSize:40, background:'none', border:'none', cursor:'pointer', color: i <= (hover || score) ? 'var(--am)' : 'var(--g2)', transition:'color .1s', padding:0, lineHeight:1 }}>
-              ★
-            </button>
-          ))}
-        </div>
-        {(hover || score) > 0 && (
-          <div style={{ textAlign:'center', fontSize:13, color:'var(--or)', fontWeight:500, marginBottom:16, minHeight:20 }}>
-            {STAR_LABELS[hover || score]}
-          </div>
-        )}
-        <textarea className="input" rows={3} style={{ resize:'none', marginBottom:16 }}
-          placeholder="Commentaire optionnel..." value={comment} onChange={e => setComment(e.target.value)} />
-        <div style={{ display:'flex', gap:10 }}>
-          <button className="btn-secondary" style={{ flex:1, justifyContent:'center' }} onClick={onClose} disabled={loading}>Plus tard</button>
-          <button className="btn-primary" style={{ flex:2, justifyContent:'center' }} disabled={!score || loading} onClick={() => onSubmit(score, comment)}>
-            {loading ? 'Envoi...' : 'Envoyer l\'évaluation'}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
 }
 
 const Field = ({ label, id, form, set, ...props }) => (
@@ -63,6 +27,110 @@ const Field = ({ label, id, form, set, ...props }) => (
     <input className="input" {...props} onChange={e => set(id, e.target.value)} value={form[id] || ''} />
   </div>
 )
+
+// ── Composant KYC Upload ──────────────────────────────────────
+const KYC_DOCS = [
+  { key: 'id',    field: 'id_doc_url',    verifiedField: 'id_verified',    label: 'Pièce d\'identité',     hint: 'CNI, passeport (JPEG, PNG ou PDF, max 10 Mo)' },
+  { key: 'siret', field: 'siret_doc_url', verifiedField: 'siret_verified', label: 'Justificatif SIRET',    hint: 'Extrait Kbis ou avis de situation INSEE (PDF, max 10 Mo)' },
+  { key: 'rcpro', field: 'rc_pro_url',    verifiedField: 'rc_pro_verified', label: 'RC Professionnelle',   hint: 'Attestation d\'assurance RC Pro en cours de validité (PDF, max 10 Mo)' },
+]
+
+function KycUploadSection({ worker, userId, onUpdate, showToast }) {
+  const [uploading, setUploading] = React.useState({})
+  const fileRefs = React.useRef({})
+
+  const handleFile = async (docDef, file) => {
+    if (!file || !userId) return
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('Fichier trop volumineux (max 10 Mo)', 'error')
+      return
+    }
+    setUploading(u => ({ ...u, [docDef.key]: true }))
+    const { url, error } = await uploadKycDocument(userId, docDef.key, file)
+    if (error || !url) {
+      showToast('Erreur lors de l\'upload', 'error')
+      setUploading(u => ({ ...u, [docDef.key]: false }))
+      return
+    }
+    const { error: saveErr } = await submitKycDocuments(userId, { [docDef.field]: url })
+    if (saveErr) {
+      showToast('Erreur lors de la sauvegarde', 'error')
+    } else {
+      showToast(`${docDef.label} déposé — en attente de vérification`, 'success')
+      await onUpdate()
+    }
+    setUploading(u => ({ ...u, [docDef.key]: false }))
+  }
+
+  const allVerified = worker?.id_verified && worker?.siret_verified && worker?.rc_pro_verified
+  const hasRejection = worker?.kyc_rejection_reason
+
+  return (
+    <div className="card" style={{ padding:16, marginBottom:12 }}>
+      <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>Documents & vérifications KYC</div>
+
+      {allVerified && (
+        <div style={{ background:'#ECFDF5', border:'1px solid #6EE7B7', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#065F46' }}>
+          KYC complété le {worker.kyc_completed_at?.split('T')[0]} — votre identité est vérifiée
+        </div>
+      )}
+
+      {hasRejection && (
+        <div style={{ background:'#FEF2F2', border:'1px solid #FCA5A5', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#991B1B' }}>
+          <strong>Documents refusés :</strong> {hasRejection}
+          <br />Veuillez re-déposer vos documents corrigés.
+        </div>
+      )}
+
+      {KYC_DOCS.map(doc => {
+        const verified = worker?.[doc.verifiedField]
+        const hasDoc = !!worker?.[doc.field]
+        const isUploading = uploading[doc.key]
+        return (
+          <div key={doc.key} style={{ padding:'10px 0', borderBottom:'1px solid var(--g1)' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: verified ? 0 : 6 }}>
+              <div>
+                <div style={{ fontSize:13, fontWeight:500, color:'var(--g6)' }}>{doc.label}</div>
+                {!verified && <div style={{ fontSize:11, color:'var(--g4)', marginTop:2 }}>{doc.hint}</div>}
+              </div>
+              <span className={`badge ${verified ? 'badge-green' : hasDoc ? 'badge-blue' : 'badge-orange'}`} style={{ fontSize:10, flexShrink:0, marginLeft:8 }}>
+                {verified ? '✓ Vérifié' : hasDoc ? 'En cours' : 'À déposer'}
+              </span>
+            </div>
+            {!verified && (
+              <div style={{ display:'flex', gap:8, alignItems:'center', marginTop:6 }}>
+                <input
+                  ref={el => { fileRefs.current[doc.key] = el }}
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.webp,.pdf"
+                  style={{ display:'none' }}
+                  onChange={e => handleFile(doc, e.target.files?.[0])}
+                />
+                <button
+                  className="btn-secondary"
+                  style={{ padding:'6px 12px', fontSize:11, opacity: isUploading ? 0.6 : 1 }}
+                  disabled={isUploading}
+                  onClick={() => fileRefs.current[doc.key]?.click()}
+                >
+                  {isUploading ? 'Upload...' : hasDoc ? 'Remplacer' : 'Déposer'}
+                </button>
+                {hasDoc && !isUploading && (
+                  <span style={{ fontSize:11, color:'var(--g4)' }}>Document déposé — vérification admin en attente</span>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      })}
+
+      {worker?.kyc_submitted_at && !allVerified && (
+        <div style={{ fontSize:11, color:'var(--g4)', marginTop:8 }}>
+          Soumis le {worker.kyc_submitted_at?.split('T')[0]} · vérification manuelle sous 24-48h
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const { user, profile, roleData, refreshRoleData } = useAuth()
@@ -89,7 +157,6 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   })
   const [disponible, setDisponible]     = useState(false)
   const [applying, setApplying]         = useState({})
-  const [toast, setToast]               = useState(null)
   const [profileForm, setProfileForm]   = useState({})
   const [savingProfile, setSavingProfile] = useState(false)
   const [allMissions, setAllMissions]   = useState([])
@@ -115,7 +182,8 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const [signedContracts, setSignedContracts] = useState(() => {
     try { return JSON.parse(localStorage.getItem('tempo_signed_contracts') || '[]') } catch { return [] }
   })
-  const [darkMode, setDarkMode]           = useState(() => localStorage.getItem('tempo_dark_mode') === '1')
+  const [unreadMessages, setUnreadMessages] = useState(0)
+  const { darkMode, toggleDarkMode } = useDarkMode()
   const [savedAlerts, setSavedAlerts]     = useState(() => {
     try { return JSON.parse(localStorage.getItem('tempo_saved_alerts') || '[]') } catch { return [] }
   })
@@ -128,33 +196,43 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const initials = worker?.first_name?.[0] || profile?.email?.[0]?.toUpperCase() || '?'
   const unreadCount = notifs.filter(n => !n.read_at).length
 
-  const showToast = (msg, type = 'success') => {
-    setToast({ msg, type })
-    setTimeout(() => setToast(null), 3000)
-  }
+  const { toast, showToast } = useToast()
 
-  const loadData = useCallback(async () => {
+  // Ref stable vers loadData pour éviter de recréer les subscriptions à chaque
+  // changement de worker (loadData dépend de worker?.id)
+  const loadDataRef = React.useRef(loadData)
+  React.useEffect(() => { loadDataRef.current = loadData }, [loadData])
+
+  const loadData = useCallback(async (missionFilters = {}) => {
     if (!user?.id) return
     setLoading(true)
     try {
-      const [mRes, aRes, iRes, nRes, wmRes] = await Promise.all([
-        getMissions({ status:'open', limit:50 }),
+      const [mRes, aRes, iRes, nRes, wmRes, scRes] = await Promise.allSettled([
+        getMissions({ status:'open', limit:50, ...missionFilters }),
         getWorkerApplications(user.id),
         getWorkerInvoices(user.id),
         getNotifications(user.id),
         getWorkerMissions(user.id),
+        getSignedContractsByWorker(user.id),
       ])
-      if (mRes.data) {
-        const withScores = mRes.data.map(m => ({
+      if (mRes.status === 'fulfilled' && mRes.value.data) {
+        const withScores = mRes.value.data.map(m => ({
           ...m,
           matchScore: worker ? computeMatchScore(m, worker).total_score : 50
         })).sort((a,b) => b.matchScore - a.matchScore)
         setMissions(withScores)
       }
-      if (aRes.data) setApplications(aRes.data)
-      if (iRes.data) setInvoices(iRes.data)
-      if (nRes.data) setNotifs(nRes.data)
-      if (wmRes.data) setAllMissions(wmRes.data)
+      if (aRes.status === 'fulfilled' && aRes.value.data) setApplications(aRes.value.data)
+      if (iRes.status === 'fulfilled' && iRes.value.data) setInvoices(iRes.value.data)
+      if (nRes.status === 'fulfilled' && nRes.value.data) setNotifs(nRes.value.data)
+      if (wmRes.status === 'fulfilled' && wmRes.value.data) setAllMissions(wmRes.value.data)
+      if (scRes.status === 'fulfilled' && scRes.value.data?.length) {
+        setSignedContracts(prev => {
+          const merged = [...new Set([...prev, ...scRes.value.data])]
+          localStorage.setItem('tempo_signed_contracts', JSON.stringify(merged))
+          return merged
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -182,32 +260,44 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
     }
   }, [])
 
+  // Missions + notifications : ne dépendent que de user.id
+  // loadDataRef évite de recréer ces subscriptions à chaque rechargement de worker
   useEffect(() => {
     if (!user?.id) return
-    const mSub = subscribeToMissions(() => loadData())
+    const mSub = subscribeToMissions(() => loadDataRef.current())
     const nSub = subscribeToNotifications(user.id, (payload) => {
       setNotifs(prev => [payload.new, ...prev])
-      // Envoyer une notification push locale
       sendLocalNotification(payload.new.title || 'TEMPO', {
         body: payload.new.body || 'Vous avez une nouvelle notification',
         tag: `notif-${payload.new.id}`,
       })
     })
+    return () => {
+      mSub.unsubscribe()
+      nSub.unsubscribe()
+    }
+  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Messages : dépend du partenaire chat actif
+  useEffect(() => {
+    if (!user?.id) return
     const msgSub = subscribeToMessages(user.id, (payload) => {
-      if (chatPartner && payload.new.sender_id === chatPartner.id) {
+      if (chatPartner && payload.new.sender_id === chatPartner.id && payload.new.mission_id === chatMissionId) {
         setChatMessages(prev => [...prev, payload.new])
+      } else {
+        setUnreadMessages(prev => prev + 1)
       }
     })
-    return () => { mSub.unsubscribe(); nSub.unsubscribe(); msgSub.unsubscribe() }
-  }, [user?.id, chatPartner?.id])
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light')
-  }, [darkMode])
+    return () => { msgSub.unsubscribe() }
+  }, [user?.id, chatPartner?.id, chatMissionId])
 
   const toggleDispo = async (val) => {
     setDisponible(val)
-    await setWorkerAvailability(user.id, val)
+    const { error } = await setWorkerAvailability(user.id, val)
+    if (error) {
+      setDisponible(!val) // rollback
+      showToast('Erreur lors de la mise à jour de la disponibilité', 'error')
+    }
   }
 
   const handleApply = async (mission) => {
@@ -235,7 +325,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const handleRatingSubmit = async (score, comment) => {
     if (!ratingModal) return
     setRatingLoading(true)
-    await createRating({
+    const { error } = await createRating({
       missionId: ratingModal.missionId,
       raterId: user.id,
       ratedId: ratingModal.rateeId,
@@ -244,6 +334,10 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
       comment,
     })
     setRatingLoading(false)
+    if (error) {
+      showToast('Erreur lors de l\'envoi de l\'évaluation', 'error')
+      return
+    }
     setRatedMissions(prev => new Set([...prev, ratingModal.missionId]))
     setRatingModal(null)
     showToast('Évaluation envoyée — merci !')
@@ -252,7 +346,8 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const openChat = async (partnerId, partnerName, missionId) => {
     setChatPartner({ id: partnerId, name: partnerName })
     setChatMissionId(missionId)
-    const { data } = await getMessages(user.id, partnerId, missionId)
+    const { data, error } = await getMessages(user.id, partnerId, missionId)
+    if (error) showToast('Erreur lors du chargement des messages', 'error')
     setChatMessages(data || [])
     setScreen('chat')
   }
@@ -260,10 +355,11 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const handleSendMessage = async () => {
     if (!chatInput.trim() || !chatPartner) return
     setSendingMsg(true)
-    const { data } = await sendMessage({ senderId: user.id, receiverId: chatPartner.id, missionId: chatMissionId, content: chatInput.trim() })
+    const { data, error } = await sendMessage({ senderId: user.id, receiverId: chatPartner.id, missionId: chatMissionId, content: chatInput.trim() })
+    setSendingMsg(false)
+    if (error) { showToast('Erreur lors de l\'envoi du message', 'error'); return }
     if (data) setChatMessages(prev => [...prev, data])
     setChatInput('')
-    setSendingMsg(false)
   }
 
   const handleWithdraw = async (applicationId) => {
@@ -294,15 +390,17 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
 
   const openCompanyProfile = async (companyId, companyData) => {
     setViewCompany(companyData)
-    const { data } = await supabase
+    setCompanyMissions([])
+    setScreen('company-profile')
+    const { data, error } = await supabase
       .from('missions')
       .select('id, title, hourly_rate, city, start_date, total_hours, sector, status')
       .eq('company_id', companyId)
       .eq('status', 'open')
       .order('created_at', { ascending: false })
       .limit(10)
-    setCompanyMissions(data || [])
-    setScreen('company-profile')
+    if (error) showToast('Erreur lors du chargement des missions', 'error')
+    else setCompanyMissions(data || [])
   }
 
   const saveAlert = (alert) => {
@@ -326,13 +424,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
     })
   }
 
-  const toggleDarkMode = () => {
-    setDarkMode(prev => {
-      const next = !prev
-      localStorage.setItem('tempo_dark_mode', next ? '1' : '0')
-      return next
-    })
-  }
+
 
   // Badges computation
   const badges = React.useMemo(() => {
@@ -512,7 +604,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
       )}
       {ratingModal && (
         <RatingModal
-          companyName={ratingModal.companyName}
+          rateeName={ratingModal.companyName}
           loading={ratingLoading}
           onSubmit={handleRatingSubmit}
           onClose={() => setRatingModal(null)}
@@ -1274,25 +1366,8 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
               </button>
             </div>
 
-            {/* KYC / Documents status */}
-            <div className="card" style={{ padding:16, marginBottom:12 }}>
-              <div style={{ fontSize:14, fontWeight:600, marginBottom:10 }}>Documents & vérifications</div>
-              {[
-                ['Pièce d\'identité', worker?.id_verified],
-                ['SIRET', worker?.siret_verified],
-                ['RC Pro', worker?.rc_pro_verified],
-              ].map(([label, verified]) => (
-                <div key={label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'8px 0', borderBottom:'1px solid var(--g1)' }}>
-                  <span style={{ fontSize:13, color:'var(--g6)' }}>{label}</span>
-                  <span className={`badge ${verified ? 'badge-green' : 'badge-orange'}`} style={{ fontSize:11 }}>
-                    {verified ? '✓ Vérifié' : 'En attente'}
-                  </span>
-                </div>
-              ))}
-              {worker?.kyc_completed_at && (
-                <div style={{ fontSize:11, color:'var(--g4)', marginTop:8 }}>KYC complété le {formatDate(worker.kyc_completed_at)}</div>
-              )}
-            </div>
+            {/* KYC / Documents upload & status */}
+            <KycUploadSection worker={worker} userId={user?.id} onUpdate={refreshRoleData} showToast={showToast} />
 
             {/* Badges */}
             {badges.length > 0 && (

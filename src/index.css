@@ -174,9 +174,10 @@ a { text-decoration: none; color: inherit; }
   transition: background .15s, transform .1s, box-shadow .15s;
   box-shadow: 0 2px 8px rgba(37,99,235,.28);
 }
-.btn-primary:hover { background: var(--brand-d); transform: translateY(-1px); box-shadow: var(--shadow-brand); }
-.btn-primary:active { transform: translateY(0) scale(.98); box-shadow: none; }
+.btn-primary:hover:not(:disabled) { background: var(--brand-d); transform: translateY(-1px); box-shadow: var(--shadow-brand); }
+.btn-primary:active:not(:disabled) { transform: translateY(0) scale(.98); box-shadow: none; }
 .btn-primary:focus-visible { outline: 3px solid rgba(37,99,235,.45); outline-offset: 2px; }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
 
 /* Variant inline — pour les actions dans les listes (évite le bleu plein) */
 .btn-inline {
@@ -196,8 +197,9 @@ a { text-decoration: none; color: inherit; }
   padding: 9px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 500;
   transition: background .15s, border-color .15s, transform .1s;
 }
-.btn-secondary:hover { background: var(--g1); border-color: var(--g3); transform: translateY(-1px); }
+.btn-secondary:hover:not(:disabled) { background: var(--g1); border-color: var(--g3); transform: translateY(-1px); }
 .btn-secondary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.btn-secondary:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .btn-ghost {
   display: inline-flex; align-items: center; gap: 8px;
@@ -226,7 +228,8 @@ a { text-decoration: none; color: inherit; }
   transition: background .15s;
   cursor: pointer;
 }
-.btn-danger:hover { background: var(--rd-l); }
+.btn-danger:hover:not(:disabled) { background: var(--rd-l); }
+.btn-danger:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* ══════════════════════════════════════════════════════════════
    CARDS
@@ -315,6 +318,7 @@ a { text-decoration: none; color: inherit; }
   box-shadow: 0 0 0 3px rgba(37,99,235,.12);
 }
 .input::placeholder { color: var(--g4); }
+.input:disabled { background: var(--g1); color: var(--g4); cursor: not-allowed; opacity: 0.7; }
 
 .input-dark {
   background: rgba(255,255,255,0.07);

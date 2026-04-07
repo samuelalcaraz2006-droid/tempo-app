@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useId } from 'react'
 import SignatureCanvas from './SignatureCanvas'
 
+// Affichage long pour les contrats (ex: "7 avril 2026")
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'
 
 export default function ContractModal({ mission, company, worker, role, onSign, onClose, signing }) {
@@ -89,11 +90,12 @@ export default function ContractModal({ mission, company, worker, role, onSign, 
         {/* Actions */}
         <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
           <button onClick={onClose} disabled={signing}
-            style={{ flex: 1, padding: '11px', border: '1px solid var(--g2)', borderRadius: 10, background: 'var(--wh)', fontSize: 13, cursor: 'pointer', color: 'var(--g6)' }}>
+            style={{ flex: 1, padding: '11px', border: '1px solid var(--g2)', borderRadius: 10, background: 'var(--wh)', fontSize: 13, color: 'var(--g6)' }}>
             Annuler
           </button>
           <button onClick={handleSign} disabled={!signature || !accepted || signing}
-            style={{ flex: 2, padding: '11px', border: 'none', borderRadius: 10, background: signature && accepted ? 'var(--or)' : 'var(--g2)', color: signature && accepted ? '#fff' : 'var(--g4)', fontSize: 13, fontWeight: 500, cursor: signature && accepted ? 'pointer' : 'default' }}>
+            aria-label={signing ? 'Signature en cours' : 'Signer le contrat'}
+            style={{ flex: 2, padding: '11px', border: 'none', borderRadius: 10, background: 'var(--or)', color: '#fff', fontSize: 13, fontWeight: 500, opacity: (!signature || !accepted || signing) ? 0.45 : 1, cursor: (!signature || !accepted || signing) ? 'not-allowed' : 'pointer', transition: 'opacity .15s' }}>
             {signing ? 'Signature en cours...' : 'Signer le contrat'}
           </button>
         </div>

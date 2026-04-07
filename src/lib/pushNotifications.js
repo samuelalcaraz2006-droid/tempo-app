@@ -14,20 +14,21 @@ export const requestPushPermission = async () => {
 
 export const sendLocalNotification = (title, options = {}) => {
   if (getPermissionStatus() !== 'granted') return
+
+  const notifOptions = {
+    icon: '/icons/icon-192.svg',
+    badge: '/icons/icon-192.svg',
+    ...options,
+  }
+
   try {
-    new Notification(title, {
-      icon: '/icons/icon-192.svg',
-      badge: '/icons/icon-192.svg',
-      ...options,
-    })
+    new Notification(title, notifOptions)
   } catch {
-    // Fallback : via service worker (mobile)
-    navigator.serviceWorker.ready.then((reg) => {
-      reg.showNotification(title, {
-        icon: '/icons/icon-192.svg',
-        badge: '/icons/icon-192.svg',
-        ...options,
-      })
-    })
+    // Fallback : via service worker (mobile Safari, etc.)
+    if (!('serviceWorker' in navigator)) return
+    navigator.serviceWorker.ready.then(
+      (reg) => reg.showNotification(title, notifOptions),
+      (err) => console.warn('[Push] Service worker indisponible:', err)
+    )
   }
 }

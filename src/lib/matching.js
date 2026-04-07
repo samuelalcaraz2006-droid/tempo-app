@@ -56,12 +56,12 @@ const scoreSkills = (mission, worker) => {
 const scoreRating = (worker) => {
   if (!worker.rating_count || worker.rating_count === 0) return 50 // nouveau = score neutre
   const r = parseFloat(worker.rating_avg) || 0
-  // 5 étoiles = 100, 4 = 80, 3 = 60, etc.
-  // Pondération par le volume : plus de missions = plus fiable
   const volumeBonus = Math.min(20, Math.floor(worker.rating_count / 10) * 2)
   const base = ((r - 1) / 4) * 80
-  // Pénalité si missions annulées
-  const cancelRate = worker.missions_cancelled / Math.max(1, worker.missions_completed + worker.missions_cancelled)
+  // Null-safe : missions_cancelled/completed peuvent être undefined
+  const completed = worker.missions_completed ?? 0
+  const cancelled = worker.missions_cancelled ?? 0
+  const cancelRate = cancelled / Math.max(1, completed + cancelled)
   const cancelPenalty = cancelRate * 20
   return Math.max(0, Math.min(100, Math.round(base + volumeBonus - cancelPenalty)))
 }
@@ -73,7 +73,9 @@ const scoreDistance = (mission, worker) => {
   const radius = worker.radius_km || 10
   if (km <= 2) return 100
   if (km >= radius) return 0
-  // Décroissance linéaire
+  // Guard contre division par zéro si radius <= 2 km
+  if (radius <= 2) return 0
+  // Décroissance linéaire entre 2 km et la limite du rayon
   return Math.round((1 - (km - 2) / (radius - 2)) * 100)
 }
 
@@ -90,18 +92,16 @@ const scoreHistory = (mission, worker, pastMissions = []) => {
 }
 
 // ── Score disponibilité (0–100) ───────────────────────────────
-const scoreAvailability = (worker, missionDate) => {
-  if (!worker.is_available) return 0
-  // Si on a la date de mission, vérifier les plages
+const scoreAvailability = (worker) => {
   return worker.is_available ? 100 : 0
 }
 
 // ── Score réactivité (0–100) ──────────────────────────────────
 const scoreReactivity = (worker) => {
-  // Basé sur le taux de réponse historique (à enrichir avec vraies données)
-  if (!worker.missions_completed) return 50
-  const completionRate = worker.missions_completed /
-    Math.max(1, (worker.missions_completed || 0) + (worker.missions_cancelled || 0))
+  const completed = worker.missions_completed ?? 0
+  const cancelled = worker.missions_cancelled ?? 0
+  if (!completed) return 50
+  const completionRate = completed / Math.max(1, completed + cancelled)
   return Math.round(completionRate * 100)
 }
 
@@ -112,7 +112,7 @@ export const computeMatchScore = (mission, worker, pastMissions = []) => {
     rating:     scoreRating(worker),
     distance:   scoreDistance(mission, worker),
     history:    scoreHistory(mission, worker, pastMissions),
-    avail:      scoreAvailability(worker, mission.start_date),
+    avail:      scoreAvailability(worker),
     reactivity: scoreReactivity(worker),
   }
 
