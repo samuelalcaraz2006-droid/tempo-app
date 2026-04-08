@@ -1,6 +1,6 @@
 # Statut couverture de tests — 2026-04-08
 
-## Résultat actuel : 29.8% global
+## Résultat actuel : 31.77% global (397 tests)
 
 ### Stats par domaine
 
@@ -8,62 +8,76 @@
 |---|---|---|---|---|---|
 | `src/hooks/` | 100% | 100% | 100% | 100% | DONE |
 | `src/lib/formatters.js` | 100% | 100% | 100% | 100% | DONE |
-| `src/lib/matching.js` | 100% | 100% | 100% | 100% | DONE |
+| `src/lib/matching.js` | 95.9% | 85.39% | 100% | 98.96% | DONE |
 | `src/lib/animations.js` | 100% | 100% | 100% | 100% | DONE |
-| `src/lib/supabase.js` | 28% | 0% | 13% | 29% | BLOQUÉ |
-| `src/contexts/AuthContext.jsx` | 52% | 38% | 60% | 52% | BLOQUÉ |
-| `src/pages/` | ~10% | ~5% | ~15% | ~10% | BLOQUÉ |
-| `src/components/` | ~15% | ~8% | ~20% | ~15% | PARTIEL |
+| `src/lib/notifications.js` | 95.65% | 94.11% | 100% | 100% | DONE |
+| `src/contexts/` | 100% | 88.67% | 100% | 100% | DONE |
+| `src/components/` | 94.48% | 86.42% | 97.36% | 100% | DONE |
+| `src/lib/supabase.js` | 28.83% | 8.86% | 1.88% | 30.96% | BLOQUÉ |
+| `src/pages/` | 8.81% | 9.42% | 5.67% | 9.31% | BLOQUÉ |
 | `src/lib/i18n/en.js` | 0% | 0% | 0% | 0% | SKIPPÉ |
 | `src/lib/i18n/fr.js` | 0% | 0% | 0% | 0% | SKIPPÉ |
 
-**Total tests : 368 (368 passants, 0 failing)**
+**Total tests : 397 (397 passants, 0 failing)**
 
 ---
 
-## Blocage : Rate Limit Supabase
+## Top 10 fichiers < 50% — classés par type de dépendance
 
-Les modules suivants nécessitent des mocks Supabase complexes qui triggent
-des rate limits lors des runs CI répétés :
+### 🟢 PUR (sans appel API) — testables immédiatement
 
-- `src/lib/supabase.js` — ~40 fonctions CRUD, Storage, Auth
-- `src/contexts/AuthContext.jsx` — dépend de `supabase.auth.*`
-- `src/pages/AdminApp.jsx`, `EntrepriseApp.jsx`, `TravailleurApp.jsx` — appels DB live
-- `src/components/ContractModal.jsx`, `RatingModal.jsx`, `SignatureCanvas.jsx`
+| Fichier | Stmts | Lignes | Gain estimé | Raison |
+|---|---|---|---|---|
+| `src/lib/i18n/en.js` | 0% | ~180 lignes | +1% | Export pur de strings |
+| `src/lib/i18n/fr.js` | 0% | ~180 lignes | +1% | Export pur de strings |
+| `src/pages/Landing.jsx` | 0% | ~420 lignes | +3% | Page statique, props/state simples |
+| `src/pages/Auth.jsx` | 77.47% → ↑ | ~260 lignes | +1% | Formulaires + branches non couvertes |
 
-**Symptôme** : tests passent en local mais flaky en CI à cause des retries Supabase.
+### 🔴 API-DÉPENDANT (nécessite mock Supabase)
+
+| Fichier | Stmts | Lignes | Gain si mocké | Raison |
+|---|---|---|---|---|
+| `src/lib/supabase.js` | 28.83% | ~600 lignes | +15% | ~40 fonctions CRUD/Storage/Auth |
+| `src/pages/AdminApp.jsx` | 0% | ~370 lignes | +5% | Dashboard admin — appels DB live |
+| `src/pages/EntrepriseApp.jsx` | 0% | ~1058 lignes | +8% | App entreprise — appels DB live |
+| `src/pages/TravailleurApp.jsx` | 0% | ~1515 lignes | +10% | App travailleur — appels DB live |
+| `src/App.jsx` | 69.35% → ↑ | ~200 lignes | +2% | Routes protégées, dépend auth |
 
 ---
 
-## Priorités prochaine session
+## Plan d'attaque — prochaine session
 
-### Priorité 1 — Mocks Supabase centralisés (gain ~+15%)
-Créer `src/__mocks__/supabase.js` avec mock complet de `@supabase/supabase-js` :
+### Phase 1 — PUR (rapide, ~2-3h) → +5-6%
+1. **i18n snapshot** : `en.js` + `fr.js` — test que toutes les clés existent, types string
+2. **Landing.jsx** : render statique, sections affichées, liens CTA, pas d'API
+3. **Auth.jsx branches** : compléter les cas password reset / validation
+
+### Phase 2 — Mock Supabase centralisé (~4-6h) → +20-25%
+Créer `src/__mocks__/supabase.js` :
 ```js
-vi.mock('@/lib/supabase', () => ({ supabase: mockSupabase }))
+// vi.mock('@/lib/supabase', () => ({ supabase: mockSupabase }))
+const mockSupabase = {
+  from: vi.fn().mockReturnThis(),
+  select: vi.fn().mockReturnThis(),
+  insert: vi.fn().mockReturnThis(),
+  update: vi.fn().mockReturnThis(),
+  delete: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  single: vi.fn().mockResolvedValue({ data: null, error: null }),
+  auth: { getUser: vi.fn(), signIn: vi.fn(), signOut: vi.fn() },
+  storage: { from: vi.fn().mockReturnThis(), upload: vi.fn(), getPublicUrl: vi.fn() },
+}
 ```
-Cibles : `supabase.js` entier, `AuthContext`, `useAuth`
-
-### Priorité 2 — Tests composants UI purs (gain ~+5%)
-Composants sans dépendance API :
-- `AnimatedCounter.jsx` — pur calcul CSS/animation
-- `MissionsMap.jsx` — rendu conditionnel, pas d'appel DB direct
-- `Landing.jsx` — page statique
-
-### Priorité 3 — Pages avec routing mocké (gain ~+5%)
-- `Auth.jsx` — formulaire login/register, mocker supabase.auth
-- `ResetPassword.jsx` — déjà 20 tests, compléter branches
-
-### Priorité 4 — i18n (gain ~+2%)
-- `en.js` / `fr.js` — data pure, écrire test de snapshot en 10 min
+Cibles avec ce mock : `supabase.js` entier, `AdminApp`, `EntrepriseApp`, `TravailleurApp`
 
 ---
 
 ## Objectif session suivante
-**Cible : 45-50% global** en résolvant le mock Supabase centralisé.
+**Cible : 50-55% global** après mock Supabase centralisé + tests Landing/i18n.
 
 ## Commandes utiles
 ```bash
+npm test -- --coverage
 npm test -- --coverage --reporter=verbose
-npm test -- --coverage --testPathPattern="AuthContext"
+npm test -- src/tests/Landing.test.jsx --coverage
 ```
