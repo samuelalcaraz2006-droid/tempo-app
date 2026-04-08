@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1775640024305" clover="3.2.0">
-  <project timestamp="1775640024306" name="All files">
-    <metrics statements="1646" coveredstatements="539" conditionals="2060" coveredconditionals="420" methods="701" coveredmethods="145" elements="4407" coveredelements="1104" complexity="0" loc="1646" ncloc="1646" packages="7" files="27" classes="27"/>
+<coverage generated="1775640824562" clover="3.2.0">
+  <project timestamp="1775640824563" name="All files">
+    <metrics statements="1646" coveredstatements="565" conditionals="2060" coveredconditionals="478" methods="701" coveredmethods="153" elements="4407" coveredelements="1196" complexity="0" loc="1646" ncloc="1646" packages="7" files="27" classes="27"/>
     <package name="src">
       <metrics statements="48" coveredstatements="35" conditionals="39" coveredconditionals="33" methods="26" coveredmethods="14"/>
       <file name="App.jsx" path="C:\Users\samsam\Downloads\tempo-app-v4_1\tempo-app\src\App.jsx">
@@ -710,7 +710,7 @@
       </file>
     </package>
     <package name="src.pages">
-      <metrics statements="1020" coveredstatements="69" conditionals="1613" coveredconditionals="94" methods="511" coveredmethods="21"/>
+      <metrics statements="1020" coveredstatements="95" conditionals="1613" coveredconditionals="152" methods="511" coveredmethods="29"/>
       <file name="AdminApp.jsx" path="C:\Users\samsam\Downloads\tempo-app-v4_1\tempo-app\src\pages\AdminApp.jsx">
         <metrics statements="98" coveredstatements="0" conditionals="156" coveredconditionals="0" methods="45" coveredmethods="0"/>
         <line num="6" count="0" type="stmt"/>
@@ -1272,33 +1272,33 @@
         <line num="417" count="0" type="stmt"/>
       </file>
       <file name="ResetPassword.jsx" path="C:\Users\samsam\Downloads\tempo-app-v4_1\tempo-app\src\pages\ResetPassword.jsx">
-        <metrics statements="26" coveredstatements="0" conditionals="59" coveredconditionals="0" methods="8" coveredmethods="0"/>
-        <line num="6" count="0" type="stmt"/>
-        <line num="7" count="0" type="stmt"/>
-        <line num="8" count="0" type="stmt"/>
-        <line num="9" count="0" type="stmt"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="11" count="0" type="stmt"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
-        <line num="15" count="0" type="stmt"/>
-        <line num="16" count="0" type="stmt"/>
-        <line num="17" count="0" type="cond" truecount="0" falsecount="3"/>
-        <line num="18" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="19" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
-        <line num="24" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="26" count="0" type="stmt"/>
-        <line num="28" count="0" type="stmt"/>
-        <line num="29" count="0" type="stmt"/>
-        <line num="30" count="0" type="stmt"/>
-        <line num="34" count="0" type="stmt"/>
-        <line num="79" count="0" type="stmt"/>
-        <line num="83" count="0" type="stmt"/>
-        <line num="93" count="0" type="cond" truecount="0" falsecount="5"/>
-        <line num="96" count="0" type="stmt"/>
-        <line num="116" count="0" type="stmt"/>
+        <metrics statements="26" coveredstatements="26" conditionals="59" coveredconditionals="58" methods="8" coveredmethods="8"/>
+        <line num="6" count="60" type="stmt"/>
+        <line num="7" count="60" type="stmt"/>
+        <line num="8" count="60" type="stmt"/>
+        <line num="9" count="60" type="stmt"/>
+        <line num="10" count="60" type="stmt"/>
+        <line num="11" count="60" type="stmt"/>
+        <line num="12" count="60" type="stmt"/>
+        <line num="14" count="60" type="stmt"/>
+        <line num="15" count="10" type="stmt"/>
+        <line num="16" count="10" type="stmt"/>
+        <line num="17" count="10" type="cond" truecount="3" falsecount="0"/>
+        <line num="18" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="19" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="21" count="5" type="stmt"/>
+        <line num="22" count="5" type="stmt"/>
+        <line num="24" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="26" count="3" type="stmt"/>
+        <line num="28" count="3" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="34" count="60" type="stmt"/>
+        <line num="79" count="16" type="stmt"/>
+        <line num="83" count="2" type="stmt"/>
+        <line num="93" count="140" type="cond" truecount="5" falsecount="0"/>
+        <line num="96" count="140" type="stmt"/>
+        <line num="116" count="12" type="stmt"/>
       </file>
       <file name="TravailleurApp.jsx" path="C:\Users\samsam\Downloads\tempo-app-v4_1\tempo-app\src\pages\TravailleurApp.jsx">
         <metrics statements="446" coveredstatements="0" conditionals="782" coveredconditionals="0" methods="231" coveredmethods="0"/>
