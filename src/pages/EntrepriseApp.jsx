@@ -29,7 +29,7 @@ const INV_STYLES = {
 }
 
 export default function EntrepriseApp({ onNavigate, onLogoClick }) {
-  const { user, profile, roleData, refreshRoleData } = useAuth()
+  const { user, profile, roleData, refreshRoleData, logout } = useAuth()
   const { locale, switchLocale, t } = useI18n()
   const [screen, setScreen]       = useState('dashboard')
   const [missions, setMissions]   = useState([])
@@ -417,7 +417,7 @@ export default function EntrepriseApp({ onNavigate, onLogoClick }) {
           </button>
           <div style={{ width:28, height:28, borderRadius:'50%', background:'var(--g1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:600 }}>{initials}</div>
           <span style={{ fontSize:13, fontWeight:500 }}>{displayName}</span>
-          <button onClick={async () => { await supabase.auth.signOut() }} style={{ fontSize:12, color:'var(--g4)', background:'none', border:'none', cursor:'pointer' }}>Déconnexion</button>
+          <button onClick={async () => { await logout() }} style={{ fontSize:12, color:'var(--g4)', background:'none', border:'none', cursor:'pointer' }}>Déconnexion</button>
         </div>
       </div>
 
