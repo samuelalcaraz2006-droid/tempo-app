@@ -293,6 +293,30 @@ describe('scoreReactivity — via breakdown', () => {
   })
 })
 
+// ── required_certs avec valeurs réelles ───────────────────────
+describe('scoreSkills — required_certs avec valeurs', () => {
+  it('required_certs matche avec les skills du worker', () => {
+    const mission = { ...baseMission, required_skills: [], required_certs: ['caces'] }
+    const worker = { ...baseWorker, skills: ['caces'], certifications: [] }
+    const result = computeMatchScore(mission, worker)
+    expect(result.score_skills).toBeGreaterThan(0)
+  })
+
+  it('required_certs et required_skills combinés', () => {
+    const mission = { ...baseMission, required_skills: ['manutention'], required_certs: ['caces'] }
+    const worker = { ...baseWorker, skills: ['manutention', 'caces'], certifications: [] }
+    const result = computeMatchScore(mission, worker)
+    expect(result.score_skills).toBe(100)
+  })
+
+  it('required_certs sans match donne score partiel', () => {
+    const mission = { ...baseMission, required_skills: ['manutention'], required_certs: ['caces'] }
+    const worker = { ...baseWorker, skills: ['manutention'], certifications: [] }
+    const result = computeMatchScore(mission, worker)
+    expect(result.score_skills).toBe(50)
+  })
+})
+
 // ── certifications string (non-objet) ─────────────────────────
 describe('scoreSkills — certifications string', () => {
   it('accepte les certifications sous forme de string', () => {

@@ -156,5 +156,31 @@ describe('pushNotifications', () => {
       const callArgs = NotificationMock.mock.calls[0][1]
       expect(callArgs.tag).toMatch(/^tempo-notif-\d+$/)
     })
+
+    it('utilise le fallback serviceWorker si new Notification() lance une exception', async () => {
+      NotificationMock.permission = 'granted'
+      const showNotificationMock = vi.fn()
+      serviceWorkerMock.ready = Promise.resolve({ showNotification: showNotificationMock })
+      // Faire lancer new Notification()
+      NotificationMock.mockImplementation(() => { throw new Error('not allowed') })
+      sendLocalNotification('Titre fallback')
+      // Laisser la microtask se résoudre
+      await new Promise(r => setTimeout(r, 0))
+      expect(showNotificationMock).toHaveBeenCalledWith('Titre fallback', expect.any(Object))
+    })
+
+    it('log un warning si serviceWorker.ready rejette (fallback)', async () => {
+      NotificationMock.permission = 'granted'
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      serviceWorkerMock.ready = Promise.reject(new Error('sw unavailable'))
+      NotificationMock.mockImplementation(() => { throw new Error('not allowed') })
+      sendLocalNotification('Titre rejet SW')
+      await new Promise(r => setTimeout(r, 10))
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[Push] Service worker indisponible:',
+        expect.any(Error)
+      )
+    })
+
   })
 })
