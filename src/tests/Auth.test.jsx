@@ -150,7 +150,7 @@ describe('Auth', () => {
     render(<Auth onNavigate={onNavigate} />)
     fireEvent.click(screen.getByRole('button', { name: /^inscription$/i }))
     fireEvent.click(screen.getByLabelText(/je suis travailleur/i))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
     expect(screen.getByText(/siret & localisation/i)).toBeInTheDocument()
   })
 
@@ -158,8 +158,8 @@ describe('Auth', () => {
     render(<Auth onNavigate={onNavigate} />)
     fireEvent.click(screen.getByRole('button', { name: /^inscription$/i }))
     fireEvent.click(screen.getByLabelText(/je suis travailleur/i))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
     expect(screen.getByText(/accès & finalisation/i)).toBeInTheDocument()
   })
 
@@ -170,14 +170,14 @@ describe('Auth', () => {
     fireEvent.click(screen.getByRole('button', { name: /^inscription$/i }))
     fireEvent.click(screen.getByLabelText(/je suis travailleur/i))
     // Étape 1 → 2 → 3
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
 
-    fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'Password1' } })
-    fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'DifferentPass1' } })
+    fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'Password1!' } })
+    fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'DifferentPass1!' } })
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /créer mon compte/i }))
+      fireEvent.submit(screen.getByRole('button', { name: /créer mon compte/i }).closest('form'))
     })
 
     expect(screen.getByText(/les mots de passe ne correspondent pas/i)).toBeInTheDocument()
@@ -189,14 +189,14 @@ describe('Auth', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /^inscription$/i }))
     fireEvent.click(screen.getByLabelText(/je suis travailleur/i))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
 
     fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'weak' } })
     fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'weak' } })
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /créer mon compte/i }))
+      fireEvent.submit(screen.getByRole('button', { name: /créer mon compte/i }).closest('form'))
     })
 
     expect(screen.getByText(/mot de passe trop faible/i)).toBeInTheDocument()
@@ -208,15 +208,15 @@ describe('Auth', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /^inscription$/i }))
     fireEvent.click(screen.getByLabelText(/je suis travailleur/i))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
 
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'new@test.fr' } })
-    fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'ValidPass1' } })
-    fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'ValidPass1' } })
+    fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'ValidPass10' } })
+    fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'ValidPass10' } })
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /créer mon compte/i }))
+      fireEvent.submit(screen.getByRole('button', { name: /créer mon compte/i }).closest('form'))
     })
 
     expect(screen.getByText(/compte créé/i)).toBeInTheDocument()
@@ -239,13 +239,13 @@ describe('Auth', () => {
 
     fireEvent.change(screen.getByLabelText(/nom de l'entreprise/i), { target: { value: 'My Corp' } })
     fireEvent.change(screen.getByLabelText(/prénom contact/i), { target: { value: 'Jean' } })
-    fireEvent.change(screen.getByLabelText(/nom contact/i), { target: { value: 'Dupont' } })
+    fireEvent.change(screen.getByLabelText(/^nom contact$/i), { target: { value: 'Dupont' } })
     fireEvent.change(screen.getByLabelText(/email professionnel/i), { target: { value: 'rh@corp.fr' } })
     fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'ValidPass1' } })
     fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'ValidPass1' } })
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /créer mon espace entreprise/i }))
+      fireEvent.submit(screen.getByRole('button', { name: /créer mon espace entreprise/i }).closest('form'))
     })
 
     expect(screen.getByText(/compte créé/i)).toBeInTheDocument()
@@ -298,14 +298,14 @@ describe('Auth', () => {
     render(<Auth onNavigate={onNavigate} />)
     fireEvent.click(screen.getByRole('button', { name: /^inscription$/i }))
     fireEvent.click(screen.getByLabelText(/je suis travailleur/i))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
 
-    fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'nouppercase1' } })
-    fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'nouppercase1' } })
+    fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'nouppercase1!' } })
+    fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'nouppercase1!' } })
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /créer mon compte/i }))
+      fireEvent.submit(screen.getByRole('button', { name: /créer mon compte/i }).closest('form'))
     })
 
     expect(screen.getByText(/mot de passe trop faible/i)).toBeInTheDocument()
@@ -315,14 +315,14 @@ describe('Auth', () => {
     render(<Auth onNavigate={onNavigate} />)
     fireEvent.click(screen.getByRole('button', { name: /^inscription$/i }))
     fireEvent.click(screen.getByLabelText(/je suis travailleur/i))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
+    fireEvent.submit(screen.getByRole('button', { name: /continuer/i }).closest('form'))
 
-    fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'NoDigitPwd' } })
-    fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'NoDigitPwd' } })
+    fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'NoDigitPwdLong' } })
+    fireEvent.change(screen.getByLabelText(/confirmer/i), { target: { value: 'NoDigitPwdLong' } })
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /créer mon compte/i }))
+      fireEvent.submit(screen.getByRole('button', { name: /créer mon compte/i }).closest('form'))
     })
 
     expect(screen.getByText(/mot de passe trop faible/i)).toBeInTheDocument()

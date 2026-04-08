@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.33% </span>
+                <span class="strong">90.9% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>73/75</span>
+                <span class='fraction'>80/88</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">79.54% </span>
+                <span class="strong">78.26% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>35/44</span>
+                <span class='fraction'>36/46</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">88.23% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>14/14</span>
+                <span class='fraction'>15/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">98.55% </span>
+                <span class="strong">93.58% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>68/69</span>
+                <span class='fraction'>73/78</span>
             </div>
         
             
@@ -206,7 +206,22 @@
 <a name='L141'></a><a href='#L141'>141</a>
 <a name='L142'></a><a href='#L142'>142</a>
 <a name='L143'></a><a href='#L143'>143</a>
-<a name='L144'></a><a href='#L144'>144</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -287,14 +302,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">44x</span>
 <span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -329,7 +348,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">44x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">44x</span>
@@ -430,16 +460,20 @@ export const AuthProvider = ({ children }) =&gt; {
   // c'est getSession() (effet 3) ou SIGNED_OUT (effet 1) qui gèrent ce cas.
   // Évite la race condition où loading passe à false avant que getSession
   // n'ait confirmé l'absence de session.
+  // loadProfile est stable (useCallback sans deps) — exclure de la liste
+  // pour éviter que chaque re-render de loadProfile relance l'effet.
   useEffect(() =&gt; {
     if (!user) return
 &nbsp;
+    let cancelled = false
     const run = async () =&gt; {
       await loadProfile(user.id)
-      setLoading(false)
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (!cancelled) setLoading(false)
     }
 &nbsp;
     run()
-  }, [user?.id, loadProfile]) // eslint-disable-line react-hooks/exhaustive-deps
+    return () =&gt; { cancelled = true }
+  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 &nbsp;
   // ── 3. Session initiale au chargement ─────────────────────
   useEffect(() =&gt; {
@@ -472,7 +506,18 @@ export const AuthProvider = ({ children }) =&gt; {
   }
 &nbsp;
   const logout = async () =&gt; {
-    await supabase.auth.signOut()
+    // Nettoyer les donnees utilisateur du localStorage
+    const tempoKeys = Object.keys(localStorage).<span class="fstat-no" title="function not covered" >filter(k</span> =&gt; <span class="cstat-no" title="statement not covered" >k.startsWith('tempo_'))</span>
+    tempoKeys.<span class="fstat-no" title="function not covered" >forEach(k</span> =&gt; <span class="cstat-no" title="statement not covered" >localStorage.removeItem(k))</span>
+    try {
+      await supabase.auth.signOut()
+    } catch (err) {
+<span class="cstat-no" title="statement not covered" >      console.error('[AuthContext] logout error:', err)</span>
+      // Forcer le reset local meme si signOut echoue
+<span class="cstat-no" title="statement not covered" >      setUser(null)</span>
+<span class="cstat-no" title="statement not covered" >      setProfile(null)</span>
+<span class="cstat-no" title="statement not covered" >      setRoleData(null)</span>
+    }
   }
 &nbsp;
   const refreshRoleData = async () =&gt; {
@@ -499,7 +544,7 @@ export const AuthProvider = ({ children }) =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-07T19:01:11.991Z
+                at 2026-04-08T08:31:25.697Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -5,12 +5,14 @@ export default defineConfig({
   base: '/tempo-app/',
   plugins: [react()],
   test: {
-    environment: 'node',
+    environment: 'jsdom',
     globals: true,
     setupFiles: './src/tests/setup.js',
     pool: 'threads',
     minWorkers: 1,
-    maxWorkers: 1,
+    maxWorkers: 2,
+    testTimeout: 5000,
+    hookTimeout: 5000,
     include: ['src/tests/**/*.{test,spec}.{js,jsx}'],
     exclude: ['e2e/**', 'node_modules/**'],
     coverage: {

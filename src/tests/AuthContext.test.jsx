@@ -4,27 +4,28 @@ import { render, screen, waitFor, act, renderHook } from '@testing-library/react
 import React from 'react'
 
 // ── Mock Supabase ─────────────────────────────────────────────
-// Le callback onAuthStateChange est stocké dans un objet partagé
-// pour être accessible depuis les tests.
-const callbackStore = { fn: null }
+// Le callback onAuthStateChange est stocké pour être déclenché depuis les tests.
+const authCb = { fn: null }
+
+const makeFromMock = (profileData = null) => ({
+  select: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  maybeSingle: vi.fn().mockResolvedValue({ data: profileData, error: null }),
+})
 
 vi.mock('../lib/supabase', () => {
   const supabase = {
     auth: {
       onAuthStateChange: vi.fn((cb) => {
-        callbackStore.fn = cb
+        authCb.fn = cb
         return { data: { subscription: { unsubscribe: vi.fn() } } }
       }),
-      getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
+      getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
       signUp: vi.fn(),
       signInWithPassword: vi.fn(),
-      signOut: vi.fn(() => Promise.resolve()),
+      signOut: vi.fn().mockResolvedValue({}),
     },
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
-    })),
+    from: vi.fn(() => makeFromMock()),
   }
   return { supabase }
 })
@@ -32,6 +33,9 @@ vi.mock('../lib/supabase', () => {
 import { AuthProvider } from '../contexts/AuthContext'
 import { useAuth } from '../contexts/useAuth'
 import { supabase } from '../lib/supabase'
+
+// ── Flush React effects (useEffect async) ────────────────────
+const flushEffects = () => act(async () => {})
 
 // ── Composant consommateur ────────────────────────────────────
 const TestConsumer = () => {
@@ -48,28 +52,21 @@ const TestConsumer = () => {
   )
 }
 
-describe('AuthProvider', () => {
-  beforeEach(() => {
-    callbackStore.fn = null
-    vi.clearAllMocks()
-    supabase.auth.onAuthStateChange.mockImplementation((cb) => {
-      callbackStore.fn = cb
-      return { data: { subscription: { unsubscribe: vi.fn() } } }
-    })
-    supabase.auth.getSession.mockResolvedValue({ data: { session: null } })
-    supabase.from.mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
-    })
+// ── Setup commun ──────────────────────────────────────────────
+beforeEach(() => {
+  authCb.fn = null
+  vi.clearAllMocks()
+  supabase.auth.onAuthStateChange.mockImplementation((cb) => {
+    authCb.fn = cb
+    return { data: { subscription: { unsubscribe: vi.fn() } } }
   })
+  supabase.auth.getSession.mockResolvedValue({ data: { session: null } })
+  supabase.from.mockReturnValue(makeFromMock())
+})
 
+describe('AuthProvider', () => {
   it('loading passe à false après getSession sans session', async () => {
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    )
+    render(<AuthProvider><TestConsumer /></AuthProvider>)
     await waitFor(() => {
       expect(screen.getByTestId('loading').textContent).toBe('ready')
     })
@@ -79,26 +76,13 @@ describe('AuthProvider', () => {
   it('expose user et profil travailleur après SIGNED_IN', async () => {
     const fakeUser = { id: 'user-123' }
     const fakeProfile = { id: 'user-123', role: 'travailleur', status: 'verified' }
+    supabase.from.mockReturnValue(makeFromMock(fakeProfile))
 
-    supabase.from.mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn()
-        .mockResolvedValueOnce({ data: fakeProfile, error: null })
-        .mockResolvedValueOnce({ data: { id: 'user-123' }, error: null }),
-    })
-
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    )
-
-    // Attendre que le hook useEffect soit enregistré
-    await waitFor(() => expect(callbackStore.fn).not.toBeNull())
+    render(<AuthProvider><TestConsumer /></AuthProvider>)
+    await flushEffects()
 
     await act(async () => {
-      callbackStore.fn('SIGNED_IN', { user: fakeUser })
+      authCb.fn('SIGNED_IN', { user: fakeUser })
     })
 
     await waitFor(() => {
@@ -110,16 +94,11 @@ describe('AuthProvider', () => {
   })
 
   it('remet user/profile à null après SIGNED_OUT', async () => {
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    )
-
-    await waitFor(() => expect(callbackStore.fn).not.toBeNull())
+    render(<AuthProvider><TestConsumer /></AuthProvider>)
+    await flushEffects()
 
     await act(async () => {
-      callbackStore.fn('SIGNED_OUT', null)
+      authCb.fn('SIGNED_OUT', null)
     })
 
     await waitFor(() => {
@@ -131,24 +110,13 @@ describe('AuthProvider', () => {
 
   it('isAdmin = true pour profil admin', async () => {
     const fakeUser = { id: 'admin-1' }
-    const fakeProfile = { id: 'admin-1', role: 'admin', status: 'verified' }
+    supabase.from.mockReturnValue(makeFromMock({ id: 'admin-1', role: 'admin', status: 'verified' }))
 
-    supabase.from.mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn().mockResolvedValue({ data: fakeProfile, error: null }),
-    })
-
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    )
-
-    await waitFor(() => expect(callbackStore.fn).not.toBeNull())
+    render(<AuthProvider><TestConsumer /></AuthProvider>)
+    await flushEffects()
 
     await act(async () => {
-      callbackStore.fn('SIGNED_IN', { user: fakeUser })
+      authCb.fn('SIGNED_IN', { user: fakeUser })
     })
 
     await waitFor(() => {
@@ -164,18 +132,12 @@ describe('AuthProvider', () => {
 
   it('isCompany = true pour profil entreprise', async () => {
     const fakeUser = { id: 'co-1' }
-    const fakeProfile = { id: 'co-1', role: 'entreprise', status: 'verified' }
-
-    supabase.from.mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn().mockResolvedValue({ data: fakeProfile, error: null }),
-    })
+    supabase.from.mockReturnValue(makeFromMock({ id: 'co-1', role: 'entreprise', status: 'verified' }))
 
     render(<AuthProvider><TestConsumer /></AuthProvider>)
-    await waitFor(() => expect(callbackStore.fn).not.toBeNull())
+    await flushEffects()
 
-    await act(async () => { callbackStore.fn('SIGNED_IN', { user: fakeUser }) })
+    await act(async () => { authCb.fn('SIGNED_IN', { user: fakeUser }) })
 
     await waitFor(() => {
       expect(screen.getByTestId('isCompany').textContent).toBe('company')
@@ -189,10 +151,10 @@ describe('AuthProvider', () => {
     }
 
     render(<AuthProvider><RecoveringConsumer /></AuthProvider>)
-    await waitFor(() => expect(callbackStore.fn).not.toBeNull())
+    await flushEffects()
 
     await act(async () => {
-      callbackStore.fn('PASSWORD_RECOVERY', { user: { id: 'rec-1' } })
+      authCb.fn('PASSWORD_RECOVERY', { user: { id: 'rec-1' } })
     })
 
     await waitFor(() => {
@@ -202,13 +164,7 @@ describe('AuthProvider', () => {
 
   it('USER_UPDATED remet recovering=false et recharge le profil', async () => {
     const fakeUser = { id: 'upd-1' }
-    const fakeProfile = { id: 'upd-1', role: 'travailleur', status: 'verified' }
-
-    supabase.from.mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn().mockResolvedValue({ data: fakeProfile, error: null }),
-    })
+    supabase.from.mockReturnValue(makeFromMock({ id: 'upd-1', role: 'travailleur', status: 'verified' }))
 
     const RecoveringConsumer = () => {
       const { recovering, profile } = useAuth()
@@ -221,11 +177,10 @@ describe('AuthProvider', () => {
     }
 
     render(<AuthProvider><RecoveringConsumer /></AuthProvider>)
-    await waitFor(() => expect(callbackStore.fn).not.toBeNull())
+    await flushEffects()
 
-    // Simuler la séquence recovery
-    await act(async () => { callbackStore.fn('PASSWORD_RECOVERY', { user: fakeUser }) })
-    await act(async () => { callbackStore.fn('USER_UPDATED', { user: fakeUser }) })
+    await act(async () => { authCb.fn('PASSWORD_RECOVERY', { user: fakeUser }) })
+    await act(async () => { authCb.fn('USER_UPDATED', { user: fakeUser }) })
 
     await waitFor(() => {
       expect(screen.getByTestId('recovering').textContent).toBe('normal')
@@ -235,35 +190,6 @@ describe('AuthProvider', () => {
 
 // ── Fonctions exposées par AuthProvider ───────────────────────
 describe('AuthProvider — login / logout / register / refreshRoleData', () => {
-  const callbackStore2 = { fn: null }
-
-  beforeEach(() => {
-    vi.clearAllMocks()
-    supabase.auth.onAuthStateChange.mockImplementation((cb) => {
-      callbackStore2.fn = cb
-      return { data: { subscription: { unsubscribe: vi.fn() } } }
-    })
-    supabase.auth.getSession.mockResolvedValue({ data: { session: null } })
-    supabase.from.mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-    })
-  })
-
-  const FunctionsConsumer = () => {
-    const { login, logout, register, refreshRoleData, user } = useAuth()
-    return (
-      <div>
-        <span data-testid="user">{user ? user.id : 'no-user'}</span>
-        <button data-testid="btn-login"    onClick={() => login({ email: 'a@b.com', password: 'pass' })} />
-        <button data-testid="btn-logout"   onClick={() => logout()} />
-        <button data-testid="btn-register" onClick={() => register({ email: 'a@b.com', password: 'pass', role: 'travailleur' })} />
-        <button data-testid="btn-refresh"  onClick={() => refreshRoleData()} />
-      </div>
-    )
-  }
-
   const wrapper = ({ children }) => <AuthProvider>{children}</AuthProvider>
 
   it('login retourne data/error en cas de succès', async () => {
@@ -296,8 +222,6 @@ describe('AuthProvider — login / logout / register / refreshRoleData', () => {
   })
 
   it('logout appelle signOut', async () => {
-    supabase.auth.signOut.mockResolvedValue({})
-
     const { result } = renderHook(() => useAuth(), { wrapper })
     await waitFor(() => expect(result.current.loading).toBe(false))
 
@@ -351,23 +275,22 @@ describe('AuthProvider — login / logout / register / refreshRoleData', () => {
       maybeSingle: vi.fn().mockRejectedValue(new Error('db error')),
     })
 
-    const cb2store = { fn: null }
+    const localCb = { fn: null }
     supabase.auth.onAuthStateChange.mockImplementation((cb) => {
-      cb2store.fn = cb
+      localCb.fn = cb
       return { data: { subscription: { unsubscribe: vi.fn() } } }
     })
 
     const { result } = renderHook(() => useAuth(), { wrapper })
-    await waitFor(() => expect(cb2store.fn).not.toBeNull())
+    await flushEffects()
+    expect(localCb.fn).not.toBeNull()
 
-    // Ne doit pas throw
     await act(async () => {
-      cb2store.fn('SIGNED_IN', { user: { id: 'err-user' } })
+      localCb.fn('SIGNED_IN', { user: { id: 'err-user' } })
     })
 
-    // L'erreur est absorbée dans le catch de loadProfile
-    await new Promise(r => setTimeout(r, 100))
-    expect(result.current.profile).toBeNull()
+    // loadProfile rejette — profile reste null
+    await waitFor(() => expect(result.current.profile).toBeNull())
   })
 
   it('getSession qui échoue passe loading à false', async () => {

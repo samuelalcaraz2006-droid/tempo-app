@@ -107,8 +107,8 @@ describe('RatingModal', () => {
     render(<RatingModal {...defaultProps} />)
     const star2 = screen.getByRole('button', { name: /2 étoiles/i })
     fireEvent.mouseEnter(star2)
-    // STAR_LABELS[2] devrait être visible
-    expect(screen.getByText(/Bien/i)).toBeInTheDocument()
+    // STAR_LABELS[2] = 'Passable' (index 2, 2e étoile)
+    expect(screen.getByText(/Passable/i)).toBeInTheDocument()
   })
 
   it('cache le label après mouseLeave sans sélection', () => {

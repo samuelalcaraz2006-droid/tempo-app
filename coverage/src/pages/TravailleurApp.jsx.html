@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/612</span>
+                <span class='fraction'>0/619</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/780</span>
+                <span class='fraction'>0/782</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/230</span>
+                <span class='fraction'>0/231</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/439</span>
+                <span class='fraction'>0/446</span>
             </div>
         
             
@@ -1583,7 +1583,18 @@
 <a name='L1518'></a><a href='#L1518'>1518</a>
 <a name='L1519'></a><a href='#L1519'>1519</a>
 <a name='L1520'></a><a href='#L1520'>1520</a>
-<a name='L1521'></a><a href='#L1521'>1521</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1521'></a><a href='#L1521'>1521</a>
+<a name='L1522'></a><a href='#L1522'>1522</a>
+<a name='L1523'></a><a href='#L1523'>1523</a>
+<a name='L1524'></a><a href='#L1524'>1524</a>
+<a name='L1525'></a><a href='#L1525'>1525</a>
+<a name='L1526'></a><a href='#L1526'>1526</a>
+<a name='L1527'></a><a href='#L1527'>1527</a>
+<a name='L1528'></a><a href='#L1528'>1528</a>
+<a name='L1529'></a><a href='#L1529'>1529</a>
+<a name='L1530'></a><a href='#L1530'>1530</a>
+<a name='L1531'></a><a href='#L1531'>1531</a>
+<a name='L1532'></a><a href='#L1532'>1532</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1625,7 +1636,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1898,9 +1915,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3144,8 +3166,14 @@ function <span class="fstat-no" title="function not covered" >KycUploadSection({
   const [uploading, setUploading] = <span class="cstat-no" title="statement not covered" >React.useState({})</span>
   const fileRefs = <span class="cstat-no" title="statement not covered" >React.useRef({})</span>
 &nbsp;
+  const ALLOWED_MIME_TYPES = <span class="cstat-no" title="statement not covered" >['image/jpeg', 'image/png', 'image/webp', 'application/pdf']</span>
+&nbsp;
   const handleFile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async (d</span>ocDef, file) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (!file || !userId) <span class="cstat-no" title="statement not covered" >return</span></span>
+<span class="cstat-no" title="statement not covered" >    if (!ALLOWED_MIME_TYPES.includes(file.type)) {</span>
+<span class="cstat-no" title="statement not covered" >      showToast('Type de fichier non autorisé (JPEG, PNG, WebP ou PDF uniquement)', 'error')</span>
+<span class="cstat-no" title="statement not covered" >      return</span>
+    }
 <span class="cstat-no" title="statement not covered" >    if (file.size &gt; 10 * 1024 * 1024) {</span>
 <span class="cstat-no" title="statement not covered" >      showToast('Fichier trop volumineux (max 10 Mo)', 'error')</span>
 <span class="cstat-no" title="statement not covered" >      return</span>
@@ -3238,7 +3266,7 @@ function <span class="fstat-no" title="function not covered" >KycUploadSection({
 }
 &nbsp;
 export default function <span class="fstat-no" title="function not covered" >TravailleurApp({</span> onNavigate, onLogoClick }) {
-  const { user, profile, roleData, <span class="cstat-no" title="statement not covered" >refreshRoleData } = useAuth()</span>
+  const { user, profile, roleData, refreshRoleData, <span class="cstat-no" title="statement not covered" >logout } = useAuth()</span>
   const { locale, switchLocale, <span class="cstat-no" title="statement not covered" >t } = useI18n()</span>
   const [screen, <span class="cstat-no" title="statement not covered" >setScreen]             = useState('accueil')</span>
   const [selectedMission, <span class="cstat-no" title="statement not covered" >setSelectedMission] = useState(null)</span>
@@ -3419,9 +3447,14 @@ export default function <span class="fstat-no" title="function not covered" >Tra
     }
   }
 &nbsp;
+  const ALLOWED_PROFILE_FIELDS = <span class="cstat-no" title="statement not covered" >['first_name', 'last_name', 'city', 'siret', 'radius_km', 'skills', 'certifications', 'phone']</span>
+&nbsp;
   const handleSaveProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span>
 <span class="cstat-no" title="statement not covered" >    setSavingProfile(true)</span>
-    const { error } = <span class="cstat-no" title="statement not covered" >await supabase.from('workers').update(profileForm).eq('id', user.id)</span>
+    const safeUpdate = <span class="cstat-no" title="statement not covered" >Object.fromEntries(</span>
+      Object.entries(profileForm).<span class="fstat-no" title="function not covered" >filter(([</span>k]) =&gt; <span class="cstat-no" title="statement not covered" >ALLOWED_PROFILE_FIELDS.includes(k))</span>
+    )
+    const { error } = <span class="cstat-no" title="statement not covered" >await supabase.from('workers').update(safeUpdate).eq('id', user.id)</span>
 <span class="cstat-no" title="statement not covered" >    setSavingProfile(false)</span>
 <span class="cstat-no" title="statement not covered" >    if (error) <span class="cstat-no" title="statement not covered" >showToast('Erreur lors de la sauvegarde', 'error')</span></span>
     else { <span class="cstat-no" title="statement not covered" >showToast('Profil mis à jour !'); <span class="cstat-no" title="statement not covered" >r</span>efreshRoleData() }</span>
@@ -4511,7 +4544,7 @@ export default function <span class="fstat-no" title="function not covered" >Tra
                 ))}
               &lt;/div&gt;
             &lt;/div&gt;
-            &lt;button className="btn-secondary" style={{ width:'100%', justifyContent:'center' }} onClick={<span class="fstat-no" title="function not covered" >async () =&gt; {</span> <span class="cstat-no" title="statement not covered" >await supabase.auth.signOut() }}&gt;</span>
+            &lt;button className="btn-secondary" style={{ width:'100%', justifyContent:'center' }} onClick={<span class="fstat-no" title="function not covered" >async () =&gt; {</span> <span class="cstat-no" title="statement not covered" >await logout() }}&gt;</span>
               Se déconnecter
             &lt;/button&gt;
           &lt;/div&gt;
@@ -4630,7 +4663,7 @@ export default function <span class="fstat-no" title="function not covered" >Tra
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-07T19:01:11.991Z
+                at 2026-04-08T08:31:25.697Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
