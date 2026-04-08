@@ -39,8 +39,14 @@ function KycUploadSection({ worker, userId, onUpdate, showToast }) {
   const [uploading, setUploading] = React.useState({})
   const fileRefs = React.useRef({})
 
+  const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+
   const handleFile = async (docDef, file) => {
     if (!file || !userId) return
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      showToast('Type de fichier non autorisé (JPEG, PNG, WebP ou PDF uniquement)', 'error')
+      return
+    }
     if (file.size > 10 * 1024 * 1024) {
       showToast('Fichier trop volumineux (max 10 Mo)', 'error')
       return
@@ -133,7 +139,7 @@ function KycUploadSection({ worker, userId, onUpdate, showToast }) {
 }
 
 export default function TravailleurApp({ onNavigate, onLogoClick }) {
-  const { user, profile, roleData, refreshRoleData } = useAuth()
+  const { user, profile, roleData, refreshRoleData, logout } = useAuth()
   const { locale, switchLocale, t } = useI18n()
   const [screen, setScreen]             = useState('accueil')
   const [selectedMission, setSelectedMission] = useState(null)
@@ -314,9 +320,14 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
     }
   }
 
+  const ALLOWED_PROFILE_FIELDS = ['first_name', 'last_name', 'city', 'siret', 'radius_km', 'skills', 'certifications', 'phone']
+
   const handleSaveProfile = async () => {
     setSavingProfile(true)
-    const { error } = await supabase.from('workers').update(profileForm).eq('id', user.id)
+    const safeUpdate = Object.fromEntries(
+      Object.entries(profileForm).filter(([k]) => ALLOWED_PROFILE_FIELDS.includes(k))
+    )
+    const { error } = await supabase.from('workers').update(safeUpdate).eq('id', user.id)
     setSavingProfile(false)
     if (error) showToast('Erreur lors de la sauvegarde', 'error')
     else { showToast('Profil mis à jour !'); refreshRoleData() }
@@ -1406,7 +1417,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
                 ))}
               </div>
             </div>
-            <button className="btn-secondary" style={{ width:'100%', justifyContent:'center' }} onClick={async () => { await supabase.auth.signOut() }}>
+            <button className="btn-secondary" style={{ width:'100%', justifyContent:'center' }} onClick={async () => { await logout() }}>
               Se déconnecter
             </button>
           </div>

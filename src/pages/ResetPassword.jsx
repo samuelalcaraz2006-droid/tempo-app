@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/useAuth'
 
 export default function ResetPassword({ onDone }) {
+  const { logout } = useAuth()
   const [password, setPassword]         = useState('')
   const [confirm, setConfirm]           = useState('')
   const [loading, setLoading]           = useState(false)
@@ -12,7 +14,8 @@ export default function ResetPassword({ onDone }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    if (password.length < 8) { setError('Le mot de passe doit contenir au moins 8 caractères.'); return }
+    const isStrong = password.length >= 10 && /[A-Z]/.test(password) && /[0-9]/.test(password)
+    if (!isStrong) { setError('Mot de passe trop faible : 10 caractères minimum avec une majuscule et un chiffre.'); return }
     if (password !== confirm) { setError('Les mots de passe ne correspondent pas.'); return }
 
     setLoading(true)
@@ -23,7 +26,7 @@ export default function ResetPassword({ onDone }) {
     setSuccess(true)
     // Déconnexion propre puis redirect vers login
     setTimeout(async () => {
-      await supabase.auth.signOut()
+      await logout()
       onDone()
     }, 2000)
   }

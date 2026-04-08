@@ -21,6 +21,9 @@ const Field = ({ label, id, form, set, ...props }) => (
   </div>
 )
 
+const isStrongPassword = (pwd) =>
+  pwd.length >= 10 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd)
+
 export default function Auth({ onNavigate }) {
   const { login, register } = useAuth()
   const [mode, setMode]         = useState('login')     // 'login' | 'register' | 'reset'
@@ -29,6 +32,8 @@ export default function Auth({ onNavigate }) {
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
   const [success, setSuccess]   = useState('')
+  const [loginAttempts, setLoginAttempts] = useState(0)
+  const [lockedUntil, setLockedUntil]     = useState(null)
 
   const [form, setForm] = useState({
     email:'', password:'', confirmPassword:'',
@@ -42,13 +47,26 @@ export default function Auth({ onNavigate }) {
   const handleLogin = async (e) => {
     e.preventDefault()
     setError('')
+    if (lockedUntil && Date.now() < lockedUntil) {
+      const secs = Math.ceil((lockedUntil - Date.now()) / 1000)
+      setError(`Trop de tentatives. Réessayez dans ${secs}s.`)
+      return
+    }
     setLoading(true)
     const { error } = await login({ email: form.email, password: form.password })
     setLoading(false)
     if (error) {
       const isCredentialError = error.message.includes('Invalid login') || error.message.includes('invalid_credentials')
       setError(isCredentialError ? 'Email ou mot de passe incorrect.' : 'Erreur d\'authentification. Veuillez réessayer.')
-      if (!isCredentialError) console.error('[Auth] login error:', error.message)
+      const newAttempts = loginAttempts + 1
+      setLoginAttempts(newAttempts)
+      if (newAttempts >= 5) {
+        setLockedUntil(Date.now() + 30_000)
+        setLoginAttempts(0)
+      }
+    } else {
+      setLoginAttempts(0)
+      setLockedUntil(null)
     }
   }
 
@@ -72,7 +90,7 @@ export default function Auth({ onNavigate }) {
     e.preventDefault()
     setError('')
     if (form.password !== form.confirmPassword) { setError('Les mots de passe ne correspondent pas.'); return }
-    if (form.password.length < 8) { setError('Mot de passe : 8 caractères minimum.'); return }
+    if (!isStrongPassword(form.password)) { setError('Mot de passe trop faible : 10 caractères minimum avec une majuscule et un chiffre.'); return }
     setLoading(true)
     const { error } = await register({
       email: form.email,
