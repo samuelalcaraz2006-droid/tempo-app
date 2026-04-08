@@ -266,6 +266,79 @@ describe('scoreHistory — 1 à 2 missions', () => {
   })
 })
 
+// ── scoreReactivity via breakdown ─────────────────────────────
+describe('scoreReactivity — via breakdown', () => {
+  it('score_reactivity = 50 pour worker sans missions complétées', () => {
+    const worker = { ...baseWorker, missions_completed: 0, missions_cancelled: 0 }
+    const result = computeMatchScore(baseMission, worker)
+    expect(result.score_reactivity).toBe(50)
+  })
+
+  it('score_reactivity = 100 pour worker sans annulation', () => {
+    const worker = { ...baseWorker, missions_completed: 10, missions_cancelled: 0 }
+    const result = computeMatchScore(baseMission, worker)
+    expect(result.score_reactivity).toBe(100)
+  })
+
+  it('score_reactivity réduit avec annulations', () => {
+    const worker = { ...baseWorker, missions_completed: 5, missions_cancelled: 5 }
+    const result = computeMatchScore(baseMission, worker)
+    expect(result.score_reactivity).toBe(50)
+  })
+
+  it('score_reactivity undefined devient 0 via nullish coalescing', () => {
+    const worker = { ...baseWorker, missions_completed: undefined, missions_cancelled: undefined }
+    const result = computeMatchScore(baseMission, worker)
+    expect(result.score_reactivity).toBe(50)
+  })
+})
+
+// ── certifications string (non-objet) ─────────────────────────
+describe('scoreSkills — certifications string', () => {
+  it('accepte les certifications sous forme de string', () => {
+    const worker = { ...baseWorker, certifications: ['manutention'] }
+    const result = computeMatchScore(baseMission, worker)
+    expect(result.score_skills).toBeGreaterThanOrEqual(100)
+  })
+
+  it('certifications mixtes string et objet', () => {
+    const worker = { ...baseWorker, certifications: ['manutention', { name: 'CACES' }] }
+    const result = computeMatchScore(baseMission, worker)
+    expect(result.score_skills).toBeGreaterThanOrEqual(100)
+  })
+})
+
+// ── rankWorkers avec pastMissionsMap ──────────────────────────
+describe('rankWorkers — avec pastMissionsMap', () => {
+  it('utilise le bon historique pour chaque worker', () => {
+    const w1 = { ...baseWorker, id: 'w1' }
+    const w2 = { ...baseWorker, id: 'w2' }
+    const pastMissionsMap = {
+      w1: [
+        { company_id: 'c1', status: 'completed' },
+        { company_id: 'c1', status: 'completed' },
+        { company_id: 'c1', status: 'completed' },
+      ],
+    }
+    const ranked = rankWorkers(baseMission, [w1, w2], pastMissionsMap)
+    const w1Result = ranked.find(r => r.worker.id === 'w1')
+    const w2Result = ranked.find(r => r.worker.id === 'w2')
+    expect(w1Result.score_history).toBe(100)
+    expect(w2Result.score_history).toBe(30)
+  })
+})
+
+// ── computeMatchScore — poids exposés ─────────────────────────
+describe('computeMatchScore — weights exposés', () => {
+  it('expose les poids utilisés', () => {
+    const result = computeMatchScore(baseMission, baseWorker)
+    expect(result.weights).toHaveProperty('skills')
+    expect(result.weights.skills + result.weights.rating + result.weights.distance +
+      result.weights.history + result.weights.avail + result.weights.reactivity
+    ).toBeCloseTo(1.0, 5)
+  })
+})
+
 // ── recalibrateWeights ────────────────────────────────────────
 describe('recalibrateWeights', () => {
   it('retourne un objet avec correlations et note', () => {

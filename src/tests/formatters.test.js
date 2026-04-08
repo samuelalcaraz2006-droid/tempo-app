@@ -65,3 +65,56 @@ describe('STAR_LABELS', () => {
     expect(STAR_LABELS[5]).toBe('Excellent !')
   })
 })
+
+describe('formatDate — cas supplémentaires', () => {
+  it('retourne — pour false', () => {
+    expect(formatDate(false)).toBe('—')
+  })
+
+  it('retourne — pour 0', () => {
+    expect(formatDate(0)).toBe('—')
+  })
+
+  it('formate un timestamp Unix (millisecondes)', () => {
+    const result = formatDate(1721001600000) // ~15 juil 2024
+    expect(result).toMatch(/\d+/)
+  })
+
+  it('formate correctement décembre', () => {
+    const result = formatDate('2024-12-25')
+    expect(result).toMatch(/25/)
+    expect(result).toMatch(/déc\.?/i)
+  })
+
+  it('formate correctement mars', () => {
+    const result = formatDate('2024-03-10')
+    expect(result).toMatch(/10/)
+    expect(result).toMatch(/mars/i)
+  })
+})
+
+describe('formatAmount — cas supplémentaires', () => {
+  it('formate un nombre négatif', () => {
+    expect(formatAmount(-50)).toBe('-50 €')
+  })
+
+  it('formate un grand nombre', () => {
+    expect(formatAmount(1000000)).toBe('1000000 €')
+  })
+
+  it('formate NaN string', () => {
+    expect(formatAmount('NaN')).toBe('—')
+  })
+
+  it('formate une string flottante', () => {
+    expect(formatAmount('99.9')).toBe('100 €')
+  })
+})
+
+describe('SECTOR_LABELS — couverture complète', () => {
+  it('contient hotellerie et proprete', () => {
+    expect(SECTOR_LABELS.hotellerie).toBe('Hôtellerie')
+    expect(SECTOR_LABELS.proprete).toBe('Propreté')
+    expect(SECTOR_LABELS.industrie).toBe('Industrie')
+  })
+})
