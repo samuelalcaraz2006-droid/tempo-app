@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { X, Bell } from 'lucide-react'
 import WorkerStripeOnboarding from './WorkerStripeOnboarding'
+import WorkerSiretValidation from './WorkerSiretValidation'
+import WorkerAttestation from './WorkerAttestation'
+import RgpdPanel from '../shared/RgpdPanel'
 
 const Star = ({ n }) => <span style={{ color:'var(--am)', fontSize:12 }}>{'★'.repeat(Math.round(n))}{'☆'.repeat(5 - Math.round(n))}</span>
 
@@ -91,9 +94,15 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
         </button>
       </div>
 
+      <WorkerSiretValidation worker={worker} showToast={showToast} />
+
+      <WorkerAttestation worker={worker} userId={userId} showToast={showToast} onUpdate={refreshRoleData} />
+
       <KycUploadSection worker={worker} userId={userId} onUpdate={refreshRoleData} showToast={showToast} />
 
       <WorkerStripeOnboarding worker={worker} showToast={showToast} />
+
+      <RgpdPanel userId={userId} showToast={showToast} />
 
       {badges.length > 0 && (
         <div className="card" style={{ padding:16, marginBottom:12 }}>

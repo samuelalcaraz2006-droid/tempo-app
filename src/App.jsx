@@ -42,6 +42,8 @@ class ErrorBoundary extends React.Component {
 const TravailleurApp = React.lazy(() => import('./pages/TravailleurApp.jsx'))
 const EntrepriseApp  = React.lazy(() => import('./pages/EntrepriseApp.jsx'))
 const AdminApp       = React.lazy(() => import('./pages/AdminApp.jsx'))
+const Legal          = React.lazy(() => import('./pages/Legal.jsx'))
+import CookieBanner from './components/CookieBanner'
 
 // ── Écran de sélection de rôle pour l'admin ───────────────────
 const AdminRoleSelector = ({ onSelect, onLogout }) => (
@@ -170,6 +172,11 @@ const AppRouter = () => {
     if (isCompany) return <EntrepriseApp  onNavigate={setForcedPage} />
   }
 
+  // ── Pages legales ────────────────────────────────────────
+  if (forcedPage === 'legal') {
+    return <Legal onBack={() => setForcedPage(null)} />
+  }
+
   // ── Pages forcées (depuis landing) ───────────────────────
   if (forcedPage === 'auth' || forcedPage === 'travailleur' || forcedPage === 'entreprise') {
     return <Auth onNavigate={setForcedPage} />
@@ -216,6 +223,7 @@ export default function App() {
         <AuthProvider>
           <React.Suspense fallback={<LazyFallback />}>
             <AppRouter />
+            <CookieBanner />
           </React.Suspense>
         </AuthProvider>
       </I18nProvider>
