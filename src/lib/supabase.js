@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('❌ Variables VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY manquantes dans .env')
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  console.error('TEMPO: Variables VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY manquantes. Ajoutez-les dans .env ou dans Vercel Dashboard > Settings > Environment Variables')
 }
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {

@@ -24,11 +24,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'vendor'
-          if (id.includes('node_modules/@supabase')) return 'supabase'
-          if (id.includes('node_modules/leaflet') || id.includes('node_modules/react-leaflet')) return 'leaflet'
-          if (id.includes('node_modules/@stripe')) return 'stripe'
+        manualChunks: {
+          supabase: ['@supabase/supabase-js'],
+          leaflet: ['leaflet', 'react-leaflet'],
         },
       },
     },
