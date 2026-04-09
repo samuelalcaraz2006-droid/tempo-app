@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { X, Bell } from 'lucide-react'
+import WorkerStripeOnboarding from './WorkerStripeOnboarding'
 
 const Star = ({ n }) => <span style={{ color:'var(--am)', fontSize:12 }}>{'★'.repeat(Math.round(n))}{'☆'.repeat(5 - Math.round(n))}</span>
 
@@ -91,6 +92,8 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
       </div>
 
       <KycUploadSection worker={worker} userId={userId} onUpdate={refreshRoleData} showToast={showToast} />
+
+      <WorkerStripeOnboarding worker={worker} showToast={showToast} />
 
       {badges.length > 0 && (
         <div className="card" style={{ padding:16, marginBottom:12 }}>

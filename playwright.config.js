@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: [['html', { outputFolder: 'e2e-report', open: 'never' }], ['list']],
 
   use: {
-    baseURL: 'http://localhost:5173/tempo-app/',
+    baseURL: 'http://localhost:5173/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -27,7 +27,7 @@ export default defineConfig({
 
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173/tempo-app/',
+    url: 'http://localhost:5173/',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
   },

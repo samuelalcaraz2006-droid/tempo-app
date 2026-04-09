@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  base: '/tempo-app/',
+  base: '/',
   plugins: [react()],
   test: {
     environment: 'jsdom',
@@ -24,10 +24,11 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          supabase: ['@supabase/supabase-js'],
-          leaflet: ['leaflet', 'react-leaflet'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'vendor'
+          if (id.includes('node_modules/@supabase')) return 'supabase'
+          if (id.includes('node_modules/leaflet') || id.includes('node_modules/react-leaflet')) return 'leaflet'
+          if (id.includes('node_modules/@stripe')) return 'stripe'
         },
       },
     },
