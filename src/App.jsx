@@ -2,6 +2,7 @@ import React from 'react'
 import { AuthProvider } from './contexts/AuthContext'
 import { useAuth } from './contexts/useAuth'
 import { I18nProvider } from './contexts/I18nContext'
+import { captureError, setUser } from './lib/sentry'
 import Auth from './pages/Auth.jsx'
 import Landing from './pages/Landing.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
@@ -14,6 +15,9 @@ class ErrorBoundary extends React.Component {
   }
   static getDerivedStateFromError(error) {
     return { hasError: true, error }
+  }
+  componentDidCatch(error, errorInfo) {
+    captureError(error, { componentStack: errorInfo?.componentStack })
   }
   render() {
     if (!this.state.hasError) return this.props.children
@@ -119,6 +123,9 @@ const AppRouter = () => {
   const [forcedPage, setForcedPage] = React.useState(null)
   const [adminView, setAdminView] = React.useState(null)
   const [showLoginAfterReset, setShowLoginAfterReset] = React.useState(false)
+
+  // Track user in Sentry
+  React.useEffect(() => { setUser(user || null) }, [user?.id])
 
   // Lien de réinitialisation de mot de passe cliqué dans l'email
   if (recovering) {
