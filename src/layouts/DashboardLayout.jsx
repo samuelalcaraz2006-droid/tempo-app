@@ -1,0 +1,70 @@
+import React from 'react'
+import { Moon, Sun, Bell } from 'lucide-react'
+import { useAuth } from '../contexts/useAuth'
+import { useI18n } from '../contexts/I18nContext'
+import { useDarkMode } from '../hooks/useDarkMode'
+
+export default function DashboardLayout({ role, tabs, activeTab, onTabChange, onLogoClick, children, headerExtra, unreadCount = 0, onNotifClick }) {
+  const { logout } = useAuth()
+  const { locale, switchLocale } = useI18n()
+  const { darkMode, toggleDarkMode } = useDarkMode()
+
+  const isWorker = role === 'worker'
+  const headerBg = isWorker ? 'var(--navy)' : 'var(--wh2)'
+  const headerColor = isWorker ? 'rgba(255,255,255,.7)' : 'var(--g4)'
+  const headerBorder = isWorker ? 'none' : '1px solid var(--g2)'
+  const roleLabel = role === 'worker' ? '' : role === 'company' ? 'Espace Entreprise' : 'Panel Admin'
+
+  return (
+    <div style={{ minHeight:'100vh', background:'var(--wh)', display:'flex', flexDirection:'column' }}>
+      {/* Header */}
+      <div style={{ background: headerBg, borderBottom: headerBorder, padding:'0 20px', display:'flex', alignItems:'center', height: isWorker ? 54 : 48, position:'sticky', top:0, zIndex:100 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginRight: isWorker ? 'auto' : 32, cursor: onLogoClick ? 'pointer' : 'default' }} onClick={onLogoClick}>
+          <div style={{ width:24, height:24, background:'var(--or)', borderRadius:6, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 1L8.5 5L1.5 9Z" fill="white"/></svg>
+          </div>
+          <span style={{ fontWeight:600, letterSpacing: isWorker ? '2px' : '1.5px', fontSize:13, color: isWorker ? '#fff' : 'var(--bk)' }}>TEMPO</span>
+          {roleLabel && <span style={{ fontSize:12, color: headerColor, borderLeft:'1px solid var(--g2)', paddingLeft:8, marginLeft:4 }}>{roleLabel}</span>}
+        </div>
+
+        {headerExtra}
+
+        {!isWorker && (
+          <div style={{ display:'flex', gap:0, marginRight:'auto' }}>
+            {tabs.map(([key, label]) => (
+              <button key={key} onClick={() => onTabChange(key)} style={{ padding:'0 14px', height: isWorker ? 54 : 48, border:'none', background:'transparent', fontSize:13, color: activeTab === key ? 'var(--bk)' : 'var(--g4)', fontWeight: activeTab === key ? 500 : 400, borderBottom: activeTab === key ? '2px solid var(--or)' : '2px solid transparent', cursor:'pointer' }}>{label}</button>
+            ))}
+          </div>
+        )}
+
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <button onClick={() => switchLocale(locale === 'fr' ? 'en' : 'fr')} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border: isWorker ? 'none' : '1px solid var(--g2)', borderRadius: isWorker ? 8 : 6, padding: isWorker ? '6px 10px' : '4px 8px', color: headerColor, cursor:'pointer', fontSize:11, fontWeight:600, letterSpacing:'0.5px' }} title="Changer de langue">
+            {locale === 'fr' ? 'EN' : 'FR'}
+          </button>
+          <button onClick={toggleDarkMode} aria-label={darkMode ? 'Passer en mode clair' : 'Passer en mode sombre'} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }} title="Mode sombre">
+            {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+          {onNotifClick && (
+            <button onClick={onNotifClick} aria-label="Notifications" style={{ position:'relative', background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }}>
+              <Bell size={18} />
+              {unreadCount > 0 && <span style={{ position:'absolute', top:-3, right:-3, background:'var(--or)', color:'#fff', borderRadius:'50%', width:16, height:16, fontSize:10, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:600 }}>{unreadCount}</span>}
+            </button>
+          )}
+          <button onClick={async () => { await logout() }} style={{ fontSize:12, color: headerColor, background:'none', border:'none', cursor:'pointer' }}>Deconnexion</button>
+        </div>
+      </div>
+
+      {/* Worker sub-nav (tabs below header) */}
+      {isWorker && (
+        <div style={{ background:'var(--wh)', borderBottom:'1px solid var(--g2)', display:'flex', padding:'0 20px' }}>
+          {tabs.map(([key, label]) => (
+            <button key={key} onClick={() => onTabChange(key)} style={{ padding:'13px 12px', border:'none', background:'transparent', fontSize:13, color: activeTab === key ? 'var(--bk)' : 'var(--g4)', fontWeight: activeTab === key ? 500 : 400, borderBottom: activeTab === key ? '2px solid var(--or)' : '2px solid transparent', cursor:'pointer' }}>{label}</button>
+          ))}
+        </div>
+      )}
+
+      {/* Content */}
+      {children}
+    </div>
+  )
+}
