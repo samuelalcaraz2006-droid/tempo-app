@@ -48,6 +48,7 @@ const EntrepriseApp  = React.lazy(() => import('./pages/EntrepriseApp.jsx'))
 const AdminApp       = React.lazy(() => import('./pages/AdminApp.jsx'))
 const Legal          = React.lazy(() => import('./pages/Legal.jsx'))
 import CookieBanner from './components/CookieBanner'
+import FeedbackWidget from './components/FeedbackWidget'
 
 // ── Écran de sélection de rôle pour l'admin ───────────────────
 const AdminRoleSelector = ({ onSelect, onLogout }) => (
@@ -230,6 +231,7 @@ export default function App() {
           <React.Suspense fallback={<LazyFallback />}>
             <AppRouter />
             <CookieBanner />
+            <FeedbackWidget />
           </React.Suspense>
         </AuthProvider>
       </I18nProvider>
