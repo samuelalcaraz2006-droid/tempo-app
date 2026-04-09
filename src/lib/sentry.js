@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react'
+import * as Sentry from '@sentry/browser'
 
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN
 
