@@ -1,5 +1,26 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Accessibility: focus visible ring */
+:focus-visible {
+  outline: 2px solid var(--brand, #2563EB);
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 :root {
   /* ── BRAND BLUE (couleur phare — usage ciblé) ── */
   --brand:    #2563EB;   /* CTA primaires, état actif, liens */

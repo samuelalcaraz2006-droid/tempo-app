@@ -17,10 +17,15 @@ export default function DashboardLayout({ role, tabs, activeTab, onTabChange, on
 
   return (
     <div style={{ minHeight:'100vh', background:'var(--wh)', display:'flex', flexDirection:'column' }}>
+      {/* Skip to content link (a11y) */}
+      <a href="#main-content" style={{ position:'absolute', top:-40, left:0, background:'var(--or)', color:'#fff', padding:'8px 16px', zIndex:200, fontSize:13, fontWeight:600, transition:'top .2s' }} onFocus={e => { e.target.style.top = '0' }} onBlur={e => { e.target.style.top = '-40px' }}>
+        Aller au contenu principal
+      </a>
+
       {/* Header */}
-      <div style={{ background: headerBg, borderBottom: headerBorder, padding:'0 20px', display:'flex', alignItems:'center', height: isWorker ? 54 : 48, position:'sticky', top:0, zIndex:100 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8, marginRight: isWorker ? 'auto' : 32, cursor: onLogoClick ? 'pointer' : 'default' }} onClick={onLogoClick}>
-          <div style={{ width:24, height:24, background:'var(--or)', borderRadius:6, display:'flex', alignItems:'center', justifyContent:'center' }}>
+      <header role="banner" style={{ background: headerBg, borderBottom: headerBorder, padding:'0 20px', display:'flex', alignItems:'center', height: isWorker ? 54 : 48, position:'sticky', top:0, zIndex:100 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginRight: isWorker ? 'auto' : 32, cursor: onLogoClick ? 'pointer' : 'default' }} onClick={onLogoClick} role={onLogoClick ? 'button' : undefined} tabIndex={onLogoClick ? 0 : undefined} aria-label={onLogoClick ? 'Retour a l\'accueil' : undefined} onKeyDown={e => { if (onLogoClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onLogoClick() } }}>
+          <div style={{ width:24, height:24, background:'var(--or)', borderRadius:6, display:'flex', alignItems:'center', justifyContent:'center' }} aria-hidden="true">
             <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 1L8.5 5L1.5 9Z" fill="white"/></svg>
           </div>
           <span style={{ fontWeight:600, letterSpacing: isWorker ? '2px' : '1.5px', fontSize:13, color: isWorker ? '#fff' : 'var(--bk)' }}>TEMPO</span>
@@ -30,41 +35,43 @@ export default function DashboardLayout({ role, tabs, activeTab, onTabChange, on
         {headerExtra}
 
         {!isWorker && (
-          <div style={{ display:'flex', gap:0, marginRight:'auto' }}>
+          <nav role="navigation" aria-label="Navigation principale" style={{ display:'flex', gap:0, marginRight:'auto' }}>
             {tabs.map(([key, label]) => (
-              <button key={key} onClick={() => onTabChange(key)} style={{ padding:'0 14px', height: isWorker ? 54 : 48, border:'none', background:'transparent', fontSize:13, color: activeTab === key ? 'var(--bk)' : 'var(--g4)', fontWeight: activeTab === key ? 500 : 400, borderBottom: activeTab === key ? '2px solid var(--or)' : '2px solid transparent', cursor:'pointer' }}>{label}</button>
+              <button key={key} onClick={() => onTabChange(key)} aria-current={activeTab === key ? 'page' : undefined} style={{ padding:'0 14px', height: isWorker ? 54 : 48, border:'none', background:'transparent', fontSize:13, color: activeTab === key ? 'var(--bk)' : 'var(--g4)', fontWeight: activeTab === key ? 500 : 400, borderBottom: activeTab === key ? '2px solid var(--or)' : '2px solid transparent', cursor:'pointer' }}>{label}</button>
             ))}
-          </div>
+          </nav>
         )}
 
-        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <button onClick={() => switchLocale(locale === 'fr' ? 'en' : 'fr')} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border: isWorker ? 'none' : '1px solid var(--g2)', borderRadius: isWorker ? 8 : 6, padding: isWorker ? '6px 10px' : '4px 8px', color: headerColor, cursor:'pointer', fontSize:11, fontWeight:600, letterSpacing:'0.5px' }} title="Changer de langue">
+        <div style={{ display:'flex', alignItems:'center', gap:8 }} role="toolbar" aria-label="Actions rapides">
+          <button onClick={() => switchLocale(locale === 'fr' ? 'en' : 'fr')} aria-label={locale === 'fr' ? 'Switch to English' : 'Passer en francais'} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border: isWorker ? 'none' : '1px solid var(--g2)', borderRadius: isWorker ? 8 : 6, padding: isWorker ? '6px 10px' : '4px 8px', color: headerColor, cursor:'pointer', fontSize:11, fontWeight:600, letterSpacing:'0.5px' }}>
             {locale === 'fr' ? 'EN' : 'FR'}
           </button>
-          <button onClick={toggleDarkMode} aria-label={darkMode ? 'Passer en mode clair' : 'Passer en mode sombre'} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }} title="Mode sombre">
+          <button onClick={toggleDarkMode} aria-label={darkMode ? 'Passer en mode clair' : 'Passer en mode sombre'} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }}>
             {darkMode ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           {onNotifClick && (
-            <button onClick={onNotifClick} aria-label="Notifications" style={{ position:'relative', background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }}>
+            <button onClick={onNotifClick} aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} non lues)` : ''}`} style={{ position:'relative', background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }}>
               <Bell size={18} />
-              {unreadCount > 0 && <span style={{ position:'absolute', top:-3, right:-3, background:'var(--or)', color:'#fff', borderRadius:'50%', width:16, height:16, fontSize:10, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:600 }}>{unreadCount}</span>}
+              {unreadCount > 0 && <span aria-hidden="true" style={{ position:'absolute', top:-3, right:-3, background:'var(--or)', color:'#fff', borderRadius:'50%', width:16, height:16, fontSize:10, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:600 }}>{unreadCount}</span>}
             </button>
           )}
-          <button onClick={async () => { await logout() }} style={{ fontSize:12, color: headerColor, background:'none', border:'none', cursor:'pointer' }}>Deconnexion</button>
+          <button onClick={async () => { await logout() }} aria-label="Se deconnecter" style={{ fontSize:12, color: headerColor, background:'none', border:'none', cursor:'pointer' }}>Deconnexion</button>
         </div>
-      </div>
+      </header>
 
       {/* Worker sub-nav (tabs below header) */}
       {isWorker && (
-        <div style={{ background:'var(--wh)', borderBottom:'1px solid var(--g2)', display:'flex', padding:'0 20px' }}>
+        <nav role="navigation" aria-label="Navigation principale" style={{ background:'var(--wh)', borderBottom:'1px solid var(--g2)', display:'flex', padding:'0 20px' }}>
           {tabs.map(([key, label]) => (
-            <button key={key} onClick={() => onTabChange(key)} style={{ padding:'13px 12px', border:'none', background:'transparent', fontSize:13, color: activeTab === key ? 'var(--bk)' : 'var(--g4)', fontWeight: activeTab === key ? 500 : 400, borderBottom: activeTab === key ? '2px solid var(--or)' : '2px solid transparent', cursor:'pointer' }}>{label}</button>
+            <button key={key} onClick={() => onTabChange(key)} aria-current={activeTab === key ? 'page' : undefined} style={{ padding:'13px 12px', border:'none', background:'transparent', fontSize:13, color: activeTab === key ? 'var(--bk)' : 'var(--g4)', fontWeight: activeTab === key ? 500 : 400, borderBottom: activeTab === key ? '2px solid var(--or)' : '2px solid transparent', cursor:'pointer' }}>{label}</button>
           ))}
-        </div>
+        </nav>
       )}
 
       {/* Content */}
-      {children}
+      <main id="main-content" role="main">
+        {children}
+      </main>
     </div>
   )
 }
