@@ -182,7 +182,7 @@ export default function CompanyDashboard({
                             <span className="badge badge-green" style={{ fontSize: 10 }}>Contrat signé</span>
                           ) : (
                             <button className="btn-dark" style={{ padding: '5px 10px', fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}
-                              onClick={() => onOpenContract({ missionId: m.id, mission: m, workerName: `${m.workers?.first_name || ''} ${m.workers?.last_name || ''}`.trim() || 'Travailleur' })}>
+                              onClick={() => onOpenContract({ missionId: m.id, mission: m, workerName: `${m.workers?.first_name || ''} ${m.workers?.last_name || ''}`.trim() || 'Travailleur', workerId: m.workers?.id || m.assigned_worker_id })}>
                               <PenLine size={16} /> Signer
                             </button>
                           )}

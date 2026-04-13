@@ -244,6 +244,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     const { error: contractError } = await saveContract({
       mission_id: contractModal.missionId,
       company_id: userId,
+      worker_id: contractModal.workerId,
       signed_company_at: new Date().toISOString(),
       status: 'signed_company',
     })

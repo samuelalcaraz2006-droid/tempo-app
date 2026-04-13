@@ -203,7 +203,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
 
         {screen === 'mission-detail' && <WorkerMissionDetail mission={selectedMission} hasApplied={hasApplied(selectedMission?.id)} applying={actions.applying[selectedMission?.id]} onApply={actions.handleApply} onBack={() => setScreen('missions')} isSaved={savedMissions.includes(selectedMission?.id)} onToggleSave={toggleSave} onViewCompany={openCompanyProfile} />}
 
-        {screen === 'suivi' && <WorkerApplications allMissions={data.allMissions} signedContracts={data.signedContracts} ratedMissions={actions.ratedMissions} onWithdraw={id => actions.handleWithdraw(id, data.setAllMissions)} onSignContract={m => actions.setContractModal({ missionId: m.id, mission: m, companyName: m?.companies?.name || 'Entreprise' })} onOpenChat={openChatNav} onRate={m => actions.setRatingModal({ missionId: m.id, rateeId: m.companies?.id, companyName: m.companies?.name || 'l\'entreprise' })} onNavigate={navigate} t={t} />}
+        {screen === 'suivi' && <WorkerApplications allMissions={data.allMissions} signedContracts={data.signedContracts} ratedMissions={actions.ratedMissions} onWithdraw={id => actions.handleWithdraw(id, data.setAllMissions)} onSignContract={m => actions.setContractModal({ missionId: m.id, mission: m, companyName: m?.companies?.name || 'Entreprise', companyId: m?.company_id || m?.companies?.id })} onOpenChat={openChatNav} onRate={m => actions.setRatingModal({ missionId: m.id, rateeId: m.companies?.id, companyName: m.companies?.name || 'l\'entreprise' })} onNavigate={navigate} t={t} />}
 
         {screen === 'gains' && <WorkerEarnings worker={worker} invoices={data.invoices} allMissions={data.allMissions} t={t} />}
 

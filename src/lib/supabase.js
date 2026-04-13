@@ -149,9 +149,10 @@ export const createMission = async (mission) => {
 }
 
 export const getCompanyMissions = async (companyId) => {
+  // Hint FK explicite : missions.assigned_worker_id → workers(id)
   const { data, error } = await supabase
     .from('missions')
-    .select('*, workers(first_name, last_name, rating_avg)')
+    .select('*, workers!assigned_worker_id(id, first_name, last_name, rating_avg)')
     .eq('company_id', companyId)
     .order('created_at', { ascending: false })
   return { data, error }
@@ -177,9 +178,10 @@ export const getWorkerApplications = async (workerId) => {
 }
 
 export const getMissionApplications = async (missionId) => {
+  // matching_scores n'a pas de FK depuis applications → jointure séparée impossible ici
   const { data, error } = await supabase
     .from('applications')
-    .select('*, workers(first_name, last_name, rating_avg, rating_count, skills, certifications, city), matching_scores(total_score, breakdown)')
+    .select('*, workers(id, first_name, last_name, rating_avg, rating_count, skills, certifications, city)')
     .eq('mission_id', missionId)
     .order('applied_at', { ascending: false })
   return { data, error }
@@ -372,7 +374,7 @@ export const subscribeToMessages = (userId, callback) => {
 // ── Helpers cancellation / disputes ──────────
 export const cancelMission = async (missionId, reason) => {
   const updates = { status: 'cancelled' }
-  if (reason) updates.description = `[ANNULÉE] ${reason}`
+  if (reason) updates.cancellation_reason = reason  // ne pas écraser description
   const { data, error } = await supabase
     .from('missions')
     .update(updates)
@@ -393,9 +395,10 @@ export const withdrawApplication = async (applicationId) => {
 }
 
 export const getWorkerMissions = async (workerId) => {
+  // company_id inclus dans missions pour le chat et la signature de contrat
   const { data, error } = await supabase
     .from('applications')
-    .select('id, status, applied_at, match_score, missions(id, title, hourly_rate, total_hours, start_date, end_date, city, status, sector, companies(name))')
+    .select('id, status, applied_at, match_score, missions(id, title, hourly_rate, total_hours, start_date, end_date, city, status, sector, company_id, companies(id, name))')
     .eq('worker_id', workerId)
     .order('applied_at', { ascending: false })
   return { data, error }

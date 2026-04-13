@@ -39,6 +39,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
     const { error } = await saveContract({
       mission_id: contractModal.missionId,
       worker_id: userId,
+      company_id: contractModal.companyId,
       signed_worker_at: new Date().toISOString(),
       status: 'signed_worker',
     })
