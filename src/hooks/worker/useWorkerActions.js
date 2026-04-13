@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { applyToMission, withdrawApplication, saveContract, createRating, supabase, setWorkerAvailability } from '../../lib/supabase'
+import { applyToMission, withdrawApplication, signContractAsWorker, createRating, supabase, setWorkerAvailability } from '../../lib/supabase'
 
 export function useWorkerActions(userId, { showToast, setApplications, addSignedContract, refreshRoleData } = {}) {
   const [applying, setApplying] = useState({})
@@ -36,12 +36,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
   const handleSignContract = useCallback(async (signatureData) => {
     if (!contractModal) return
     setSigningContract(true)
-    const { error } = await saveContract({
-      mission_id: contractModal.missionId,
-      worker_id: userId,
-      signed_worker_at: new Date().toISOString(),
-      status: 'signed_worker',
-    })
+    const { error } = await signContractAsWorker(contractModal.missionId, userId)
     if (error) { showToast?.('Erreur lors de la signature', 'error'); setSigningContract(false); return }
     addSignedContract?.(contractModal.missionId)
     setSigningContract(false)
@@ -56,7 +51,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
       missionId: ratingModal.missionId,
       raterId: userId,
       ratedId: ratingModal.rateeId,
-      raterRole: 'travailleur',
+      raterRole: 'worker',
       score,
       comment,
     })

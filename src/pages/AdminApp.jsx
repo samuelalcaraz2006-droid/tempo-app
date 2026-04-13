@@ -35,7 +35,7 @@ export default function AdminApp({ onLogoClick }) {
       const [pRes, wRes, cRes, mRes, totalUsers, totalWorkers, totalCompanies] = await Promise.all([
         supabase.from('profiles').select('*').order('created_at', { ascending: false }).range(offset, offset + ADMIN_PAGE_SIZE - 1),
         supabase.from('workers').select('id, first_name, last_name, city, is_available, siret_verified, id_verified, rc_pro_verified, id_doc_url, siret_doc_url, rc_pro_url, kyc_submitted_at, kyc_rejection_reason, rating_avg, missions_completed').range(offset, offset + ADMIN_PAGE_SIZE - 1),
-        supabase.from('companies').select('id, name, city, plan, rating_avg, missions_posted').range(offset, offset + ADMIN_PAGE_SIZE - 1),
+        supabase.from('companies').select('id, name, city, subscription_plan, rating_avg, missions_posted').range(offset, offset + ADMIN_PAGE_SIZE - 1),
         supabase.from('missions').select('id, status, sector').limit(500),
         countQuery('profiles'),
         countQuery('profiles', q => q.eq('role', 'travailleur')),

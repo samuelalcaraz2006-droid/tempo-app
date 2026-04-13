@@ -402,6 +402,61 @@ export const getWorkerMissions = async (workerId) => {
 }
 
 // ── Helpers contrats ──────────────────────────
+
+/**
+ * Crée un contrat complet lors de l'acceptation d'un candidat.
+ * Requiert worker_id ET company_id (tous deux NOT NULL en DB).
+ */
+export const createContract = async ({ missionId, workerId, companyId, hourlyRate, totalHours }) => {
+  const { data, error } = await supabase
+    .from('contracts')
+    .insert({
+      mission_id:  missionId,
+      worker_id:   workerId,
+      company_id:  companyId,
+      hourly_rate: hourlyRate,
+      total_hours: totalHours,
+      status:      'draft',
+    })
+    .select()
+    .single()
+  return { data, error }
+}
+
+/**
+ * Signature du contrat côté travailleur.
+ * UPDATE simple sur le contrat existant (créé lors de handleAccept).
+ */
+export const signContractAsWorker = async (missionId, workerId) => {
+  const { data, error } = await supabase
+    .from('contracts')
+    .update({ signed_worker_at: new Date().toISOString(), status: 'signed_worker' })
+    .eq('mission_id', missionId)
+    .eq('worker_id', workerId)
+    .select()
+    .single()
+  return { data, error }
+}
+
+/**
+ * Signature du contrat côté entreprise.
+ * UPDATE simple sur le contrat existant (créé lors de handleAccept).
+ */
+export const signContractAsCompany = async (missionId, companyId) => {
+  const { data, error } = await supabase
+    .from('contracts')
+    .update({ signed_company_at: new Date().toISOString(), status: 'signed_company' })
+    .eq('mission_id', missionId)
+    .eq('company_id', companyId)
+    .select()
+    .single()
+  return { data, error }
+}
+
+/**
+ * @deprecated Utiliser createContract + signContractAsWorker/signContractAsCompany.
+ * Conservé pour compatibilité avec d'éventuels appels restants.
+ */
 export const saveContract = async (contractData) => {
   const { data, error } = await supabase
     .from('contracts')

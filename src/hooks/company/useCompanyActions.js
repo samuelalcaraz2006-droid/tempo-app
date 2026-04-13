@@ -7,7 +7,8 @@ import {
   completeMission,
   createRating,
   cancelMission,
-  saveContract,
+  createContract,
+  signContractAsCompany,
   createInvoice,
 } from '../../lib/supabase'
 
@@ -94,6 +95,22 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     }
     setCandidates(prev => prev.map(c => c.id === candidate.id ? { ...c, status: 'accepted' } : c))
     setMissions(prev => prev.map(m => m.id === selectedMissionId ? { ...m, status: 'matched' } : m))
+
+    // Créer le contrat avec les deux parties — nécessaire pour que les signatures fonctionnent
+    const mission = (missions || []).find(m => m.id === selectedMissionId)
+    if (mission) {
+      const { error: contractErr } = await createContract({
+        missionId: selectedMissionId,
+        workerId: candidate.workers?.id || candidate.worker_id,
+        companyId: userId,
+        hourlyRate: mission.hourly_rate,
+        totalHours: mission.total_hours,
+      })
+      if (contractErr) {
+        console.error('[handleAccept] createContract error:', contractErr.message)
+      }
+    }
+
     showToast(`${candidate.workers?.first_name} accepté — contrat en cours de génération !`)
   }, [selectedMissionId, showToast, setMissions])
 
@@ -241,12 +258,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
   const handleSignContract = useCallback(async (signatureData) => {
     if (!contractModal) return
     setSigningContract(true)
-    const { error: contractError } = await saveContract({
-      mission_id: contractModal.missionId,
-      company_id: userId,
-      signed_company_at: new Date().toISOString(),
-      status: 'signed_company',
-    })
+    const { error: contractError } = await signContractAsCompany(contractModal.missionId, userId)
     if (contractError) {
       showToast('Erreur lors de la signature', 'error')
       setSigningContract(false)
