@@ -80,18 +80,14 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
       return
     }
     safeUpdate.updated_at = new Date().toISOString()
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('workers')
       .update(safeUpdate)
       .eq('id', userId)
-      .select()
-      .single()
     setSavingProfile(false)
     if (error) {
       console.error('[WorkerActions] saveProfile error:', error)
       showToast?.('Erreur lors de la sauvegarde : ' + (error.message || 'erreur inconnue'), 'error')
-    } else if (!data) {
-      showToast?.('Erreur : profil non trouve', 'error')
     } else {
       showToast?.('Profil mis a jour !')
       refreshRoleData?.()
