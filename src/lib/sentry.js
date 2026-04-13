@@ -12,7 +12,7 @@ export function initSentry() {
 
     integrations: [
       Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration({ maskAllText: false, blockAllMedia: false }),
+      Sentry.replayIntegration({ maskAllText: true, blockAllMedia: true }),
     ],
 
     // Performance: sample 20% of transactions in prod

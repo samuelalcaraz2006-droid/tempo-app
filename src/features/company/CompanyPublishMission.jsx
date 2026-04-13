@@ -19,6 +19,8 @@ export default function CompanyPublishMission({
   onNewMission,
   onNavigateDashboard,
 }) {
+  const [templateName, setTemplateName] = React.useState('')
+  const [showTemplateSave, setShowTemplateSave] = React.useState(false)
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
@@ -35,14 +37,23 @@ export default function CompanyPublishMission({
                 style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid var(--g2)', background: 'var(--wh)', color: 'var(--g6)', fontSize: 12, cursor: 'pointer' }}>
                 📋 Templates ({templates.length})
               </button>
-              {form.title && (
-                <button onClick={() => {
-                  const name = prompt('Nom du template :')
-                  if (name) onSaveTemplate(name)
-                }}
+              {form.title && !showTemplateSave && (
+                <button onClick={() => setShowTemplateSave(true)}
                   style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid var(--g2)', background: 'var(--wh)', color: 'var(--g6)', fontSize: 12, cursor: 'pointer' }}>
                   💾 Sauver comme template
                 </button>
+              )}
+              {showTemplateSave && (
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <input className="input" placeholder="Nom du template" value={templateName} onChange={e => setTemplateName(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && templateName.trim()) { onSaveTemplate(templateName.trim()); setTemplateName(''); setShowTemplateSave(false) } }}
+                    style={{ padding: '6px 10px', fontSize: 12, width: 180 }} autoFocus />
+                  <button className="btn-primary" style={{ padding: '6px 12px', fontSize: 12 }}
+                    onClick={() => { if (templateName.trim()) { onSaveTemplate(templateName.trim()); setTemplateName(''); setShowTemplateSave(false) } }}
+                    disabled={!templateName.trim()}>OK</button>
+                  <button className="btn-secondary" style={{ padding: '6px 10px', fontSize: 12 }}
+                    onClick={() => { setTemplateName(''); setShowTemplateSave(false) }}>✕</button>
+                </div>
               )}
             </div>
 

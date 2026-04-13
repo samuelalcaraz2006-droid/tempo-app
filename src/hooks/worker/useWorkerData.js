@@ -73,8 +73,8 @@ export function useWorkerData(userId, worker) {
       })
     })
     return () => {
-      mSub.unsubscribe()
-      nSub.unsubscribe()
+      mSub?.unsubscribe()
+      nSub?.unsubscribe()
     }
   }, [userId])
 
