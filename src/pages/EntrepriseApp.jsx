@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { useAuth } from '../contexts/useAuth'
 import { useI18n } from '../contexts/I18nContext'
 import { useToast } from '../hooks/useToast'
@@ -14,6 +14,7 @@ import CompanyCandidates from '../features/company/CompanyCandidates'
 import CompanyStats from '../features/company/CompanyStats'
 import CompanyContracts from '../features/company/CompanyContracts'
 import CompanyMessages from '../features/company/CompanyMessages'
+import CompanyProfile from '../features/company/CompanyProfile'
 
 const ContractModal = lazy(() => import('../components/ContractModal'))
 
@@ -24,12 +25,13 @@ const EMPTY_FORM = {
 }
 
 export default function EntrepriseApp({ onLogoClick }) {
-  const { user, profile, roleData } = useAuth()
+  const { user, profile, roleData, refreshRoleData, logout } = useAuth()
   const { t } = useI18n()
   const { toast, showToast, dismissToast } = useToast()
 
   const [screen, setScreen] = useState('dashboard')
   const [form, setForm] = useState(EMPTY_FORM)
+  const [profileForm, setProfileForm] = useState({})
   const setF = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   const data = useCompanyData(user?.id)
@@ -38,6 +40,7 @@ export default function EntrepriseApp({ onLogoClick }) {
     setMissions: data.setMissions,
     setInvoices: data.setInvoices,
     missions: data.missions,
+    refreshRoleData,
   })
   const chat = useChat(user?.id, { onError: msg => showToast(msg, 'error') })
 
@@ -45,12 +48,28 @@ export default function EntrepriseApp({ onLogoClick }) {
   const displayName = company?.name || profile?.email || '—'
   const initials = displayName.slice(0, 2).toUpperCase()
 
+  // Initialiser le formulaire profil quand les données entreprise chargent
+  useEffect(() => {
+    if (company) {
+      setProfileForm({
+        name:          company.name          || '',
+        siret:         company.siret         || '',
+        city:          company.city          || '',
+        address:       company.address       || '',
+        sector:        company.sector        || '',
+        contact_name:  company.contact_name  || '',
+        contact_phone: company.contact_phone || '',
+      })
+    }
+  }, [company?.id])
+
   const tabs = [
     ['dashboard', t('nav_dashboard')],
     ['publier', t('nav_publish')],
     ['messages-e', t('nav_messages')],
     ['stats', t('nav_stats')],
     ['contrats', t('nav_contracts')],
+    ['profil-e', t('nav_profile')],
   ]
 
   const openChatNav = async (pid, pn, mid) => {
@@ -193,6 +212,20 @@ export default function EntrepriseApp({ onLogoClick }) {
           <CompanyContracts
             invoices={data.invoices}
             onExportInvoices={() => actions.exportInvoicesCSV(data.invoices)}
+          />
+        )}
+
+        {screen === 'profil-e' && (
+          <CompanyProfile
+            company={company}
+            profile={profile}
+            profileForm={profileForm}
+            setProfileForm={setProfileForm}
+            onSave={actions.handleSaveCompanyProfile}
+            saving={actions.savingProfile}
+            displayName={displayName}
+            initials={initials}
+            onLogout={logout}
           />
         )}
 
