@@ -39,8 +39,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
     const { error } = await saveContract({
       mission_id: contractModal.missionId,
       worker_id: userId,
-      worker_signature: signatureData,
-      worker_signed_at: new Date().toISOString(),
+      signed_worker_at: new Date().toISOString(),
       status: 'signed_worker',
     })
     if (error) { showToast?.('Erreur lors de la signature', 'error'); setSigningContract(false); return }

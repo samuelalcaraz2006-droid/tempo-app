@@ -21,7 +21,7 @@ function KycWorkerCard({ u, onApproveAll, onApproveField, onReject, kycFieldLoad
             </div>
           )}
           {w.kyc_rejection_reason && (
-            <div style={{ fontSize: 11, color: '#DC2626', marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: 'var(--rd)', marginTop: 2 }}>
               Refus précédent : {w.kyc_rejection_reason}
             </div>
           )}
@@ -37,7 +37,7 @@ function KycWorkerCard({ u, onApproveAll, onApproveField, onReject, kycFieldLoad
             </button>
           )}
           <button
-            style={{ padding: '4px 10px', fontSize: 11, background: '#FEE2E2', color: '#DC2626', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
+            style={{ padding: '4px 10px', fontSize: 11, background: 'var(--rd-l)', color: 'var(--rd)', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
             onClick={() => onReject(u)}
           >
             ✗ Refuser
@@ -49,7 +49,7 @@ function KycWorkerCard({ u, onApproveAll, onApproveField, onReject, kycFieldLoad
         <div key={doc.key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderTop: '1px solid var(--g1)' }}>
           <span style={{ fontSize: 12, color: 'var(--g6)', width: 120, flexShrink: 0 }}>{doc.label}</span>
           {doc.url ? (
-            <a href={doc.url} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: '#2563EB', textDecoration: 'underline', flex: 1 }}>
+            <a href={doc.url} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: 'var(--brand)', textDecoration: 'underline', flex: 1 }}>
               Voir le document
             </a>
           ) : (

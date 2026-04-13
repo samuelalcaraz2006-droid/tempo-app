@@ -15,12 +15,21 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 })
 
 // ── Helpers auth ──────────────────────────────
-export const signUp = async ({ email, password, role, firstName, lastName, companyName }) => {
+export const signUp = async ({ email, password, role, firstName, lastName, companyName, phone, siret, city, radiusKm }) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { role, first_name: firstName, last_name: lastName, company_name: companyName }
+      data: {
+        role,
+        first_name: firstName,
+        last_name: lastName,
+        company_name: companyName,
+        phone: phone || null,
+        siret: siret || null,
+        city: city || null,
+        radius_km: radiusKm ? parseInt(radiusKm, 10) : 10,
+      }
     }
   })
   return { data, error }
@@ -416,7 +425,7 @@ export const getSignedContractsByWorker = async (workerId) => {
     .from('contracts')
     .select('mission_id')
     .eq('worker_id', workerId)
-    .not('worker_signed_at', 'is', null)
+    .not('signed_worker_at', 'is', null)
   return { data: data?.map(c => c.mission_id) || [], error }
 }
 
@@ -425,23 +434,26 @@ export const getSignedContractsByCompany = async (companyId) => {
     .from('contracts')
     .select('mission_id')
     .eq('company_id', companyId)
-    .not('company_signed_at', 'is', null)
+    .not('signed_company_at', 'is', null)
   return { data: data?.map(c => c.mission_id) || [], error }
 }
 
 // ── Helpers facturation ───────────────────────────────────────
-export const createInvoice = async ({ workerPayout, amountTtc, workerId, companyId, contractId, missionId }) => {
-  const invoiceNumber = `INV-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`
+export const createInvoice = async ({ workerPayout, amountTtc, workerId, companyId, contractId, missionId, totalHours }) => {
+  const amountHt = amountTtc ? Math.round(amountTtc / 1.2 * 100) / 100 : 0
+  const commission = amountTtc ? Math.round((amountTtc - workerPayout) * 100) / 100 : 0
   const { data, error } = await supabase
     .from('invoices')
     .insert({
-      invoice_number: invoiceNumber,
       worker_id: workerId,
       company_id: companyId,
       contract_id: contractId || null,
       mission_id: missionId || null,
       worker_payout: workerPayout,
+      amount_ht: amountHt,
       amount_ttc: amountTtc,
+      commission: commission,
+      total_hours: totalHours || null,
       status: 'draft',
     })
     .select()
@@ -450,9 +462,11 @@ export const createInvoice = async ({ workerPayout, amountTtc, workerId, company
 }
 
 export const updateInvoiceStatus = async (invoiceId, status) => {
+  const update = { status }
+  if (status === 'paid') update.paid_at = new Date().toISOString()
   const { data, error } = await supabase
     .from('invoices')
-    .update({ status, updated_at: new Date().toISOString() })
+    .update(update)
     .eq('id', invoiceId)
     .select()
     .single()

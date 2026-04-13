@@ -61,7 +61,7 @@ export default function ResetPassword({ onDone }) {
               <div style={{ fontSize: 13, color: 'var(--g4)', marginBottom: 24 }}>Choisissez un mot de passe sécurisé pour votre compte TEMPO</div>
 
               {error && (
-                <div style={{ background: 'var(--rd-l)', border: '1px solid #FECACA', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#991B1B', marginBottom: 16 }}>
+                <div style={{ background: 'var(--rd-l)', border: '1px solid var(--rd-l)', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: 'var(--rd)', marginBottom: 16 }}>
                   {error}
                 </div>
               )}
@@ -94,11 +94,11 @@ export default function ResetPassword({ onDone }) {
                             : password.length >= 10 ? 3
                             : password.length >= 8 ? 2 : 1
                           return (
-                            <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= strength ? (strength <= 1 ? 'var(--rd)' : strength === 2 ? '#D97706' : strength === 3 ? 'var(--bl)' : 'var(--gr)') : 'var(--g2)', transition: 'background .2s' }} />
+                            <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= strength ? (strength <= 1 ? 'var(--rd)' : strength === 2 ? 'var(--am)' : strength === 3 ? 'var(--bl)' : 'var(--gr)') : 'var(--g2)', transition: 'background .2s' }} />
                           )
                         })}
                       </div>
-                      <div style={{ fontSize: 11, color: password.length < 8 ? 'var(--rd)' : password.length < 10 ? '#D97706' : 'var(--gr)' }}>
+                      <div style={{ fontSize: 11, color: password.length < 8 ? 'var(--rd)' : password.length < 10 ? 'var(--am)' : 'var(--gr)' }}>
                         {password.length < 8 ? 'Trop court' : password.length < 10 ? 'Moyen' : password.length < 12 ? 'Bon' : 'Excellent'}
                       </div>
                     </div>

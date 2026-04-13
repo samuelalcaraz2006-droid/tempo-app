@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { supabase } from '../lib/supabase'
-import { useAuth } from '../contexts/useAuth'
+import { AuthContext } from '../contexts/AuthContext'
 
 export default function FeedbackWidget() {
-  const { user } = useAuth()
+  const ctx = useContext(AuthContext)
+  const user = ctx?.user
   const [open, setOpen] = useState(false)
   const [comment, setComment] = useState('')
   const [rating, setRating] = useState(0)
@@ -56,7 +57,7 @@ export default function FeedbackWidget() {
               <div style={{ display:'flex', gap:4, marginBottom:12 }}>
                 {[1, 2, 3, 4, 5].map(n => (
                   <button key={n} onClick={() => setRating(n)} aria-label={`${n} etoile${n > 1 ? 's' : ''}`}
-                    style={{ background:'none', border:'none', cursor:'pointer', fontSize:24, color: n <= rating ? '#F59E0B' : 'var(--g3, #ddd)', transition:'color .1s', padding:0 }}>
+                    style={{ background:'none', border:'none', cursor:'pointer', fontSize:24, color: n <= rating ? 'var(--am)' : 'var(--g3, #ddd)', transition:'color .1s', padding:0 }}>
                     {n <= rating ? '★' : '☆'}
                   </button>
                 ))}

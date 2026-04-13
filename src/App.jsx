@@ -22,20 +22,26 @@ class ErrorBoundary extends React.Component {
   render() {
     if (!this.state.hasError) return this.props.children
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, background: '#F8FAFC', padding: 24 }}>
-        <div style={{ width: 48, height: 48, background: '#EF4444', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, background: 'var(--wh)', padding: 24 }}>
+        <div style={{ width: 48, height: 48, background: 'var(--rd)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 6v4m0 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
         </div>
         <div style={{ textAlign: 'center', maxWidth: 400 }}>
-          <div style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginBottom: 8 }}>Une erreur est survenue</div>
-          <div style={{ fontSize: 13, color: '#64748B', marginBottom: 20, lineHeight: 1.6 }}>
+          <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--bk)', marginBottom: 8 }}>Une erreur est survenue</div>
+          <div style={{ fontSize: 13, color: 'var(--g6)', marginBottom: 20, lineHeight: 1.6 }}>
             {this.state.error?.message || 'Erreur inattendue. Rechargez la page.'}
           </div>
           <button
             onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload() }}
-            style={{ padding: '10px 24px', background: '#2563EB', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+            style={{ padding: '10px 24px', background: 'var(--brand)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
           >
             Recharger l'application
+          </button>
+          <button
+            onClick={() => { this.setState({ hasError: false, error: null }); window.location.href = '/' }}
+            style={{ marginTop: 8, padding: '8px 20px', background: 'transparent', color: 'var(--g6)', border: '1px solid var(--g2)', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+          >
+            Retour a l'accueil
           </button>
         </div>
       </div>
@@ -53,20 +59,20 @@ import FeedbackWidget from './components/FeedbackWidget'
 // ── Écran de sélection de rôle pour l'admin ───────────────────
 const AdminRoleSelector = ({ onSelect, onLogout }) => (
   <div style={{
-    minHeight: '100vh', background: '#0A0A0A', display: 'flex',
+    minHeight: '100vh', background: 'var(--navy)', display: 'flex',
     alignItems: 'center', justifyContent: 'center', padding: 24,
   }}>
     <div style={{ maxWidth: 480, width: '100%', textAlign: 'center' }}>
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 40 }}>
-        <div style={{ width: 36, height: 36, background: '#FF5500', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, background: 'var(--brand)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
         </div>
         <span style={{ fontWeight: 700, letterSpacing: '2.5px', fontSize: 18, color: '#fff' }}>TEMPO</span>
       </div>
 
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,85,0,.15)', border: '1px solid rgba(255,85,0,.3)', borderRadius: 99, padding: '4px 14px', marginBottom: 24 }}>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF5500', display: 'inline-block' }}></span>
-        <span style={{ fontSize: 12, color: '#FF8844' }}>Mode Administrateur</span>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--brand)', display: 'inline-block' }}></span>
+        <span style={{ fontSize: 12, color: 'var(--brand-m)' }}>Mode Administrateur</span>
       </div>
 
       <h2 style={{ fontSize: 28, fontWeight: 600, color: '#fff', marginBottom: 8, letterSpacing: '-0.5px' }}>
@@ -139,7 +145,7 @@ const AppRouter = () => {
 
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, background: 'var(--wh)' }}>
-      <div style={{ width: 36, height: 36, background: '#FF5500', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 36, height: 36, background: 'var(--brand)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
       </div>
       <div style={{ fontSize: 13, color: 'var(--g4)' }}>Chargement TEMPO...</div>
@@ -150,7 +156,7 @@ const AppRouter = () => {
   if (user && !profile) {
     return (
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:16, background:'var(--wh)' }}>
-        <div style={{ width:36, height:36, background:'#FF5500', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ width:36, height:36, background:'var(--brand)', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center' }}>
           <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
         </div>
         <div style={{ fontSize:13, color:'var(--g4)' }}>Chargement du profil...</div>
@@ -195,7 +201,7 @@ const AppRouter = () => {
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: 'rgba(17,17,17,.96)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '0 24px', display: 'flex', alignItems: 'center', height: 54 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 'auto' }}>
-            <div style={{ width: 26, height: 26, background: '#FF5500', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 26, height: 26, background: 'var(--brand)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 1L8.5 5L1.5 9Z" fill="white"/></svg>
             </div>
             <span style={{ fontWeight: 600, letterSpacing: '2px', fontSize: 13, color: '#fff' }}>TEMPO</span>
@@ -203,7 +209,7 @@ const AppRouter = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button onClick={() => setForcedPage('auth')} style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,.15)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,.75)', cursor: 'pointer' }}>Connexion</button>
             <button onClick={() => setForcedPage('travailleur')} style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,.15)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,.75)', cursor: 'pointer' }}>Espace Travailleur</button>
-            <button onClick={() => setForcedPage('entreprise')} style={{ padding: '8px 18px', background: '#FF5500', border: 'none', borderRadius: 8, fontSize: 13, color: '#fff', cursor: 'pointer', fontWeight: 500 }}>Espace Entreprise</button>
+            <button onClick={() => setForcedPage('entreprise')} style={{ padding: '8px 18px', background: 'var(--brand)', border: 'none', borderRadius: 8, fontSize: 13, color: '#fff', cursor: 'pointer', fontWeight: 500 }}>Espace Entreprise</button>
           </div>
         </div>
       </nav>
@@ -216,7 +222,7 @@ const AppRouter = () => {
 
 const LazyFallback = () => (
   <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, background: 'var(--wh)' }}>
-    <div style={{ width: 36, height: 36, background: '#FF5500', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ width: 36, height: 36, background: 'var(--brand)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
     </div>
     <div style={{ fontSize: 13, color: 'var(--g4)' }}>Chargement...</div>

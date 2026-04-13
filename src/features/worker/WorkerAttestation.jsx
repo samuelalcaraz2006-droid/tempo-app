@@ -9,7 +9,7 @@ export default function WorkerAttestation({ worker, userId, showToast, onUpdate 
     return (
       <div className="card" style={{ padding:16, marginBottom:12 }}>
         <div style={{ fontSize:14, fontWeight:600, marginBottom:8 }}>Attestation sur l'honneur</div>
-        <div style={{ background:'#ECFDF5', border:'1px solid #6EE7B7', borderRadius:8, padding:'10px 14px', fontSize:12, color:'#065F46' }}>
+        <div style={{ background:'var(--gr-l)', border:'1px solid var(--gr)', borderRadius:8, padding:'10px 14px', fontSize:12, color:'var(--gr-d)' }}>
           ✓ Signee le {new Date(worker.attestation_honneur_signed_at).toLocaleDateString('fr-FR')}
         </div>
       </div>

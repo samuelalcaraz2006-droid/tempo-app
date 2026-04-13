@@ -6,7 +6,12 @@ const translations = { fr, en }
 const I18nContext = createContext()
 
 export function I18nProvider({ children }) {
-  const [locale, setLocale] = useState(() => localStorage.getItem('tempo_locale') || 'fr')
+  const [locale, setLocale] = useState(() => {
+    const saved = localStorage.getItem('tempo_locale')
+    if (saved) return saved
+    const browserLang = navigator.language?.slice(0, 2)
+    return browserLang === 'en' ? 'en' : 'fr'
+  })
 
   const switchLocale = useCallback((loc) => {
     setLocale(loc)

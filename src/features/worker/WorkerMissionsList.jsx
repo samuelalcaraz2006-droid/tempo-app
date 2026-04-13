@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react'
 import { Search, X, Menu, Map, Heart } from 'lucide-react'
 import MissionCard from '../shared/MissionCard'
+import EmptyState from '../../components/UI/EmptyState'
 
 const MissionsMap = lazy(() => import('../../components/MissionsMap'))
 
@@ -61,7 +62,7 @@ export default function WorkerMissionsList({ filters, missions, hasApplied, appl
           <MissionsMap missions={filters.filteredMissions} onSelectMission={m => onNavigate('mission-detail', m)} onApply={m => onApply(m, hasApplied(m.id))} hasApplied={hasApplied} />
         </Suspense>
       ) : filters.filteredMissions.length === 0
-        ? <div style={{ textAlign:'center', padding:'40px', color:'var(--g4)', fontSize:13 }}>Aucune mission trouvee avec ces criteres</div>
+        ? <EmptyState icon={Search} title="Aucune mission trouvee" description="Essayez d'ajuster vos filtres ou revenez plus tard" />
         : filters.filteredMissions.map(m => <MissionCard key={m.id} mission={m} applied={hasApplied(m.id)} saved={savedMissions.includes(m.id)} applying={applying[m.id]} onApply={() => onApply(m, hasApplied(m.id))} onToggleSave={onToggleSave} onSelect={() => onNavigate('mission-detail', m)} />)
       }
     </div>

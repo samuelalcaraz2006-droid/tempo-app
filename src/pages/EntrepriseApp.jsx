@@ -5,6 +5,7 @@ import { useToast } from '../hooks/useToast'
 import { useCompanyData } from '../hooks/company/useCompanyData'
 import { useCompanyActions } from '../hooks/company/useCompanyActions'
 import { useChat } from '../hooks/shared/useChat'
+import Toast from '../components/UI/Toast'
 import DashboardLayout from '../layouts/DashboardLayout'
 import RatingModal from '../components/RatingModal'
 import CompanyDashboard from '../features/company/CompanyDashboard'
@@ -25,7 +26,7 @@ const EMPTY_FORM = {
 export default function EntrepriseApp({ onLogoClick }) {
   const { user, profile, roleData } = useAuth()
   const { t } = useI18n()
-  const { toast, showToast } = useToast()
+  const { toast, showToast, dismissToast } = useToast()
 
   const [screen, setScreen] = useState('dashboard')
   const [form, setForm] = useState(EMPTY_FORM)
@@ -82,12 +83,7 @@ export default function EntrepriseApp({ onLogoClick }) {
 
   return (
     <DashboardLayout role="company" tabs={tabs} activeTab={screen} onTabChange={setScreen} onLogoClick={onLogoClick}>
-      {/* Toast */}
-      {toast && (
-        <div className="toast" style={{ position: 'fixed', top: 16, right: 16, zIndex: 999, background: toast.type === 'error' ? 'var(--rd)' : toast.type === 'warn' ? '#D97706' : 'var(--gr)', color: '#fff', borderRadius: 10, padding: '12px 18px', fontSize: 13, fontWeight: 500, boxShadow: '0 4px 16px rgba(0,0,0,.15)' }}>
-          {toast.msg}
-        </div>
-      )}
+      <Toast toast={toast} onDismiss={dismissToast} />
 
       {/* Contract modal */}
       {actions.contractModal && (

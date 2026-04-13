@@ -46,7 +46,7 @@ export default function MissionsMap({ missions, onSelectMission, onApply, hasApp
 
   if (mappable.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px 20px', color: '#8A8A86' }}>
+      <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--g4)' }}>
         <div style={{ fontSize: 32, marginBottom: 12 }}>🗺️</div>
         <div style={{ fontSize: 14, fontWeight: 500 }}>Aucune mission localisable</div>
         <div style={{ fontSize: 13, marginTop: 4 }}>Les missions avec une ville reconnue apparaissent sur la carte</div>
@@ -55,7 +55,7 @@ export default function MissionsMap({ missions, onSelectMission, onApply, hasApp
   }
 
   return (
-    <div style={{ borderRadius: 14, overflow: 'hidden', border: '1px solid #E8E8E5', height: 420 }}>
+    <div style={{ borderRadius: 14, overflow: 'hidden', border: '1px solid var(--g2)', height: 420 }}>
       <MapContainer center={DEFAULT_CENTER} zoom={6} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -73,16 +73,16 @@ export default function MissionsMap({ missions, onSelectMission, onApply, hasApp
                   {m.start_date ? ` · ${formatDate(m.start_date)}` : ''}
                 </div>
                 {m.matchScore && (
-                  <div style={{ fontSize: 11, color: '#059669', fontWeight: 600, marginBottom: 6 }}>{m.matchScore}% de compatibilité</div>
+                  <div style={{ fontSize: 11, color: 'var(--gr)', fontWeight: 600, marginBottom: 6 }}>{m.matchScore}% de compatibilité</div>
                 )}
                 <div style={{ display: 'flex', gap: 6 }}>
                   <button onClick={() => onSelectMission(m)}
-                    style={{ flex: 1, padding: '5px 8px', fontSize: 11, background: '#fff', border: '1px solid #E8E8E5', borderRadius: 6, cursor: 'pointer' }}>
+                    style={{ flex: 1, padding: '5px 8px', fontSize: 11, background: '#fff', border: '1px solid var(--g2)', borderRadius: 6, cursor: 'pointer' }}>
                     Détails
                   </button>
                   <button onClick={() => onApply(m)}
                     disabled={hasApplied(m.id)}
-                    style={{ flex: 1, padding: '5px 8px', fontSize: 11, background: hasApplied(m.id) ? '#E8E8E5' : '#FF5500', color: hasApplied(m.id) ? '#8A8A86' : '#fff', border: 'none', borderRadius: 6, cursor: hasApplied(m.id) ? 'default' : 'pointer' }}>
+                    style={{ flex: 1, padding: '5px 8px', fontSize: 11, background: hasApplied(m.id) ? 'var(--g2)' : 'var(--brand)', color: hasApplied(m.id) ? 'var(--g4)' : '#fff', border: 'none', borderRadius: 6, cursor: hasApplied(m.id) ? 'default' : 'pointer' }}>
                     {hasApplied(m.id) ? '✓ Postulé' : 'Postuler'}
                   </button>
                 </div>

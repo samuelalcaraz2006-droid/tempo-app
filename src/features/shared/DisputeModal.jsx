@@ -41,7 +41,7 @@ export default function DisputeModal({ contractId, missionId, userId, onClose, s
             Annuler
           </button>
           <button
-            style={{ flex:2, background:'#DC2626', color:'white', border:'none', borderRadius:8, padding:'10px 0', fontWeight:600, cursor: reason.trim() && !loading ? 'pointer' : 'not-allowed', opacity: reason.trim() && !loading ? 1 : 0.5 }}
+            style={{ flex:2, background:'var(--rd)', color:'white', border:'none', borderRadius:8, padding:'10px 0', fontWeight:600, cursor: reason.trim() && !loading ? 'pointer' : 'not-allowed', opacity: reason.trim() && !loading ? 1 : 0.5 }}
             onClick={handleSubmit}
             disabled={!reason.trim() || loading}
           >

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Search } from 'lucide-react'
 import MissionCard from '../shared/MissionCard'
+import EmptyState from '../../components/UI/EmptyState'
 
 export default function WorkerDashboard({ worker, displayName, missions, urgentMissions, applications, onNavigate, onApply, applying, savedMissions, onToggleSave, t }) {
   const hasApplied = (id) => applications.some(a => a.mission_id === id)
@@ -30,11 +31,12 @@ export default function WorkerDashboard({ worker, displayName, missions, urgentM
         </div>
       )}
       {missions.length === 0 ? (
-        <div style={{ textAlign:'center', padding:'40px 20px', color:'var(--g4)' }}>
-          <div style={{ fontSize:32, marginBottom:12, display:'flex', justifyContent:'center' }}><Search size={32} /></div>
-          <div style={{ fontSize:14, fontWeight:500 }}>Aucune mission disponible</div>
-          <div style={{ fontSize:13, marginTop:4 }}>Les missions apparaissent ici en temps reel</div>
-        </div>
+        <EmptyState
+          icon={Search}
+          title="Aucune mission disponible"
+          description="Les missions apparaissent ici en temps reel"
+          action={{ label: 'Voir les missions', onClick: () => onNavigate('missions') }}
+        />
       ) : (
         <>
           <div style={{ marginBottom:12, display:'flex', justifyContent:'space-between', alignItems:'center' }}>

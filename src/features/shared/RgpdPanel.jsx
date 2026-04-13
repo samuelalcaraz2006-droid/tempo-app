@@ -48,9 +48,9 @@ export default function RgpdPanel({ userId, showToast }) {
           Supprimer mon compte
         </button>
       ) : (
-        <div style={{ background:'#FEF2F2', border:'1px solid #FCA5A5', borderRadius:8, padding:14 }}>
-          <div style={{ fontSize:13, fontWeight:600, color:'#991B1B', marginBottom:8 }}>Confirmer la suppression</div>
-          <div style={{ fontSize:12, color:'#991B1B', marginBottom:8, lineHeight:1.5 }}>
+        <div style={{ background:'var(--rd-l)', border:'1px solid var(--rd-l)', borderRadius:8, padding:14 }}>
+          <div style={{ fontSize:13, fontWeight:600, color:'var(--rd)', marginBottom:8 }}>Confirmer la suppression</div>
+          <div style={{ fontSize:12, color:'var(--rd)', marginBottom:8, lineHeight:1.5 }}>
             Cette action est irreversible. Vos donnees personnelles seront anonymisees sous 30 jours. Les factures seront conservees 10 ans (obligation legale).
           </div>
           <textarea
@@ -63,7 +63,7 @@ export default function RgpdPanel({ userId, showToast }) {
           />
           <div style={{ display:'flex', gap:8 }}>
             <button className="btn-secondary" style={{ flex:1, fontSize:12 }} onClick={() => setShowDeleteConfirm(false)}>Annuler</button>
-            <button onClick={handleDelete} disabled={deleteLoading} style={{ flex:1, padding:'8px', border:'none', borderRadius:8, background:'#DC2626', color:'#fff', fontSize:12, fontWeight:600, cursor:'pointer' }}>
+            <button onClick={handleDelete} disabled={deleteLoading} style={{ flex:1, padding:'8px', border:'none', borderRadius:8, background:'var(--rd)', color:'#fff', fontSize:12, fontWeight:600, cursor:'pointer' }}>
               {deleteLoading ? 'Suppression...' : 'Confirmer'}
             </button>
           </div>

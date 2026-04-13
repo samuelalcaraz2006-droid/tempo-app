@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 export const AuthContext = createContext(null)
@@ -103,11 +103,22 @@ export const AuthProvider = ({ children }) => {
     }).catch(() => setLoading(false))
   }, [])
 
-  const register = async ({ email, password, role, firstName, lastName, companyName }) => {
+  const register = async ({ email, password, role, firstName, lastName, companyName, phone, siret, city, radiusKm }) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email, password,
-        options: { data: { role, first_name: firstName || '', last_name: lastName || '', company_name: companyName || '' } }
+        options: {
+          data: {
+            role,
+            first_name: firstName || '',
+            last_name: lastName || '',
+            company_name: companyName || '',
+            phone: phone || null,
+            siret: siret || null,
+            city: city || null,
+            radius_km: radiusKm ? parseInt(radiusKm, 10) : 10,
+          }
+        }
       })
       return error ? { error } : { data, error: null }
     } catch (e) {

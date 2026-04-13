@@ -31,7 +31,7 @@ export default function CompanyCandidates({
           return (
             <div key={c.id} className="card" style={{ padding: 16, marginBottom: 10, borderLeft: isAccepted ? '3px solid var(--gr)' : isRejected ? '3px solid var(--rd)' : '3px solid transparent', transition: 'border-color .2s' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: isAccepted ? 'var(--gr-l)' : 'var(--bl-l)', color: isAccepted ? 'var(--gr-d)' : '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: isAccepted ? 'var(--gr-l)' : 'var(--bl-l)', color: isAccepted ? 'var(--gr-d)' : 'var(--brand-d)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
                   {(c.workers?.first_name?.[0] || '?')}{c.workers?.last_name?.[0] || ''}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>

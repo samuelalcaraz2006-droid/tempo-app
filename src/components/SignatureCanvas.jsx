@@ -65,8 +65,8 @@ export default function SignatureCanvas({ onSave, label = 'Signature' }) {
 
   return (
     <div>
-      <div style={{ fontSize: 13, fontWeight: 500, color: '#6E6E6B', marginBottom: 6 }} id="sig-label">{label}</div>
-      <p style={{ fontSize: 11, color: '#9A9A96', marginBottom: 6, marginTop: 0 }}>
+      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 6 }} id="sig-label">{label}</div>
+      <p style={{ fontSize: 11, color: 'var(--g4)', marginBottom: 6, marginTop: 0 }}>
         Dessinez votre signature dans la zone ci-dessous, puis cliquez sur « Valider la signature ».
       </p>
       <canvas

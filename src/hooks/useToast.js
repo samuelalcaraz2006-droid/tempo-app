@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 
-export function useToast(duration = 3000) {
+export function useToast(duration = 5000) {
   const [toast, setToast] = useState(null)
   const timerRef = useRef(null)
 
@@ -15,5 +15,10 @@ export function useToast(duration = 3000) {
     timerRef.current = setTimeout(() => setToast(null), duration)
   }, [duration])
 
-  return { toast, showToast }
+  const dismissToast = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setToast(null)
+  }, [])
+
+  return { toast, showToast, dismissToast }
 }

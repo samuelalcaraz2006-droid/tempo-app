@@ -573,7 +573,7 @@ a { text-decoration: none; color: inherit; }
 
   [data-theme="dark"] .mobile-bottom-nav { background: var(--navy2); border-color: rgba(255,255,255,.07); }
 
-  .entreprise-tabs { font-size: 11px !important; }
+  .entreprise-tabs { font-size: 12px !important; }
 }
 
 @media (max-width: 480px) {
@@ -583,6 +583,32 @@ a { text-decoration: none; color: inherit; }
 
 @media (max-width: 768px) {
   .main-content-mobile { padding-bottom: 70px !important; }
+  .app-header { padding-top: env(safe-area-inset-top, 0px); }
+}
+
+/* Spinner for Button component */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Toast exit animation */
+@keyframes slideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(20px); }
+}
+
+/* Form error state */
+.input-error {
+  border-color: var(--rd) !important;
+  box-shadow: 0 0 0 3px rgba(239,68,68,.12) !important;
+}
+
+/* Password strength meter */
+.strength-bar {
+  height: 3px;
+  border-radius: 2px;
+  transition: background .2s, width .3s;
 }
 
 /* ══════════════════════════════════════════════════════════════

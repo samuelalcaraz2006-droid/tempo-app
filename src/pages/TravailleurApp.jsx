@@ -9,6 +9,7 @@ import { useWorkerData } from '../hooks/worker/useWorkerData'
 import { useWorkerActions } from '../hooks/worker/useWorkerActions'
 import { useMissionFilters } from '../hooks/worker/useMissionFilters'
 import { useChat } from '../hooks/shared/useChat'
+import Toast from '../components/UI/Toast'
 import DashboardLayout from '../layouts/DashboardLayout'
 import MissionCard from '../features/shared/MissionCard'
 import WorkerDashboard from '../features/worker/WorkerDashboard'
@@ -55,8 +56,8 @@ function KycUploadSection({ worker, userId, onUpdate, showToast }) {
   return (
     <div className="card" style={{ padding:16, marginBottom:12 }}>
       <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>Documents & verifications KYC</div>
-      {allVerified && <div style={{ background:'#ECFDF5', border:'1px solid #6EE7B7', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#065F46' }}>KYC complete — identite verifiee</div>}
-      {worker?.kyc_rejection_reason && <div style={{ background:'#FEF2F2', border:'1px solid #FCA5A5', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#991B1B' }}><strong>Refuses :</strong> {worker.kyc_rejection_reason}</div>}
+      {allVerified && <div style={{ background:'var(--gr-l)', border:'1px solid var(--gr)', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:12, color:'var(--gr-d)' }}>KYC complete — identite verifiee</div>}
+      {worker?.kyc_rejection_reason && <div style={{ background:'var(--rd-l)', border:'1px solid var(--rd)', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:12, color:'var(--rd)' }}><strong>Refuses :</strong> {worker.kyc_rejection_reason}</div>}
       {KYC_DOCS.map(doc => {
         const verified = worker?.[doc.verifiedField], hasDoc = !!worker?.[doc.field], isUp = uploading[doc.key]
         return (
@@ -80,7 +81,7 @@ function KycUploadSection({ worker, userId, onUpdate, showToast }) {
 export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const { user, profile, roleData, refreshRoleData, logout } = useAuth()
   const { t } = useI18n()
-  const { toast, showToast } = useToast()
+  const { toast, showToast, dismissToast } = useToast()
   const worker = roleData
 
   const [screen, setScreen] = useState('accueil')
@@ -151,7 +152,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const headerExtra = (
     <div style={{ display:'flex', alignItems:'center', gap:8, marginLeft:'auto' }}>
       <div style={{ display:'flex', alignItems:'center', gap:6, padding:'4px 10px', background:'rgba(255,255,255,.08)', borderRadius:99 }}>
-        <span className={disponible ? 'pulse' : ''} style={{ width:7, height:7, borderRadius:'50%', background: disponible ? '#10B981' : '#6B7280', display:'inline-block' }}></span>
+        <span className={disponible ? 'pulse' : ''} style={{ width:7, height:7, borderRadius:'50%', background: disponible ? 'var(--gr)' : 'var(--g4)', display:'inline-block' }}></span>
         <span style={{ fontSize:12, color:'rgba(255,255,255,.7)' }}>{disponible ? 'Disponible' : 'Indisponible'}</span>
         <input type="checkbox" checked={disponible} onChange={e => actions.toggleDispo(e.target.checked, setDisponible)} style={{ width:14, height:14, cursor:'pointer', accentColor:'var(--or)' }} />
       </div>
@@ -162,7 +163,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
 
   return (
     <DashboardLayout role="worker" tabs={tabs} activeTab={screen} onTabChange={setScreen} onLogoClick={onLogoClick} headerExtra={headerExtra} unreadCount={unreadCount} onNotifClick={() => setScreen('notifs')}>
-      {toast && <div className="toast" style={{ position:'fixed', top:16, right:16, zIndex:999, background:toast.type==='error'?'var(--rd)':toast.type==='warn'?'#D97706':'var(--gr)', color:'#fff', borderRadius:10, padding:'12px 18px', fontSize:13, fontWeight:500, boxShadow:'0 4px 16px rgba(0,0,0,.15)' }}>{toast.msg}</div>}
+      <Toast toast={toast} onDismiss={dismissToast} />
 
       {showOnboarding && (
         <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.6)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1001, padding:20 }}>
@@ -173,7 +174,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
             </div>
             {[['Completez votre profil', 'Competences, certifications et zone d\'intervention.'], ['Parcourez les missions', 'Filtres, recherche et score de matching.'], ['Postulez et travaillez', 'Contrat et paiement securises.']].map(([t, d], i) => (
               <div key={i} style={{ display:'flex', gap:12, marginBottom:14 }}>
-                <div style={{ width:28, height:28, borderRadius:'50%', background:'#FFF2EE', color:'var(--or)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:600, flexShrink:0 }}>{i + 1}</div>
+                <div style={{ width:28, height:28, borderRadius:'50%', background:'var(--brand-l)', color:'var(--or)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:600, flexShrink:0 }}>{i + 1}</div>
                 <div><div style={{ fontSize:13, fontWeight:600, marginBottom:2 }}>{t}</div><div style={{ fontSize:12, color:'var(--g4)', lineHeight:1.5 }}>{d}</div></div>
               </div>
             ))}

@@ -1,5 +1,7 @@
 import React from 'react'
+import { DollarSign } from 'lucide-react'
 import { formatDate, formatAmount } from '../../lib/formatters'
+import EmptyState from '../../components/UI/EmptyState'
 
 export default function WorkerEarnings({ worker, invoices, allMissions, t }) {
   const totalMois = invoices.filter(i => new Date(i.created_at).getMonth() === new Date().getMonth()).reduce((s, i) => s + parseFloat(i.worker_payout || 0), 0)
@@ -77,7 +79,7 @@ export default function WorkerEarnings({ worker, invoices, allMissions, t }) {
         <div className="card" style={{ padding:16, marginBottom:16 }}>
           <div style={{ fontSize:14, fontWeight:600, marginBottom:8 }}>Projection CA annuel</div>
           <div className="pbar" style={{ height:8, marginBottom:6 }}>
-            <div className="pfill" style={{ width:`${Math.min(100, (worker.ca_ytd / 77700) * 100)}%`, background: worker.ca_ytd > 70000 ? 'var(--rd)' : worker.ca_ytd > 50000 ? '#D97706' : 'var(--gr)' }}></div>
+            <div className="pfill" style={{ width:`${Math.min(100, (worker.ca_ytd / 77700) * 100)}%`, background: worker.ca_ytd > 70000 ? 'var(--rd)' : worker.ca_ytd > 50000 ? 'var(--am)' : 'var(--gr)' }}></div>
           </div>
           <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, color:'var(--g4)' }}>
             <span>{formatAmount(worker.ca_ytd)}</span>
@@ -89,14 +91,14 @@ export default function WorkerEarnings({ worker, invoices, allMissions, t }) {
 
       {/* Invoices table */}
       {invoices.length === 0
-        ? <div style={{ textAlign:'center', padding:'40px', color:'var(--g4)', fontSize:13 }}>Vos gains apparaitront ici apres vos premieres missions</div>
+        ? <EmptyState icon={DollarSign} title="Aucun gain pour le moment" description="Vos gains apparaitront ici apres vos premieres missions" />
         : <div className="card" style={{ padding:0, overflowX:'auto' }}>
             <table style={{ width:'100%', borderCollapse:'collapse', minWidth:400 }}>
               <thead><tr style={{ background:'var(--g1)' }}>
                 {['Reference', 'Date', 'Montant', 'Statut'].map(h => <th key={h} style={{ padding:'10px 12px', textAlign:'left', fontSize:12, fontWeight:500, color:'var(--g4)', borderBottom:'1px solid var(--g2)' }}>{h}</th>)}
               </tr></thead>
               <tbody>{invoices.map((inv, i) => (
-                <tr key={inv.id} style={{ background: i % 2 === 1 ? 'var(--g1)' : 'var(--wh)' }}>
+                <tr key={inv.id}>
                   <td style={{ padding:'10px 12px', fontSize:12, fontWeight:500 }}>{inv.invoice_number}</td>
                   <td style={{ padding:'10px 12px', fontSize:12, color:'var(--g4)' }}>{formatDate(inv.created_at)}</td>
                   <td style={{ padding:'10px 12px', fontSize:13, fontWeight:600 }}>{formatAmount(inv.worker_payout)}</td>

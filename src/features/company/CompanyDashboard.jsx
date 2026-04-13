@@ -1,5 +1,6 @@
 import React from 'react'
-import { Download, PenLine, MessageCircle, RefreshCw, X } from 'lucide-react'
+import { Download, PenLine, MessageCircle, RefreshCw, X, ClipboardList } from 'lucide-react'
+import EmptyState from '../../components/UI/EmptyState'
 import { formatDate, formatAmount, SECTOR_LABELS } from '../../lib/formatters'
 
 const STATUS_STYLES = {
@@ -61,7 +62,7 @@ export default function CompanyDashboard({
             return lastMonth > 0 ? (totalMois >= lastMonth ? '↑ vs mois dernier' : '↓ vs mois dernier') : ''
           })(), 'var(--am)'],
           [completedMissions.length, 'Missions terminées', missions.length > 0 ? `${Math.round((completedMissions.length / missions.length) * 100)}% taux complétion` : '', 'var(--gr)'],
-          [company?.rating_avg ? parseFloat(company.rating_avg).toFixed(1) + '/5' : '—', 'Note moyenne', company?.rating_count ? `${company.rating_count} avis` : '', '#F59E0B'],
+          [company?.rating_avg ? parseFloat(company.rating_avg).toFixed(1) + '/5' : '—', 'Note moyenne', company?.rating_count ? `${company.rating_count} avis` : '', 'var(--am)'],
         ].map(([v, l, d, accent]) => (
           <div key={l} className="metric-card" style={{ '--metric-accent': accent }}>
             <div className="metric-label">{l}</div>
@@ -143,12 +144,12 @@ export default function CompanyDashboard({
       </div>
 
       {missions.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--g4)' }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>📋</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--bk)', marginBottom: 8 }}>Aucune mission publiée</div>
-          <div style={{ fontSize: 14, marginBottom: 20 }}>Publiez votre première mission et recevez des candidatures en moins de 30 minutes</div>
-          <button className="btn-primary" onClick={() => onNavigate('publier')}>Publier une mission →</button>
-        </div>
+        <EmptyState
+          icon={ClipboardList}
+          title="Aucune mission publiee"
+          description="Publiez votre premiere mission et recevez des candidatures en moins de 30 minutes"
+          action={{ label: 'Publier une mission \u2192', onClick: () => onNavigate('publier') }}
+        />
       ) : (
         <div>
           <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 12 }}>Vos missions</div>

@@ -118,11 +118,16 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     if (mission && workerId) {
       const amountTtc = Math.round((mission.hourly_rate || 0) * (mission.total_hours || 0) * 100) / 100
       const workerPayout = Math.round(amountTtc * 0.78 * 100) / 100
-      const { data: inv } = await createInvoice({ workerPayout, amountTtc, workerId, companyId: userId, missionId })
+      const { data: inv, error: invErr } = await createInvoice({ workerPayout, amountTtc, workerId, companyId: userId, missionId, totalHours: mission.total_hours })
+      if (invErr) {
+        showToast('Mission terminee mais erreur lors de la generation de la facture', 'error')
+        setActionLoading(s => ({ ...s, [missionId]: null }))
+        return
+      }
       if (inv) setInvoices(prev => [inv, ...prev])
     }
     setActionLoading(s => ({ ...s, [missionId]: null }))
-    showToast('Mission terminée — facture générée !')
+    showToast('Mission terminee — facture generee !')
     setRatingModal({ missionId, rateeId: workerId, rateeName: workerName })
   }, [userId, showToast, setMissions, setInvoices, missions])
 
@@ -239,8 +244,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     const { error: contractError } = await saveContract({
       mission_id: contractModal.missionId,
       company_id: userId,
-      company_signature: signatureData,
-      company_signed_at: new Date().toISOString(),
+      signed_company_at: new Date().toISOString(),
       status: 'signed_company',
     })
     if (contractError) {

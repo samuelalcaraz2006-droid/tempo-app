@@ -24,6 +24,29 @@ const Field = ({ label, id, form, set, ...props }) => (
 const isStrongPassword = (pwd) =>
   pwd.length >= 10 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd)
 
+const PasswordStrength = ({ password }) => {
+  if (!password) return null
+  let score = 0
+  if (password.length >= 8) score++
+  if (password.length >= 10) score++
+  if (/[A-Z]/.test(password)) score++
+  if (/[0-9]/.test(password)) score++
+  if (/[^A-Za-z0-9]/.test(password)) score++
+  const labels = ['Tres faible', 'Faible', 'Moyen', 'Bon', 'Excellent']
+  const colors = ['var(--rd)', 'var(--rd)', 'var(--am)', 'var(--brand)', 'var(--gr)']
+  const level = Math.min(score, 4)
+  return (
+    <div style={{ marginTop: 6, marginBottom: 12 }}>
+      <div style={{ display: 'flex', gap: 3, marginBottom: 4 }}>
+        {[0,1,2,3,4].map(i => (
+          <div key={i} className="strength-bar" style={{ flex: 1, background: i <= level ? colors[level] : 'var(--g2)' }} />
+        ))}
+      </div>
+      <div style={{ fontSize: 11, color: colors[level], fontWeight: 500 }}>{labels[level]}</div>
+    </div>
+  )
+}
+
 export default function Auth({ onNavigate }) {
   const { login, register } = useAuth()
   const [mode, setMode]         = useState('login')     // 'login' | 'register' | 'reset'
@@ -99,6 +122,10 @@ export default function Auth({ onNavigate }) {
       firstName: form.firstName,
       lastName: form.lastName,
       companyName: form.companyName,
+      phone: form.phone,
+      siret: form.siret,
+      city: form.city,
+      radiusKm: form.radiusKm,
     })
     setLoading(false)
     if (error) {
@@ -139,7 +166,7 @@ export default function Auth({ onNavigate }) {
               <Field form={form} set={set} label="Email" id="email" type="email" placeholder="votre@email.fr" required />
               <Field form={form} set={set} label="Mot de passe" id="password" type="password" placeholder="••••••••" required />
               <button type="submit" className="btn-primary" style={{ width:'100%', justifyContent:'center', padding:'12px', marginTop:6 }} disabled={loading}>
-                {loading ? 'Connexion...' : 'Se connecter →'}
+                {loading ? <><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation:'spin .6s linear infinite' }}><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" opacity=".25"/><path d="M14 8a6 6 0 00-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg> Connexion...</> : 'Se connecter →'}
               </button>
             </form>
             <div style={{ textAlign:'center', marginTop:10, fontSize:13 }}>
@@ -161,9 +188,9 @@ export default function Auth({ onNavigate }) {
             <div style={{ fontSize:14, color:'var(--g4)', textAlign:'center', marginBottom:20 }}>Choisissez votre profil pour commencer</div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
               <button onClick={() => setRole('travailleur')} style={{ border:'1.5px solid var(--g2)', borderRadius:14, padding:'24px 16px', background:'var(--wh)', cursor:'pointer', transition:'all .15s', textAlign:'center' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(255,85,0,.08)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(37,99,235,.08)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}
-                onFocus={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(255,85,0,.15)' }}
+                onFocus={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(37,99,235,.15)' }}
                 onBlur={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}
                 aria-label="Je suis travailleur — auto-entrepreneur cherchant des missions">
                 <div style={{ fontSize:28, marginBottom:8 }}>👷</div>
@@ -171,9 +198,9 @@ export default function Auth({ onNavigate }) {
                 <div style={{ fontSize:12, color:'var(--g4)', lineHeight:1.5 }}>Je cherche des missions en tant qu'auto-entrepreneur</div>
               </button>
               <button onClick={() => setRole('entreprise')} style={{ border:'1.5px solid var(--g2)', borderRadius:14, padding:'24px 16px', background:'var(--wh)', cursor:'pointer', transition:'all .15s', textAlign:'center' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(255,85,0,.08)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(37,99,235,.08)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}
-                onFocus={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(255,85,0,.15)' }}
+                onFocus={e => { e.currentTarget.style.borderColor='var(--or)'; e.currentTarget.style.boxShadow='0 0 0 3px rgba(37,99,235,.15)' }}
                 onBlur={e => { e.currentTarget.style.borderColor='var(--g2)'; e.currentTarget.style.boxShadow='none' }}
                 aria-label="Je suis entreprise — je publie des missions et cherche des talents">
                 <div style={{ fontSize:28, marginBottom:8 }}>🏢</div>
@@ -238,13 +265,14 @@ export default function Auth({ onNavigate }) {
               {step === 3 && <>
                 <Field form={form} set={set} label="Email" id="email" type="email" placeholder="marc@email.fr" required />
                 <Field form={form} set={set} label="Mot de passe" id="password" type="password" placeholder="8 caractères minimum" required minLength={8} />
+                <PasswordStrength password={form.password} />
                 <Field form={form} set={set} label="Confirmer le mot de passe" id="confirmPassword" type="password" placeholder="••••••••" required />
                 <div style={{ background:'var(--or-l)', border:'1px solid var(--or-ll, #FED7AA)', borderRadius:8, padding:'9px 12px', fontSize:12, color:'var(--or-d)', marginBottom:12, lineHeight:1.5 }}>
                   Après inscription, vous devrez uploader votre pièce d'identité et certifications pour activer votre profil TEMPO Vérifié.
                 </div>
               </>}
               <button type="submit" className="btn-primary" style={{ width:'100%', justifyContent:'center', padding:'12px', marginTop:4 }} disabled={loading}>
-                {loading ? 'Création...' : step < 3 ? 'Continuer →' : 'Créer mon compte TEMPO →'}
+                {loading ? <><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation:'spin .6s linear infinite' }}><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" opacity=".25"/><path d="M14 8a6 6 0 00-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg> Création...</> : step < 3 ? 'Continuer →' : 'Créer mon compte TEMPO →'}
               </button>
             </form>
           </div>
@@ -267,12 +295,13 @@ export default function Auth({ onNavigate }) {
               </div>
               <Field form={form} set={set} label="Email professionnel" id="email" type="email" placeholder="rh@entreprise.fr" required />
               <Field form={form} set={set} label="Mot de passe" id="password" type="password" placeholder="8 caractères minimum" required minLength={8} />
+              <PasswordStrength password={form.password} />
               <Field form={form} set={set} label="Confirmer" id="confirmPassword" type="password" placeholder="••••••••" required />
               <div style={{ background:'var(--gr-l)', border:'1px solid #D1FAE5', borderRadius:8, padding:'9px 12px', fontSize:12, color:'var(--gr-d)', marginBottom:12, lineHeight:1.5 }}>
                 TEMPO génère automatiquement les contrats de prestation et factures. Aucune gestion administrative requise.
               </div>
               <button type="submit" className="btn-primary" style={{ width:'100%', justifyContent:'center', padding:'12px' }} disabled={loading}>
-                {loading ? 'Création...' : 'Créer mon espace entreprise →'}
+                {loading ? <><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation:'spin .6s linear infinite' }}><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" opacity=".25"/><path d="M14 8a6 6 0 00-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg> Création...</> : 'Créer mon espace entreprise →'}
               </button>
             </form>
           </div>

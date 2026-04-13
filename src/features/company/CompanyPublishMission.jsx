@@ -91,6 +91,7 @@ export default function CompanyPublishMission({
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Taux horaire (€) *</label>
                   <input className="input" type="number" placeholder="14.50" value={form.hourly_rate} onChange={e => setF('hourly_rate', e.target.value)} />
+                  <div style={{ fontSize: 11, color: 'var(--g4)', marginTop: 2 }}>Recommande : 14-80 EUR/h</div>
                 </div>
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Heures estimées</label>
@@ -120,8 +121,9 @@ export default function CompanyPublishMission({
                 <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Description</label>
                 <textarea className="input" rows={3} style={{ resize: 'none' }} placeholder="Décrivez la mission, les conditions de travail..."
                   value={form.description} onChange={e => setF('description', e.target.value)} />
+                {form.description && <div style={{ fontSize: 11, color: form.description.length > 500 ? 'var(--rd)' : 'var(--g4)', textAlign: 'right', marginTop: 2 }}>{form.description.length}/500</div>}
               </div>
-              <div style={{ background: '#FFF2EE', border: '1px solid #FED7AA', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: 'var(--or-d)', lineHeight: 1.5 }}>
+              <div style={{ background: 'var(--brand-l)', border: '1px solid var(--am-l)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: 'var(--or-d)', lineHeight: 1.5 }}>
                 Protection TEMPO — Contrat de prestation auto-généré. RC Pro, URSSAF et facturation incluses.
               </div>
               <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px' }} onClick={onPublish} disabled={publishing}>
@@ -135,7 +137,7 @@ export default function CompanyPublishMission({
             <div style={{ background: 'var(--navy)', borderRadius: 14, padding: 20, marginBottom: 16, color: '#fff' }}>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,.5)', marginBottom: 8 }}>Délai moyen de pourvoi</div>
               <div style={{ fontSize: 36, fontWeight: 600, color: 'var(--or)', marginBottom: 2 }}>30 min</div>
-              <div style={{ fontSize: 13, color: '#10B981', marginBottom: 16 }}>Taux de réussite 98%</div>
+              <div style={{ fontSize: 13, color: 'var(--gr)', marginBottom: 16 }}>Taux de réussite 98%</div>
               {[['Délai 1ère candidature', '< 5 min'], ['Mission pourvue', '< 30 min'], ['Contrat généré', 'Automatique'], ['Paiement', 'J+2 après mission']].map(([l, v]) => (
                 <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderTop: '1px solid rgba(255,255,255,.06)', fontSize: 13 }}>
                   <span style={{ color: 'rgba(255,255,255,.5)' }}>{l}</span>

@@ -150,12 +150,12 @@ export default function AdminApp({ onLogoClick }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
           <div
             onClick={onLogoClick}
-            style={{ width: 28, height: 28, background: '#FF5500', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: onLogoClick ? 'pointer' : 'default' }}
+            style={{ width: 28, height: 28, background: 'var(--brand)', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: onLogoClick ? 'pointer' : 'default' }}
           >
             <svg width="11" height="11" viewBox="0 0 11 11"><path d="M1.5 1L9.5 5.5L1.5 10Z" fill="white"/></svg>
           </div>
           <span onClick={onLogoClick} style={{ fontWeight: 600, letterSpacing: '2px', fontSize: 14, cursor: onLogoClick ? 'pointer' : 'default' }}>TEMPO</span>
-          <span style={{ fontSize: 12, color: 'var(--g4)', borderLeft: '1px solid #E8E8E5', paddingLeft: 8, marginLeft: 4 }}>Panel Admin</span>
+          <span style={{ fontSize: 12, color: 'var(--g4)', borderLeft: '1px solid var(--g2)', paddingLeft: 8, marginLeft: 4 }}>Panel Admin</span>
         </div>
 
         {/* Tabs */}
@@ -164,7 +164,7 @@ export default function AdminApp({ onLogoClick }) {
             <button
               key={k}
               onClick={() => setTab(k)}
-              style={{ padding: '10px 16px', border: 'none', background: 'transparent', fontSize: 13, fontWeight: tab === k ? 500 : 400, color: tab === k ? 'var(--bk)' : 'var(--g4)', borderBottom: tab === k ? '2px solid #FF5500' : '2px solid transparent', cursor: 'pointer' }}
+              style={{ padding: '10px 16px', border: 'none', background: 'transparent', fontSize: 13, fontWeight: tab === k ? 500 : 400, color: tab === k ? 'var(--bk)' : 'var(--g4)', borderBottom: tab === k ? '2px solid var(--brand)' : '2px solid transparent', cursor: 'pointer' }}
             >
               {l}
             </button>
@@ -226,7 +226,7 @@ export default function AdminApp({ onLogoClick }) {
                 Annuler
               </button>
               <button
-                style={{ flex: 2, background: '#DC2626', color: 'white', border: 'none', borderRadius: 8, padding: '10px 0', fontWeight: 600, cursor: kycRejectReason.trim() && !kycLoading ? 'pointer' : 'not-allowed', opacity: kycRejectReason.trim() && !kycLoading ? 1 : 0.5 }}
+                style={{ flex: 2, background: 'var(--rd)', color: 'white', border: 'none', borderRadius: 8, padding: '10px 0', fontWeight: 600, cursor: kycRejectReason.trim() && !kycLoading ? 'pointer' : 'not-allowed', opacity: kycRejectReason.trim() && !kycLoading ? 1 : 0.5 }}
                 onClick={handleKycRejectConfirm}
                 disabled={!kycRejectReason.trim() || kycLoading}
               >
@@ -247,7 +247,7 @@ export default function AdminApp({ onLogoClick }) {
               <strong>{kycConfirm.worker?.first_name} {kycConfirm.worker?.last_name}</strong>{' '}
               ({kycConfirm.email}) ?
               <br />
-              <span style={{ color: '#FF5500', fontSize: 12 }}>Cette action est irréversible et sera enregistrée dans le journal d'audit.</span>
+              <span style={{ color: 'var(--brand)', fontSize: 12 }}>Cette action est irréversible et sera enregistrée dans le journal d'audit.</span>
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button
