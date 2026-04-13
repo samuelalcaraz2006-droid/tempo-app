@@ -16,13 +16,17 @@ export default function FeedbackWidget() {
   const handleSubmit = async () => {
     if (!comment.trim()) return
     setSending(true)
-    await supabase.from('beta_feedback').insert({
+    const { error } = await supabase.from('beta_feedback').insert({
       user_id: user.id,
       page: window.location.pathname,
       comment: comment.trim(),
       rating: rating || null,
     })
     setSending(false)
+    if (error) {
+      console.error('[FeedbackWidget] insert error:', error)
+      return
+    }
     setSent(true)
     setTimeout(() => { setSent(false); setOpen(false); setComment(''); setRating(0) }, 2000)
   }
