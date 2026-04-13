@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "TEMPO",
+    "slug": "tempo-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#111111"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.tempo.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#111111"
+      },
+      "package": "com.tempo.app"
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    },
+    "plugins": [
+      "expo-document-picker"
+    ]
+  }
+}
