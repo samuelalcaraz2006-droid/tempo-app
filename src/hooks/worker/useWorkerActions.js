@@ -10,7 +10,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
   const [signingContract, setSigningContract] = useState(false)
   const [savingProfile, setSavingProfile] = useState(false)
 
-  const ALLOWED_PROFILE_FIELDS = ['first_name', 'last_name', 'city', 'siret', 'radius_km', 'skills', 'certifications', 'phone']
+  const ALLOWED_PROFILE_FIELDS = ['first_name', 'last_name', 'city', 'siret', 'radius_km', 'skills', 'certifications']
 
   const handleApply = useCallback(async (mission, hasApplied) => {
     if (applying[mission.id] || hasApplied) return
@@ -69,13 +69,33 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
 
   const handleSaveProfile = useCallback(async (profileForm) => {
     setSavingProfile(true)
+    // Filtrer les champs autorises et retirer les undefined
     const safeUpdate = Object.fromEntries(
-      Object.entries(profileForm).filter(([k]) => ALLOWED_PROFILE_FIELDS.includes(k))
+      Object.entries(profileForm)
+        .filter(([k, v]) => ALLOWED_PROFILE_FIELDS.includes(k) && v !== undefined)
     )
-    const { error } = await supabase.from('workers').update(safeUpdate).eq('id', userId)
+    if (Object.keys(safeUpdate).length === 0) {
+      setSavingProfile(false)
+      showToast?.('Aucune modification a sauvegarder', 'warn')
+      return
+    }
+    safeUpdate.updated_at = new Date().toISOString()
+    const { data, error } = await supabase
+      .from('workers')
+      .update(safeUpdate)
+      .eq('id', userId)
+      .select()
+      .single()
     setSavingProfile(false)
-    if (error) showToast?.('Erreur lors de la sauvegarde', 'error')
-    else { showToast?.('Profil mis à jour !'); refreshRoleData?.() }
+    if (error) {
+      console.error('[WorkerActions] saveProfile error:', error)
+      showToast?.('Erreur lors de la sauvegarde : ' + (error.message || 'erreur inconnue'), 'error')
+    } else if (!data) {
+      showToast?.('Erreur : profil non trouve', 'error')
+    } else {
+      showToast?.('Profil mis a jour !')
+      refreshRoleData?.()
+    }
   }, [userId, showToast, refreshRoleData])
 
   const toggleDispo = useCallback(async (val, setDisponible) => {

@@ -109,7 +109,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   useEffect(() => {
     if (worker) {
       setDisponible(worker.is_available || false)
-      setProfileForm({ first_name: worker.first_name || '', last_name: worker.last_name || '', city: worker.city || '', siret: worker.siret || '', radius_km: worker.radius_km || 10 })
+      setProfileForm({ first_name: worker.first_name || '', last_name: worker.last_name || '', city: worker.city || '', siret: worker.siret || '', radius_km: worker.radius_km || 10, skills: worker.skills || [], certifications: worker.certifications || [] })
     }
   }, [worker?.id])
 
