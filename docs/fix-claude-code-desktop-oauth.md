@@ -21,15 +21,46 @@ problème de vos credentials**. C'est un souci côté serveur Anthropic ou sur
 le chemin réseau (Cloudflare, VPN, proxy). Donc :
 
 1. **N'effacez pas vos credentials tout de suite** — ça ne sert à rien.
-2. Lancez le script de diagnostic :
-   ```bash
-   bash scripts/fix-claude-code-oauth.sh
-   ```
+2. Lancez le script de diagnostic selon votre OS :
+   - **macOS / Linux / Git Bash / WSL** :
+     ```bash
+     bash scripts/fix-claude-code-oauth.sh
+     ```
+   - **Windows PowerShell** (pas de `bash` par défaut) :
+     ```powershell
+     .\scripts\fix-claude-code-oauth.ps1
+     ```
+     Si PowerShell refuse à cause de l'ExecutionPolicy :
+     ```powershell
+     powershell -ExecutionPolicy Bypass -File .\scripts\fix-claude-code-oauth.ps1
+     ```
 3. Suivez ses recommandations dans l'ordre (status page → réseau → horloge).
-4. **En dernier recours uniquement**, relancez avec `--reset` :
+4. **En dernier recours uniquement**, relancez avec reset :
    ```bash
    bash scripts/fix-claude-code-oauth.sh --reset
    ```
+   ```powershell
+   .\scripts\fix-claude-code-oauth.ps1 -Reset
+   ```
+
+### Ultra-rapide Windows (sans cloner le repo)
+
+Ouvrez **Windows PowerShell** et collez :
+
+```powershell
+# 1. Test de connectivité
+Invoke-WebRequest https://claude.ai/oauth/authorize -Method Head -UseBasicParsing
+
+# 2. Status Anthropic
+(Invoke-RestMethod https://status.anthropic.com/api/v2/status.json).status
+
+# 3. Horloge système (doit être proche de l'heure réelle)
+Get-Date
+```
+
+- HTTP **200** ou **302** → serveur OK, problème ailleurs (voir §3)
+- HTTP **503** → incident Anthropic ou VPN/Cloudflare, attendez ou coupez le VPN
+- **Erreur** `Resolve-DnsName` → DNS ou pas d'Internet
 
 ---
 
