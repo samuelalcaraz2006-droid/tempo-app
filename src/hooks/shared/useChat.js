@@ -45,10 +45,17 @@ export function useChat(userId, { onError } = {}) {
   }, [])
 
   // Realtime subscription
+  //  - Si une conversation est ouverte avec un partenaire : tout message de
+  //    ce partenaire est ajoute au fil, quelle que soit la mission (la vue
+  //    messages est groupee par interlocuteur, pas par mission).
+  //  - Si le chat est ferme ou vient d'un autre expediteur : increment
+  //    badge + notification locale.
   useEffect(() => {
     if (!userId) return
     const msgSub = subscribeToMessages(userId, (payload) => {
-      if (chatPartner && payload.new.sender_id === chatPartner.id && payload.new.mission_id === chatMissionId) {
+      const fromCurrentPartner = chatPartner && payload.new.sender_id === chatPartner.id
+      const missionMatches = chatMissionId == null || payload.new.mission_id === chatMissionId
+      if (fromCurrentPartner && missionMatches) {
         setChatMessages(prev => [...prev, payload.new])
       } else {
         setUnreadMessages(prev => prev + 1)
