@@ -1,36 +1,48 @@
-import React, { useState, useEffect, Suspense } from 'react'
-import { useAuth } from '../contexts/useAuth'
-import { supabase, uploadKycDocument, submitKycDocuments } from '../lib/supabase'
-import { useI18n } from '../contexts/I18nContext'
+import React, { Suspense, useEffect, useState } from 'react'
 import RatingModal from '../components/RatingModal'
-import { useToast } from '../hooks/useToast'
-import { useDarkMode } from '../hooks/useDarkMode'
-import { useWorkerData } from '../hooks/worker/useWorkerData'
-import { useWorkerActions } from '../hooks/worker/useWorkerActions'
-import { useMissionFilters } from '../hooks/worker/useMissionFilters'
-import { useChat } from '../hooks/shared/useChat'
 import Toast from '../components/UI/Toast'
-import DashboardLayout from '../layouts/DashboardLayout'
+import { useI18n } from '../contexts/I18nContext'
+import { useAuth } from '../contexts/useAuth'
+import ChatView from '../features/shared/ChatView'
 import MissionCard from '../features/shared/MissionCard'
-import WorkerDashboard from '../features/worker/WorkerDashboard'
-import WorkerMissionsList from '../features/worker/WorkerMissionsList'
-import WorkerMissionDetail from '../features/worker/WorkerMissionDetail'
-import WorkerApplications from '../features/worker/WorkerApplications'
-import WorkerEarnings from '../features/worker/WorkerEarnings'
-import WorkerProfile from '../features/worker/WorkerProfile'
-import WorkerNotifications from '../features/worker/WorkerNotifications'
-import WorkerMessages from '../features/worker/WorkerMessages'
 import WorkerAlerts from '../features/worker/WorkerAlerts'
+import WorkerApplications from '../features/worker/WorkerApplications'
 import WorkerCalendar from '../features/worker/WorkerCalendar'
 import WorkerCompanyProfile from '../features/worker/WorkerCompanyProfile'
+import WorkerDashboard from '../features/worker/WorkerDashboard'
+import WorkerEarnings from '../features/worker/WorkerEarnings'
+import WorkerMessages from '../features/worker/WorkerMessages'
+import WorkerMissionDetail from '../features/worker/WorkerMissionDetail'
+import WorkerMissionsList from '../features/worker/WorkerMissionsList'
+import WorkerNotifications from '../features/worker/WorkerNotifications'
+import WorkerProfile from '../features/worker/WorkerProfile'
+import { useDarkMode } from '../hooks/useDarkMode'
+import { useToast } from '../hooks/useToast'
+import { useMissionFilters } from '../hooks/worker/useMissionFilters'
+import { useWorkerActions } from '../hooks/worker/useWorkerActions'
+import { useWorkerData } from '../hooks/worker/useWorkerData'
+import DashboardLayout from '../layouts/DashboardLayout'
+import { submitKycDocuments, supabase, uploadKycDocument } from '../lib/supabase'
 
 const ContractModal = React.lazy(() => import('../components/ContractModal'))
 
 // ── KYC Upload Section ──
 const KYC_DOCS = [
-  { key: 'id',    field: 'id_doc_url',    verifiedField: 'id_verified',    label: 'Piece d\'identite',     hint: 'CNI, passeport (JPEG, PNG ou PDF, max 10 Mo)' },
-  { key: 'siret', field: 'siret_doc_url', verifiedField: 'siret_verified', label: 'Justificatif SIRET',    hint: 'Extrait Kbis ou avis de situation INSEE (PDF, max 10 Mo)' },
-  { key: 'rcpro', field: 'rc_pro_url',    verifiedField: 'rc_pro_verified', label: 'RC Professionnelle',   hint: 'Attestation RC Pro en cours de validite (PDF, max 10 Mo)' },
+  { key: 'id', field: 'id_doc_url', verifiedField: 'id_verified', label: "Piece d'identite", hint: 'CNI, passeport (JPEG, PNG ou PDF, max 10 Mo)' },
+  {
+    key: 'siret',
+    field: 'siret_doc_url',
+    verifiedField: 'siret_verified',
+    label: 'Justificatif SIRET',
+    hint: 'Extrait Kbis ou avis de situation INSEE (PDF, max 10 Mo)',
+  },
+  {
+    key: 'rcpro',
+    field: 'rc_pro_url',
+    verifiedField: 'rc_pro_verified',
+    label: 'RC Professionnelle',
+    hint: 'Attestation RC Pro en cours de validite (PDF, max 10 Mo)',
+  },
 ]
 
 function KycUploadSection({ worker, userId, onUpdate, showToast }) {
@@ -40,36 +52,101 @@ function KycUploadSection({ worker, userId, onUpdate, showToast }) {
 
   const handleFile = async (doc, file) => {
     if (!file || !userId) return
-    if (!ALLOWED.includes(file.type)) { showToast('Type non autorise (JPEG, PNG, WebP ou PDF)', 'error'); return }
-    if (file.size > 10 * 1024 * 1024) { showToast('Fichier trop volumineux (max 10 Mo)', 'error'); return }
-    setUploading(u => ({ ...u, [doc.key]: true }))
+    if (!ALLOWED.includes(file.type)) {
+      showToast('Type non autorise (JPEG, PNG, WebP ou PDF)', 'error')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('Fichier trop volumineux (max 10 Mo)', 'error')
+      return
+    }
+    setUploading((u) => ({ ...u, [doc.key]: true }))
     const { url, error } = await uploadKycDocument(userId, doc.key, file)
-    if (error || !url) { showToast('Erreur upload', 'error'); setUploading(u => ({ ...u, [doc.key]: false })); return }
+    if (error || !url) {
+      showToast('Erreur upload', 'error')
+      setUploading((u) => ({ ...u, [doc.key]: false }))
+      return
+    }
     const { error: saveErr } = await submitKycDocuments(userId, { [doc.field]: url })
     if (saveErr) showToast('Erreur sauvegarde', 'error')
-    else { showToast(`${doc.label} depose`, 'success'); await onUpdate() }
-    setUploading(u => ({ ...u, [doc.key]: false }))
+    else {
+      showToast(`${doc.label} depose`, 'success')
+      await onUpdate()
+    }
+    setUploading((u) => ({ ...u, [doc.key]: false }))
   }
 
   const allVerified = worker?.id_verified && worker?.siret_verified && worker?.rc_pro_verified
 
   return (
-    <div className="card" style={{ padding:16, marginBottom:12 }}>
-      <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>Documents & verifications KYC</div>
-      {allVerified && <div style={{ background:'var(--gr-l)', border:'1px solid var(--gr)', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:12, color:'var(--gr-d)' }}>KYC complete — identite verifiee</div>}
-      {worker?.kyc_rejection_reason && <div style={{ background:'var(--rd-l)', border:'1px solid var(--rd)', borderRadius:8, padding:'8px 12px', marginBottom:12, fontSize:12, color:'var(--rd)' }}><strong>Refuses :</strong> {worker.kyc_rejection_reason}</div>}
-      {KYC_DOCS.map(doc => {
-        const verified = worker?.[doc.verifiedField], hasDoc = !!worker?.[doc.field], isUp = uploading[doc.key]
+    <div className="card" style={{ padding: 16, marginBottom: 12 }}>
+      <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Documents & verifications KYC</div>
+      {allVerified && (
+        <div
+          style={{
+            background: 'var(--gr-l)',
+            border: '1px solid var(--gr)',
+            borderRadius: 8,
+            padding: '8px 12px',
+            marginBottom: 12,
+            fontSize: 12,
+            color: 'var(--gr-d)',
+          }}
+        >
+          KYC complete — identite verifiee
+        </div>
+      )}
+      {worker?.kyc_rejection_reason && (
+        <div
+          style={{
+            background: 'var(--rd-l)',
+            border: '1px solid var(--rd)',
+            borderRadius: 8,
+            padding: '8px 12px',
+            marginBottom: 12,
+            fontSize: 12,
+            color: 'var(--rd)',
+          }}
+        >
+          <strong>Refuses :</strong> {worker.kyc_rejection_reason}
+        </div>
+      )}
+      {KYC_DOCS.map((doc) => {
+        const verified = worker?.[doc.verifiedField],
+          hasDoc = !!worker?.[doc.field],
+          isUp = uploading[doc.key]
         return (
-          <div key={doc.key} style={{ padding:'10px 0', borderBottom:'1px solid var(--g1)' }}>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: verified ? 0 : 6 }}>
-              <div><div style={{ fontSize:13, fontWeight:500, color:'var(--g6)' }}>{doc.label}</div>{!verified && <div style={{ fontSize:11, color:'var(--g4)', marginTop:2 }}>{doc.hint}</div>}</div>
-              <span className={`badge ${verified ? 'badge-green' : hasDoc ? 'badge-blue' : 'badge-orange'}`} style={{ fontSize:10 }}>{verified ? '✓ Verifie' : hasDoc ? 'En cours' : 'A deposer'}</span>
+          <div key={doc.key} style={{ padding: '10px 0', borderBottom: '1px solid var(--g1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: verified ? 0 : 6 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)' }}>{doc.label}</div>
+                {!verified && <div style={{ fontSize: 11, color: 'var(--g4)', marginTop: 2 }}>{doc.hint}</div>}
+              </div>
+              <span className={`badge ${verified ? 'badge-green' : hasDoc ? 'badge-blue' : 'badge-orange'}`} style={{ fontSize: 10 }}>
+                {verified ? '✓ Verifie' : hasDoc ? 'En cours' : 'A deposer'}
+              </span>
             </div>
-            {!verified && <div style={{ display:'flex', gap:8, alignItems:'center', marginTop:6 }}>
-              <input ref={el => { fileRefs.current[doc.key] = el }} type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" style={{ display:'none' }} onChange={e => handleFile(doc, e.target.files?.[0])} />
-              <button className="btn-secondary" style={{ padding:'6px 12px', fontSize:11, opacity: isUp ? 0.6 : 1 }} disabled={isUp} onClick={() => fileRefs.current[doc.key]?.click()}>{isUp ? 'Upload...' : hasDoc ? 'Remplacer' : 'Deposer'}</button>
-            </div>}
+            {!verified && (
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 6 }}>
+                <input
+                  ref={(el) => {
+                    fileRefs.current[doc.key] = el
+                  }}
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.webp,.pdf"
+                  style={{ display: 'none' }}
+                  onChange={(e) => handleFile(doc, e.target.files?.[0])}
+                />
+                <button
+                  className="btn-secondary"
+                  style={{ padding: '6px 12px', fontSize: 11, opacity: isUp ? 0.6 : 1 }}
+                  disabled={isUp}
+                  onClick={() => fileRefs.current[doc.key]?.click()}
+                >
+                  {isUp ? 'Upload...' : hasDoc ? 'Remplacer' : 'Deposer'}
+                </button>
+              </div>
+            )}
           </div>
         )
       })}
@@ -86,30 +163,61 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
 
   const [screen, setScreen] = useState('accueil')
   const [selectedMission, setSelectedMission] = useState(null)
+  const [chatTarget, setChatTarget] = useState(null)
   const [viewCompany, setViewCompany] = useState(null)
   const [companyMissions, setCompanyMissions] = useState([])
   const [disponible, setDisponible] = useState(false)
   const [profileForm, setProfileForm] = useState({})
   const [mapView, setMapView] = useState(false)
-  const [savedMissions, setSavedMissions] = useState(() => { try { return JSON.parse(localStorage.getItem('tempo_saved_missions') || '[]') } catch { return [] } })
-  const [savedAlerts, setSavedAlerts] = useState(() => { try { return JSON.parse(localStorage.getItem('tempo_saved_alerts') || '[]') } catch { return [] } })
-  const [blockedDays, setBlockedDays] = useState(() => { try { return JSON.parse(localStorage.getItem('tempo_blocked_days') || '[]') } catch { return [] } })
+  const [savedMissions, setSavedMissions] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('tempo_saved_missions') || '[]')
+    } catch {
+      return []
+    }
+  })
+  const [savedAlerts, setSavedAlerts] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('tempo_saved_alerts') || '[]')
+    } catch {
+      return []
+    }
+  })
+  const [blockedDays, setBlockedDays] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('tempo_blocked_days') || '[]')
+    } catch {
+      return []
+    }
+  })
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('tempo_onboarding_done'))
 
   const data = useWorkerData(user?.id, worker)
-  const actions = useWorkerActions(user?.id, { showToast, setApplications: data.setApplications, addSignedContract: data.addSignedContract, refreshRoleData })
-  const chat = useChat(user?.id, { onError: msg => showToast(msg, 'error') })
+  const actions = useWorkerActions(user?.id, {
+    showToast,
+    setApplications: data.setApplications,
+    addSignedContract: data.addSignedContract,
+    refreshRoleData,
+  })
   const filters = useMissionFilters(data.missions)
 
   const displayName = worker ? `${worker.first_name || ''} ${worker.last_name || ''}`.trim() || profile?.email : profile?.email || '—'
   const initials = worker?.first_name?.[0] || profile?.email?.[0]?.toUpperCase() || '?'
-  const unreadCount = data.notifs.filter(n => !n.read_at).length
-  const urgentMissions = data.missions.filter(m => m.urgency === 'immediate' || m.urgency === 'urgent')
+  const unreadCount = data.notifs.filter((n) => !n.read_at).length
+  const urgentMissions = data.missions.filter((m) => m.urgency === 'immediate' || m.urgency === 'urgent')
 
   useEffect(() => {
     if (worker) {
       setDisponible(worker.is_available || false)
-      setProfileForm({ first_name: worker.first_name || '', last_name: worker.last_name || '', city: worker.city || '', siret: worker.siret || '', radius_km: worker.radius_km || 10, skills: worker.skills || [], certifications: worker.certifications || [] })
+      setProfileForm({
+        first_name: worker.first_name || '',
+        last_name: worker.last_name || '',
+        city: worker.city || '',
+        siret: worker.siret || '',
+        radius_km: worker.radius_km || 10,
+        skills: worker.skills || [],
+        certifications: worker.certifications || [],
+      })
     }
   }, [worker?.id])
 
@@ -126,8 +234,13 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
     return b
   }, [worker, profileForm.skills])
 
-  const hasApplied = (id) => data.applications.some(a => a.mission_id === id)
-  const toggleSave = (id) => setSavedMissions(prev => { const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]; localStorage.setItem('tempo_saved_missions', JSON.stringify(next)); return next })
+  const hasApplied = (id) => data.applications.some((a) => a.mission_id === id)
+  const toggleSave = (id) =>
+    setSavedMissions((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      localStorage.setItem('tempo_saved_missions', JSON.stringify(next))
+      return next
+    })
 
   const navigate = (target, d) => {
     if (d && target === 'mission-detail') setSelectedMission(d)
@@ -135,106 +248,366 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   }
 
   const openCompanyProfile = async (companyId, companyData) => {
-    setViewCompany(companyData); setCompanyMissions([]); setScreen('company-profile')
-    const { data: m } = await supabase.from('missions').select('id, title, hourly_rate, city, start_date, total_hours, sector, status').eq('company_id', companyId).eq('status', 'open').order('created_at', { ascending: false }).limit(10)
+    setViewCompany(companyData)
+    setCompanyMissions([])
+    setScreen('company-profile')
+    const { data: m } = await supabase
+      .from('missions')
+      .select('id, title, hourly_rate, city, start_date, total_hours, sector, status')
+      .eq('company_id', companyId)
+      .eq('status', 'open')
+      .order('created_at', { ascending: false })
+      .limit(10)
     setCompanyMissions(m || [])
   }
 
-  const openChatNav = async (pid, pn, mid) => { await chat.openChat(pid, pn, mid); setScreen('chat') }
+  const openChatNav = (pid, pn, mid) => {
+    setChatTarget({ partnerId: pid, partnerName: pn, missionId: mid || null })
+    setScreen('chat')
+  }
+  const closeChat = () => {
+    setChatTarget(null)
+    setScreen('messages')
+  }
 
-  if (data.loading) return (
-    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:14, background:'var(--wh)' }}>
-      <div style={{ width:32, height:32, background:'var(--or)', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center' }}><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 1.5L10 6L2 10.5Z" fill="white"/></svg></div>
-      <div style={{ fontSize:13, color:'var(--g4)' }}>Chargement...</div>
-    </div>
-  )
+  if (data.loading)
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: 14,
+          background: 'var(--wh)',
+        }}
+      >
+        <div
+          style={{ width: 32, height: 32, background: 'var(--or)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12">
+            <path d="M2 1.5L10 6L2 10.5Z" fill="white" />
+          </svg>
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--g4)' }}>Chargement...</div>
+      </div>
+    )
 
   const headerExtra = (
-    <div style={{ display:'flex', alignItems:'center', gap:8, marginLeft:'auto' }}>
-      <div style={{ display:'flex', alignItems:'center', gap:6, padding:'4px 10px', background:'rgba(255,255,255,.08)', borderRadius:99 }}>
-        <span className={disponible ? 'pulse' : ''} style={{ width:7, height:7, borderRadius:'50%', background: disponible ? 'var(--gr)' : 'var(--g4)', display:'inline-block' }}></span>
-        <span style={{ fontSize:12, color:'rgba(255,255,255,.7)' }}>{disponible ? 'Disponible' : 'Indisponible'}</span>
-        <input type="checkbox" checked={disponible} onChange={e => actions.toggleDispo(e.target.checked, setDisponible)} style={{ width:14, height:14, cursor:'pointer', accentColor:'var(--or)' }} />
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255,255,255,.08)', borderRadius: 99 }}>
+        <span
+          className={disponible ? 'pulse' : ''}
+          style={{ width: 7, height: 7, borderRadius: '50%', background: disponible ? 'var(--gr)' : 'var(--g4)', display: 'inline-block' }}
+        ></span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,.7)' }}>{disponible ? 'Disponible' : 'Indisponible'}</span>
+        <input
+          type="checkbox"
+          checked={disponible}
+          onChange={(e) => actions.toggleDispo(e.target.checked, setDisponible)}
+          style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--or)' }}
+        />
       </div>
     </div>
   )
 
-  const tabs = [['accueil', t('nav_home')], ['missions', t('nav_missions')], ['messages', t('nav_messages')], ['suivi', t('nav_tracking')], ['gains', t('nav_earnings')], ['profil', t('nav_profile')]]
+  const tabs = [
+    ['accueil', t('nav_home')],
+    ['missions', t('nav_missions')],
+    ['messages', t('nav_messages')],
+    ['suivi', t('nav_tracking')],
+    ['gains', t('nav_earnings')],
+    ['profil', t('nav_profile')],
+  ]
 
   return (
-    <DashboardLayout role="worker" tabs={tabs} activeTab={screen} onTabChange={setScreen} onLogoClick={onLogoClick} headerExtra={headerExtra} unreadCount={unreadCount} onNotifClick={() => setScreen('notifs')}>
+    <DashboardLayout
+      role="worker"
+      tabs={tabs}
+      activeTab={screen}
+      onTabChange={setScreen}
+      onLogoClick={onLogoClick}
+      headerExtra={headerExtra}
+      unreadCount={unreadCount}
+      onNotifClick={() => setScreen('notifs')}
+    >
       <Toast toast={toast} onDismiss={dismissToast} />
 
       {showOnboarding && (
-        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.6)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1001, padding:20 }}>
-          <div style={{ background:'var(--wh)', borderRadius:16, padding:28, maxWidth:440, width:'100%' }}>
-            <div style={{ textAlign:'center', marginBottom:20 }}>
-              <div style={{ width:48, height:48, background:'var(--or)', borderRadius:12, display:'inline-flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}><svg width="18" height="18" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg></div>
-              <div style={{ fontSize:20, fontWeight:600, marginBottom:4 }}>Bienvenue sur TEMPO !</div>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1001,
+            padding: 20,
+          }}
+        >
+          <div style={{ background: 'var(--wh)', borderRadius: 16, padding: 28, maxWidth: 440, width: '100%' }}>
+            <div style={{ textAlign: 'center', marginBottom: 20 }}>
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  background: 'var(--or)',
+                  borderRadius: 12,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 12,
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 14 14">
+                  <path d="M2 1.5L12 7L2 12.5Z" fill="white" />
+                </svg>
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Bienvenue sur TEMPO !</div>
             </div>
-            {[['Completez votre profil', 'Competences, certifications et zone d\'intervention.'], ['Parcourez les missions', 'Filtres, recherche et score de matching.'], ['Postulez et travaillez', 'Contrat et paiement securises.']].map(([t, d], i) => (
-              <div key={i} style={{ display:'flex', gap:12, marginBottom:14 }}>
-                <div style={{ width:28, height:28, borderRadius:'50%', background:'var(--brand-l)', color:'var(--or)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:600, flexShrink:0 }}>{i + 1}</div>
-                <div><div style={{ fontSize:13, fontWeight:600, marginBottom:2 }}>{t}</div><div style={{ fontSize:12, color:'var(--g4)', lineHeight:1.5 }}>{d}</div></div>
+            {[
+              ['Completez votre profil', "Competences, certifications et zone d'intervention."],
+              ['Parcourez les missions', 'Filtres, recherche et score de matching.'],
+              ['Postulez et travaillez', 'Contrat et paiement securises.'],
+            ].map(([t, d], i) => (
+              <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
+                <div
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    background: 'var(--brand-l)',
+                    color: 'var(--or)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    flexShrink: 0,
+                  }}
+                >
+                  {i + 1}
+                </div>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 2 }}>{t}</div>
+                  <div style={{ fontSize: 12, color: 'var(--g4)', lineHeight: 1.5 }}>{d}</div>
+                </div>
               </div>
             ))}
-            <button className="btn-primary" style={{ width:'100%', justifyContent:'center', marginTop:8 }} onClick={() => { setShowOnboarding(false); localStorage.setItem('tempo_onboarding_done', '1') }}>C'est parti →</button>
+            <button
+              className="btn-primary"
+              style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}
+              onClick={() => {
+                setShowOnboarding(false)
+                localStorage.setItem('tempo_onboarding_done', '1')
+              }}
+            >
+              C'est parti →
+            </button>
           </div>
         </div>
       )}
 
-      {actions.contractModal && <Suspense fallback={null}><ContractModal mission={actions.contractModal.mission} company={{ name: actions.contractModal.companyName }} worker={worker} role="worker" onSign={actions.handleSignContract} onClose={() => actions.setContractModal(null)} signing={actions.signingContract} /></Suspense>}
-      {actions.ratingModal && <RatingModal rateeName={actions.ratingModal.companyName} loading={actions.ratingLoading} onSubmit={actions.handleRatingSubmit} onClose={() => actions.setRatingModal(null)} />}
+      {actions.contractModal && (
+        <Suspense fallback={null}>
+          <ContractModal
+            mission={actions.contractModal.mission}
+            company={{ name: actions.contractModal.companyName }}
+            worker={worker}
+            role="worker"
+            onSign={actions.handleSignContract}
+            onClose={() => actions.setContractModal(null)}
+            signing={actions.signingContract}
+          />
+        </Suspense>
+      )}
+      {actions.ratingModal && (
+        <RatingModal
+          rateeName={actions.ratingModal.companyName}
+          loading={actions.ratingLoading}
+          onSubmit={actions.handleRatingSubmit}
+          onClose={() => actions.setRatingModal(null)}
+        />
+      )}
 
-      <div style={{ maxWidth:680, margin:'0 auto', padding:'20px 16px' }}>
-        {screen === 'accueil' && <WorkerDashboard worker={worker} displayName={displayName} missions={data.missions} urgentMissions={urgentMissions} applications={data.applications} onNavigate={navigate} onApply={actions.handleApply} applying={actions.applying} savedMissions={savedMissions} onToggleSave={toggleSave} t={t} />}
+      <div style={{ maxWidth: 680, margin: '0 auto', padding: '20px 16px' }}>
+        {screen === 'accueil' && (
+          <WorkerDashboard
+            worker={worker}
+            displayName={displayName}
+            missions={data.missions}
+            urgentMissions={urgentMissions}
+            applications={data.applications}
+            onNavigate={navigate}
+            onApply={actions.handleApply}
+            applying={actions.applying}
+            savedMissions={savedMissions}
+            onToggleSave={toggleSave}
+            t={t}
+          />
+        )}
 
-        {screen === 'missions' && <WorkerMissionsList filters={filters} missions={data.missions} hasApplied={hasApplied} applying={actions.applying} onApply={actions.handleApply} savedMissions={savedMissions} onToggleSave={toggleSave} onNavigate={navigate} mapView={mapView} setMapView={setMapView} />}
+        {screen === 'missions' && (
+          <WorkerMissionsList
+            filters={filters}
+            missions={data.missions}
+            hasApplied={hasApplied}
+            applying={actions.applying}
+            onApply={actions.handleApply}
+            savedMissions={savedMissions}
+            onToggleSave={toggleSave}
+            onNavigate={navigate}
+            mapView={mapView}
+            setMapView={setMapView}
+          />
+        )}
 
         {screen === 'favoris' && (
           <div>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
-              <div><div style={{ fontSize:18, fontWeight:600 }}>Missions sauvegardees</div><div style={{ fontSize:13, color:'var(--g4)' }}>{savedMissions.length} mission{savedMissions.length !== 1 ? 's' : ''}</div></div>
-              <button onClick={() => setScreen('missions')} style={{ fontSize:13, color:'var(--g4)', background:'none', border:'none', cursor:'pointer' }}>‹ Retour</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 600 }}>Missions sauvegardees</div>
+                <div style={{ fontSize: 13, color: 'var(--g4)' }}>
+                  {savedMissions.length} mission{savedMissions.length !== 1 ? 's' : ''}
+                </div>
+              </div>
+              <button
+                onClick={() => setScreen('missions')}
+                style={{ fontSize: 13, color: 'var(--g4)', background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                ‹ Retour
+              </button>
             </div>
-            {savedMissions.length === 0 ? <div style={{ textAlign:'center', padding:'40px', color:'var(--g4)', fontSize:13 }}>Aucune mission sauvegardee</div> : data.missions.filter(m => savedMissions.includes(m.id)).map(m => <MissionCard key={m.id} mission={m} applied={hasApplied(m.id)} saved={true} applying={actions.applying[m.id]} onApply={() => actions.handleApply(m, hasApplied(m.id))} onToggleSave={toggleSave} onSelect={() => navigate('mission-detail', m)} />)}
+            {savedMissions.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--g4)', fontSize: 13 }}>Aucune mission sauvegardee</div>
+            ) : (
+              data.missions
+                .filter((m) => savedMissions.includes(m.id))
+                .map((m) => (
+                  <MissionCard
+                    key={m.id}
+                    mission={m}
+                    applied={hasApplied(m.id)}
+                    saved={true}
+                    applying={actions.applying[m.id]}
+                    onApply={() => actions.handleApply(m, hasApplied(m.id))}
+                    onToggleSave={toggleSave}
+                    onSelect={() => navigate('mission-detail', m)}
+                  />
+                ))
+            )}
           </div>
         )}
 
-        {screen === 'mission-detail' && <WorkerMissionDetail mission={selectedMission} hasApplied={hasApplied(selectedMission?.id)} applying={actions.applying[selectedMission?.id]} onApply={actions.handleApply} onBack={() => setScreen('missions')} isSaved={savedMissions.includes(selectedMission?.id)} onToggleSave={toggleSave} onViewCompany={openCompanyProfile} />}
+        {screen === 'mission-detail' && (
+          <WorkerMissionDetail
+            mission={selectedMission}
+            hasApplied={hasApplied(selectedMission?.id)}
+            applying={actions.applying[selectedMission?.id]}
+            onApply={actions.handleApply}
+            onBack={() => setScreen('missions')}
+            isSaved={savedMissions.includes(selectedMission?.id)}
+            onToggleSave={toggleSave}
+            onViewCompany={openCompanyProfile}
+          />
+        )}
 
-        {screen === 'suivi' && <WorkerApplications allMissions={data.allMissions} signedContracts={data.signedContracts} ratedMissions={actions.ratedMissions} onWithdraw={id => actions.handleWithdraw(id, data.setAllMissions)} onSignContract={m => actions.setContractModal({ missionId: m.id, mission: m, companyName: m?.companies?.name || 'Entreprise', companyId: m?.company_id || m?.companies?.id })} onOpenChat={openChatNav} onRate={m => actions.setRatingModal({ missionId: m.id, rateeId: m.companies?.id, companyName: m.companies?.name || 'l\'entreprise' })} onNavigate={navigate} t={t} />}
+        {screen === 'suivi' && (
+          <WorkerApplications
+            allMissions={data.allMissions}
+            signedContracts={data.signedContracts}
+            ratedMissions={actions.ratedMissions}
+            onWithdraw={(id) => actions.handleWithdraw(id, data.setAllMissions)}
+            onSignContract={(m) =>
+              actions.setContractModal({
+                missionId: m.id,
+                mission: m,
+                companyName: m?.companies?.name || 'Entreprise',
+                companyId: m?.company_id || m?.companies?.id,
+              })
+            }
+            onOpenChat={openChatNav}
+            onRate={(m) => actions.setRatingModal({ missionId: m.id, rateeId: m.companies?.id, companyName: m.companies?.name || "l'entreprise" })}
+            onNavigate={navigate}
+            t={t}
+          />
+        )}
 
         {screen === 'gains' && <WorkerEarnings worker={worker} invoices={data.invoices} allMissions={data.allMissions} t={t} />}
 
-        {screen === 'messages' && !chat.chatPartner && <WorkerMessages allMissions={data.allMissions} onOpenChat={openChatNav} />}
+        {screen === 'messages' && !chatTarget && <WorkerMessages userId={user?.id} onOpenChat={openChatNav} />}
 
-        {screen === 'chat' && chat.chatPartner && (
-          <div style={{ display:'flex', flexDirection:'column', height:'calc(100dvh - 160px)' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-              <button onClick={() => { chat.closeChat(); setScreen('messages') }} style={{ background:'none', border:'none', fontSize:13, color:'var(--g4)', cursor:'pointer' }}>‹ Retour</button>
-              <div style={{ fontSize:15, fontWeight:600 }}>{chat.chatPartner.name}</div>
-            </div>
-            <div style={{ flex:1, overflowY:'auto', padding:8, background:'var(--g1)', borderRadius:10, marginBottom:12 }}>
-              {chat.chatMessages.length === 0 ? <div style={{ textAlign:'center', padding:20, color:'var(--g4)', fontSize:13 }}>Demarrez la conversation</div> : chat.chatMessages.map((msg, i) => {
-                const mine = msg.sender_id === user.id
-                return <div key={msg.id || i} style={{ display:'flex', justifyContent: mine ? 'flex-end' : 'flex-start', marginBottom:8 }}><div style={{ maxWidth:'75%', padding:'8px 12px', borderRadius: mine ? '12px 12px 4px 12px' : '12px 12px 12px 4px', background: mine ? 'var(--or)' : 'var(--wh)', color: mine ? '#fff' : 'var(--bk)', fontSize:13, boxShadow:'0 1px 3px rgba(0,0,0,.08)' }}>{msg.content}<div style={{ fontSize:10, marginTop:4, opacity:0.6 }}>{new Date(msg.created_at).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}</div></div></div>
-              })}
-            </div>
-            <div style={{ display:'flex', gap:8 }}>
-              <input className="input" placeholder="Votre message..." value={chat.chatInput} onChange={e => chat.setChatInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') chat.handleSendMessage() }} style={{ flex:1 }} />
-              <button className="btn-primary" style={{ padding:'10px 18px' }} onClick={chat.handleSendMessage} disabled={chat.sendingMsg || !chat.chatInput.trim()}>{chat.sendingMsg ? '...' : '→'}</button>
-            </div>
-          </div>
+        {screen === 'chat' && chatTarget && (
+          <ChatView
+            userId={user?.id}
+            partnerId={chatTarget.partnerId}
+            partnerName={chatTarget.partnerName}
+            contextMissionId={chatTarget.missionId}
+            onBack={closeChat}
+            onOpenMission={(m) => {
+              setSelectedMission(m)
+              setChatTarget(null)
+              setScreen('mission-detail')
+            }}
+          />
         )}
 
-        {screen === 'profil' && <WorkerProfile worker={worker} profile={profile} profileForm={profileForm} setProfileForm={setProfileForm} onSave={actions.handleSaveProfile} savingProfile={actions.savingProfile} badges={badges} initials={initials} displayName={displayName} onNavigate={navigate} onLogout={logout} savedAlerts={savedAlerts} KycUploadSection={KycUploadSection} userId={user?.id} refreshRoleData={refreshRoleData} showToast={showToast} />}
+        {screen === 'profil' && (
+          <WorkerProfile
+            worker={worker}
+            profile={profile}
+            profileForm={profileForm}
+            setProfileForm={setProfileForm}
+            onSave={actions.handleSaveProfile}
+            savingProfile={actions.savingProfile}
+            badges={badges}
+            initials={initials}
+            displayName={displayName}
+            onNavigate={navigate}
+            onLogout={logout}
+            savedAlerts={savedAlerts}
+            KycUploadSection={KycUploadSection}
+            userId={user?.id}
+            refreshRoleData={refreshRoleData}
+            showToast={showToast}
+          />
+        )}
 
-        {screen === 'notifs' && <WorkerNotifications notifs={data.notifs} setNotifs={data.setNotifs} userId={user?.id} unreadCount={unreadCount} onBack={() => setScreen('accueil')} />}
+        {screen === 'notifs' && (
+          <WorkerNotifications
+            notifs={data.notifs}
+            setNotifs={data.setNotifs}
+            userId={user?.id}
+            unreadCount={unreadCount}
+            onBack={() => setScreen('accueil')}
+          />
+        )}
 
-        {screen === 'company-profile' && <WorkerCompanyProfile company={viewCompany} companyMissions={companyMissions} missions={data.missions} onBack={() => setScreen('missions')} onSelectMission={m => { setSelectedMission(m); setScreen('mission-detail') }} />}
+        {screen === 'company-profile' && (
+          <WorkerCompanyProfile
+            company={viewCompany}
+            companyMissions={companyMissions}
+            missions={data.missions}
+            onBack={() => setScreen('missions')}
+            onSelectMission={(m) => {
+              setSelectedMission(m)
+              setScreen('mission-detail')
+            }}
+          />
+        )}
 
-        {screen === 'alertes' && <WorkerAlerts savedAlerts={savedAlerts} setSavedAlerts={setSavedAlerts} filters={filters} profileForm={profileForm} showToast={showToast} onBack={() => setScreen('missions')} />}
+        {screen === 'alertes' && (
+          <WorkerAlerts
+            savedAlerts={savedAlerts}
+            setSavedAlerts={setSavedAlerts}
+            filters={filters}
+            profileForm={profileForm}
+            showToast={showToast}
+            onBack={() => setScreen('missions')}
+          />
+        )}
 
         {screen === 'calendrier' && <WorkerCalendar blockedDays={blockedDays} setBlockedDays={setBlockedDays} onBack={() => setScreen('profil')} />}
       </div>

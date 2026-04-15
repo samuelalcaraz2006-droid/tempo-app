@@ -4,14 +4,16 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
 if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-  console.error('TEMPO: Variables VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY manquantes. Ajoutez-les dans .env ou dans Vercel Dashboard > Settings > Environment Variables')
+  console.error(
+    'TEMPO: Variables VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY manquantes. Ajoutez-les dans .env ou dans Vercel Dashboard > Settings > Environment Variables',
+  )
 }
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-  }
+  },
 })
 
 // ── Helpers auth ──────────────────────────────
@@ -29,8 +31,8 @@ export const signUp = async ({ email, password, role, firstName, lastName, compa
         siret: siret || null,
         city: city || null,
         radius_km: radiusKm ? parseInt(radiusKm, 10) : 10,
-      }
-    }
+      },
+    },
   })
   return { data, error }
 }
@@ -46,17 +48,15 @@ export const signOut = async () => {
 }
 
 export const getSession = async () => {
-  const { data: { session } } = await supabase.auth.getSession()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
   return session
 }
 
 // ── Helpers workers ───────────────────────────
 export const getWorkerProfile = async (userId) => {
-  const { data, error } = await supabase
-    .from('workers')
-    .select('*, profiles(*)')
-    .eq('id', userId)
-    .single()
+  const { data, error } = await supabase.from('workers').select('*, profiles(*)').eq('id', userId).single()
   return { data, error }
 }
 
@@ -70,20 +70,13 @@ export const updateWorkerProfile = async (userId, updates) => {
 }
 
 export const setWorkerAvailability = async (userId, isAvailable) => {
-  const { data, error } = await supabase
-    .from('workers')
-    .update({ is_available: isAvailable })
-    .eq('id', userId)
+  const { data, error } = await supabase.from('workers').update({ is_available: isAvailable }).eq('id', userId)
   return { data, error }
 }
 
 // ── Helpers companies ─────────────────────────
 export const getCompanyProfile = async (userId) => {
-  const { data, error } = await supabase
-    .from('companies')
-    .select('*, profiles(*)')
-    .eq('id', userId)
-    .single()
+  const { data, error } = await supabase.from('companies').select('*, profiles(*)').eq('id', userId).single()
   return { data, error }
 }
 
@@ -131,11 +124,7 @@ export const getMissions = async ({
 }
 
 export const getMissionById = async (id) => {
-  const { data, error } = await supabase
-    .from('missions')
-    .select('*, companies(name, city, rating_avg, rating_count, lat, lng)')
-    .eq('id', id)
-    .single()
+  const { data, error } = await supabase.from('missions').select('*, companies(name, city, rating_avg, rating_count, lat, lng)').eq('id', id).single()
   return { data, error }
 }
 
@@ -209,38 +198,23 @@ export const getWorkerRatings = async (workerId) => {
 
 // ── Helpers notifications ─────────────────────
 export const getNotifications = async (userId) => {
-  const { data, error } = await supabase
-    .from('notifications')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(30)
+  const { data, error } = await supabase.from('notifications').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(30)
   return { data, error }
 }
 
 export const markNotifsRead = async (userId) => {
-  const { error } = await supabase
-    .from('notifications')
-    .update({ read_at: new Date().toISOString() })
-    .eq('user_id', userId)
-    .is('read_at', null)
+  const { error } = await supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('user_id', userId).is('read_at', null)
   return { error }
 }
 
 export const createNotification = async ({ userId, type, title, body, payload = {} }) => {
-  const { data, error } = await supabase
-    .from('notifications')
-    .insert({ user_id: userId, type, title, body, payload })
-    .select()
-    .single()
+  const { data, error } = await supabase.from('notifications').insert({ user_id: userId, type, title, body, payload }).select().single()
   return { data, error }
 }
 
 // ── Helpers matching scores ───────────────────
 export const saveMatchingScores = async (scores) => {
-  const { data, error } = await supabase
-    .from('matching_scores')
-    .upsert(scores, { onConflict: 'mission_id,worker_id' })
+  const { data, error } = await supabase.from('matching_scores').upsert(scores, { onConflict: 'mission_id,worker_id' })
   return { data, error }
 }
 
@@ -296,12 +270,7 @@ export const subscribeToNotifications = (userId, callback) => {
 
 // ── Helpers candidatures — actions ────────────────────────────
 export const updateApplicationStatus = async (applicationId, status) => {
-  const { data, error } = await supabase
-    .from('applications')
-    .update({ status })
-    .eq('id', applicationId)
-    .select()
-    .single()
+  const { data, error } = await supabase.from('applications').update({ status }).eq('id', applicationId).select().single()
   return { data, error }
 }
 
@@ -326,22 +295,78 @@ export const completeMission = async (missionId) => {
 }
 
 // ── Helpers messages (chat) ──────────────────
+// Retourne les conversations groupees par partenaire (un interlocuteur = une conversation,
+// quelle que soit la mission). Enrichit avec le nom du partenaire et le titre de la derniere mission.
 export const getConversations = async (userId) => {
-  const { data, error } = await supabase
+  if (!userId) return { data: [], error: null }
+  const { data: msgs, error } = await supabase
     .from('messages')
-    .select('id, sender_id, receiver_id, mission_id, content, created_at, read_at')
+    .select('*')
     .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
     .order('created_at', { ascending: false })
-    .limit(200)
-  if (!data) return { data: [], error }
-  // Group by conversation partner — keep only the latest message per conversation
-  const convMap = {}
-  data.forEach(m => {
+  if (error) {
+    console.warn('[getConversations] select error:', error.message)
+    return { data: [], error }
+  }
+  if (!msgs || msgs.length === 0) return { data: [], error: null }
+
+  // Groupe par partenaire. msgs sont du plus recent au plus ancien,
+  // la premiere occurrence gagne pour "dernier message".
+  const map = new Map()
+  for (const m of msgs) {
     const partnerId = m.sender_id === userId ? m.receiver_id : m.sender_id
-    const key = [m.mission_id, partnerId].join('_')
-    if (!convMap[key]) convMap[key] = { partnerId, missionId: m.mission_id, lastMessage: m }
-  })
-  return { data: Object.values(convMap), error }
+    if (!map.has(partnerId)) {
+      map.set(partnerId, {
+        partnerId,
+        missionId: m.mission_id || null,
+        lastMessage: m.content,
+        lastAt: m.created_at,
+        lastSenderId: m.sender_id,
+        unreadCount: 0,
+      })
+    }
+    const conv = map.get(partnerId)
+    // Fallback : si le dernier message n'a pas de mission, prendre la plus recente qui en a une.
+    if (!conv.missionId && m.mission_id) conv.missionId = m.mission_id
+    if (m.receiver_id === userId && !m.read_at) conv.unreadCount += 1
+  }
+
+  const conversations = Array.from(map.values())
+  const partnerIds = [...new Set(conversations.map((c) => c.partnerId))]
+  const missionIds = [...new Set(conversations.map((c) => c.missionId).filter(Boolean))]
+
+  // Batch enrichissement (noms partenaires + titres missions)
+  const [profilesRes, workersRes, companiesRes, missionsRes] = await Promise.all([
+    supabase.from('profiles').select('id, email, role').in('id', partnerIds),
+    supabase.from('workers').select('id, first_name, last_name').in('id', partnerIds),
+    supabase.from('companies').select('id, name').in('id', partnerIds),
+    missionIds.length ? supabase.from('missions').select('id, title').in('id', missionIds) : Promise.resolve({ data: [] }),
+  ])
+
+  const profileById = new Map((profilesRes.data || []).map((p) => [p.id, p]))
+  const workerById = new Map((workersRes.data || []).map((w) => [w.id, w]))
+  const companyById = new Map((companiesRes.data || []).map((c) => [c.id, c]))
+  const missionById = new Map((missionsRes.data || []).map((m) => [m.id, m]))
+
+  for (const conv of conversations) {
+    const prof = profileById.get(conv.partnerId)
+    if (prof?.role === 'travailleur') {
+      const w = workerById.get(conv.partnerId)
+      conv.partnerName = w ? `${w.first_name || ''} ${w.last_name || ''}`.trim() || prof.email : prof.email
+      conv.partnerRole = 'travailleur'
+    } else if (prof?.role === 'entreprise') {
+      const c = companyById.get(conv.partnerId)
+      conv.partnerName = c?.name || prof.email
+      conv.partnerRole = 'entreprise'
+    } else {
+      conv.partnerName = prof?.email || 'Utilisateur'
+      conv.partnerRole = prof?.role || null
+    }
+    const mission = conv.missionId ? missionById.get(conv.missionId) : null
+    conv.missionTitle = mission?.title || null
+  }
+
+  return { data: conversations, error: null }
 }
 
 export const getMessages = async (userId, partnerId, missionId) => {
@@ -364,33 +389,89 @@ export const sendMessage = async ({ senderId, receiverId, missionId, content }) 
   return { data, error }
 }
 
-export const subscribeToMessages = (userId, callback) => {
-  return supabase
-    .channel(`messages_${userId}`)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `receiver_id=eq.${userId}` }, callback)
-    .subscribe()
+// Marque comme lus tous les messages recus de partnerId (optionnellement scope a une mission).
+export const markMessagesRead = (userId, partnerId, missionId) => {
+  if (!userId || !partnerId) return Promise.resolve({ data: null, error: null })
+  let q = supabase
+    .from('messages')
+    .update({ read_at: new Date().toISOString() })
+    .eq('receiver_id', userId)
+    .eq('sender_id', partnerId)
+    .is('read_at', null)
+  if (missionId) q = q.eq('mission_id', missionId)
+  return q
+}
+
+export const countUnreadMessages = (userId) =>
+  supabase.from('messages').select('id', { count: 'exact', head: true }).eq('receiver_id', userId).is('read_at', null)
+
+// Ecoute :
+//   - INSERT des messages recus par userId              → onInsert(payload)
+//   - UPDATE des messages ENVOYES par userId            → onUpdate(payload)
+//     (la transition `read_at` cote destinataire arrive ici — permet au sender d'afficher ✓✓ en live)
+export const subscribeToMessages = (userId, onInsert, onUpdate) => {
+  if (!userId) return { unsubscribe: () => {} }
+  const channelName = `messages_${userId}_${Math.random().toString(36).slice(2, 10)}`
+  const channel = supabase
+    .channel(channelName)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `receiver_id=eq.${userId}` }, onInsert)
+  if (typeof onUpdate === 'function') {
+    channel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `sender_id=eq.${userId}` }, onUpdate)
+  }
+  channel.subscribe()
+  return {
+    unsubscribe: () => {
+      supabase.removeChannel(channel)
+    },
+    channel,
+  }
+}
+
+// Canal broadcast realtime pour l'indicateur "est en train d'ecrire" entre deux utilisateurs.
+// Le nom de canal est canonicalise a partir de la paire triee, les deux cotes rejoignent la meme room.
+// Retourne { sendTyping, unsubscribe }. onTyping est declenche uniquement pour les events du partenaire.
+export const subscribeToChatPresence = (userId, partnerId, onTyping) => {
+  if (!userId || !partnerId) {
+    return { sendTyping: () => {}, unsubscribe: () => {} }
+  }
+  const pair = [userId, partnerId].sort().join(':')
+  const channelName = `chat:${pair}`
+  const channel = supabase.channel(channelName, { config: { broadcast: { self: false } } })
+  channel.on('broadcast', { event: 'typing' }, (payload) => {
+    const fromId = payload?.payload?.userId
+    if (!fromId || fromId === userId) return
+    onTyping?.(payload.payload)
+  })
+  let subscribed = false
+  channel.subscribe((status) => {
+    if (status === 'SUBSCRIBED') subscribed = true
+  })
+  const sendTyping = (state = 'start') => {
+    if (!subscribed) return
+    channel.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { userId, state, at: Date.now() },
+    })
+  }
+  return {
+    sendTyping,
+    unsubscribe: () => {
+      supabase.removeChannel(channel)
+    },
+  }
 }
 
 // ── Helpers cancellation / disputes ──────────
 export const cancelMission = async (missionId, reason) => {
   const updates = { status: 'cancelled' }
-  if (reason) updates.cancellation_reason = reason  // ne pas écraser description
-  const { data, error } = await supabase
-    .from('missions')
-    .update(updates)
-    .eq('id', missionId)
-    .select()
-    .single()
+  if (reason) updates.cancellation_reason = reason // ne pas écraser description
+  const { data, error } = await supabase.from('missions').update(updates).eq('id', missionId).select().single()
   return { data, error }
 }
 
 export const withdrawApplication = async (applicationId) => {
-  const { data, error } = await supabase
-    .from('applications')
-    .update({ status: 'withdrawn' })
-    .eq('id', applicationId)
-    .select()
-    .single()
+  const { data, error } = await supabase.from('applications').update({ status: 'withdrawn' }).eq('id', applicationId).select().single()
   return { data, error }
 }
 
@@ -398,7 +479,9 @@ export const getWorkerMissions = async (workerId) => {
   // company_id inclus dans missions pour le chat et la signature de contrat
   const { data, error } = await supabase
     .from('applications')
-    .select('id, status, applied_at, match_score, missions(id, title, hourly_rate, total_hours, start_date, end_date, city, status, sector, company_id, companies(id, name))')
+    .select(
+      'id, status, applied_at, match_score, missions(id, title, hourly_rate, total_hours, start_date, end_date, city, status, sector, company_id, companies(id, name))',
+    )
     .eq('worker_id', workerId)
     .order('applied_at', { ascending: false })
   return { data, error }
@@ -415,35 +498,23 @@ export const saveContract = async (contractData) => {
 }
 
 export const getContract = async (missionId) => {
-  const { data, error } = await supabase
-    .from('contracts')
-    .select('*')
-    .eq('mission_id', missionId)
-    .maybeSingle()
+  const { data, error } = await supabase.from('contracts').select('*').eq('mission_id', missionId).maybeSingle()
   return { data, error }
 }
 
 export const getSignedContractsByWorker = async (workerId) => {
-  const { data, error } = await supabase
-    .from('contracts')
-    .select('mission_id')
-    .eq('worker_id', workerId)
-    .not('signed_worker_at', 'is', null)
-  return { data: data?.map(c => c.mission_id) || [], error }
+  const { data, error } = await supabase.from('contracts').select('mission_id').eq('worker_id', workerId).not('signed_worker_at', 'is', null)
+  return { data: data?.map((c) => c.mission_id) || [], error }
 }
 
 export const getSignedContractsByCompany = async (companyId) => {
-  const { data, error } = await supabase
-    .from('contracts')
-    .select('mission_id')
-    .eq('company_id', companyId)
-    .not('signed_company_at', 'is', null)
-  return { data: data?.map(c => c.mission_id) || [], error }
+  const { data, error } = await supabase.from('contracts').select('mission_id').eq('company_id', companyId).not('signed_company_at', 'is', null)
+  return { data: data?.map((c) => c.mission_id) || [], error }
 }
 
 // ── Helpers facturation ───────────────────────────────────────
 export const createInvoice = async ({ workerPayout, amountTtc, workerId, companyId, contractId, missionId, totalHours }) => {
-  const amountHt = amountTtc ? Math.round(amountTtc / 1.2 * 100) / 100 : 0
+  const amountHt = amountTtc ? Math.round((amountTtc / 1.2) * 100) / 100 : 0
   const commission = amountTtc ? Math.round((amountTtc - workerPayout) * 100) / 100 : 0
   const { data, error } = await supabase
     .from('invoices')
@@ -467,12 +538,7 @@ export const createInvoice = async ({ workerPayout, amountTtc, workerId, company
 export const updateInvoiceStatus = async (invoiceId, status) => {
   const update = { status }
   if (status === 'paid') update.paid_at = new Date().toISOString()
-  const { data, error } = await supabase
-    .from('invoices')
-    .update(update)
-    .eq('id', invoiceId)
-    .select()
-    .single()
+  const { data, error } = await supabase.from('invoices').update(update).eq('id', invoiceId).select().single()
   return { data, error }
 }
 
@@ -485,15 +551,11 @@ export const updateInvoiceStatus = async (invoiceId, status) => {
 export const uploadKycDocument = async (userId, docType, file) => {
   const ext = file.name.split('.').pop()
   const path = `${userId}/${docType}/${Date.now()}.${ext}`
-  const { error: upErr } = await supabase.storage
-    .from('kyc-documents')
-    .upload(path, file, { upsert: true })
+  const { error: upErr } = await supabase.storage.from('kyc-documents').upload(path, file, { upsert: true })
   if (upErr) return { url: null, path: null, error: upErr }
 
   // Générer une URL signée longue durée (7 jours) pour le stockage en DB
-  const { data: signed, error: signErr } = await supabase.storage
-    .from('kyc-documents')
-    .createSignedUrl(path, 60 * 60 * 24 * 7)
+  const { data: signed, error: signErr } = await supabase.storage.from('kyc-documents').createSignedUrl(path, 60 * 60 * 24 * 7)
   return { url: signed?.signedUrl || null, path, error: signErr }
 }
 
@@ -501,9 +563,7 @@ export const uploadKycDocument = async (userId, docType, file) => {
  * Générer une URL signée courte durée pour qu'un admin consulte un document.
  */
 export const getKycSignedUrl = async (path, expiresIn = 3600) => {
-  const { data, error } = await supabase.storage
-    .from('kyc-documents')
-    .createSignedUrl(path, expiresIn)
+  const { data, error } = await supabase.storage.from('kyc-documents').createSignedUrl(path, expiresIn)
   return { url: data?.signedUrl || null, error }
 }
 

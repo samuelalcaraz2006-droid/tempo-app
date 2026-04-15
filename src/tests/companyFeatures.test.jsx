@@ -9,6 +9,11 @@ vi.mock('lucide-react', () => ({
   Download: (props) => <svg data-testid="icon-download" {...props} />,
   MessageCircle: (props) => <svg data-testid="icon-message-circle" {...props} />,
   X: (props) => <svg data-testid="icon-x" {...props} />,
+  Search: (props) => <svg data-testid="icon-search" {...props} />,
+}))
+
+vi.mock('../hooks/shared/useConversations', () => ({
+  useConversations: () => ({ conversations: [], loading: false, refreshing: false, refresh: vi.fn(), error: null }),
 }))
 
 vi.mock('../lib/formatters', () => ({
@@ -110,36 +115,13 @@ describe('CompanyContracts', () => {
   })
 })
 
-// ── CompanyMessages ───────────────────────────────────────────────────────────
+// ── CompanyMessages (thin wrapper over ConversationsList) ───────────────────
 
 describe('CompanyMessages', () => {
-  it('renders empty state when no active missions', () => {
-    render(<CompanyMessages missions={[]} onOpenChat={vi.fn()} />)
-    expect(screen.getByText(/messagerie est disponible/i)).toBeInTheDocument()
-  })
-
-  it('renders empty state when missions have no assigned workers', () => {
-    const missions = [{ id: 'm1', title: 'Mission A' }]
-    render(<CompanyMessages missions={missions} onOpenChat={vi.fn()} />)
-    expect(screen.getByText(/messagerie est disponible/i)).toBeInTheDocument()
-  })
-
-  it('renders worker cards for active missions', () => {
-    render(<CompanyMessages missions={FAKE_MISSIONS_WITH_WORKER} onOpenChat={vi.fn()} />)
-    expect(screen.getByText('Marc Leroy')).toBeInTheDocument()
-    expect(screen.getByText('Opérateur logistique')).toBeInTheDocument()
-  })
-
-  it('clicking a mission card calls onOpenChat with correct args', () => {
-    const onOpenChat = vi.fn()
-    render(<CompanyMessages missions={FAKE_MISSIONS_WITH_WORKER} onOpenChat={onOpenChat} />)
-    fireEvent.click(screen.getByText('Marc Leroy'))
-    expect(onOpenChat).toHaveBeenCalledWith('w1', 'Marc Leroy', 'm1')
-  })
-
-  it('shows Messages heading', () => {
-    render(<CompanyMessages missions={[]} onOpenChat={vi.fn()} />)
+  it('renders header and empty state via ConversationsList', () => {
+    render(<CompanyMessages userId="company-1" onOpenChat={vi.fn()} />)
     expect(screen.getByText('Messages')).toBeInTheDocument()
+    expect(screen.getByText(/travailleurs/i)).toBeInTheDocument()
   })
 })
 

@@ -6,6 +6,12 @@ import React from 'react'
 // ── Mock lucide-react ─────────────────────────────────────────
 vi.mock('lucide-react', () => ({
   Heart: ({ size, style }) => <svg data-testid="heart-icon" style={style} />,
+  ChevronLeft: () => <svg data-testid="chevron-left" />,
+  Briefcase: () => <svg data-testid="briefcase" />,
+  Check: () => <svg data-testid="check" />,
+  CheckCheck: () => <svg data-testid="check-check" />,
+  MessageCircle: () => <svg data-testid="message-circle" />,
+  Search: () => <svg data-testid="search" />,
 }))
 
 // ── Mock formatters ───────────────────────────────────────────
@@ -13,9 +19,27 @@ vi.mock('../lib/formatters', () => ({
   formatDate: (d) => d ? '1 janv.' : '—',
 }))
 
-// ── Mock supabase (not used in MissionCard/ChatView directly) ─
+// ── Mock supabase (ChatView fetches pinned mission) ─
 vi.mock('../lib/supabase', () => ({
   supabase: {},
+  getMissionById: vi.fn().mockResolvedValue({ data: null, error: null }),
+}))
+
+// ── Mock useChat (ChatView uses it internally) ─
+const mockSend = vi.fn()
+const mockSetInput = vi.fn()
+let mockUseChatReturn = {
+  messages: [],
+  loading: false,
+  input: '',
+  setInput: mockSetInput,
+  sending: false,
+  error: null,
+  send: mockSend,
+  partnerTyping: false,
+}
+vi.mock('../hooks/shared/useChat', () => ({
+  useChat: () => mockUseChatReturn,
 }))
 
 // ── Fix jsdom missing scrollIntoView ─────────────────────────
@@ -131,23 +155,30 @@ describe('MissionCard', () => {
 })
 
 // ────────────────────────────────────────────────────────────────
-// ChatView tests
+// ChatView tests — hook-based stateless component
 // ────────────────────────────────────────────────────────────────
 
 describe('ChatView', () => {
   const defaultProps = {
-    chatMessages: [],
-    chatPartner: { name: 'Jean Dupont' },
-    chatInput: '',
-    setChatInput: vi.fn(),
-    sendingMsg: false,
-    onSend: vi.fn(),
-    onBack: vi.fn(),
     userId: 'user-1',
+    partnerId: 'partner-1',
+    partnerName: 'Jean Dupont',
+    contextMissionId: null,
+    onBack: vi.fn(),
   }
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUseChatReturn = {
+      messages: [],
+      loading: false,
+      input: '',
+      setInput: mockSetInput,
+      sending: false,
+      error: null,
+      send: mockSend,
+      partnerTyping: false,
+    }
   })
 
   it('renders empty state when no messages', () => {
@@ -155,65 +186,77 @@ describe('ChatView', () => {
     expect(screen.getByText(/Aucun message/i)).toBeTruthy()
   })
 
-  it('renders chat partner name', () => {
+  it('renders partner name in header', () => {
     render(<ChatView {...defaultProps} />)
     expect(screen.getByText('Jean Dupont')).toBeTruthy()
   })
 
-  it('falls back to Conversation when no partner', () => {
-    render(<ChatView {...defaultProps} chatPartner={null} />)
+  it('falls back to Conversation when no partner name', () => {
+    render(<ChatView {...defaultProps} partnerName={null} />)
     expect(screen.getByText('Conversation')).toBeTruthy()
   })
 
   it('calls onBack when back button clicked', () => {
     const onBack = vi.fn()
     render(<ChatView {...defaultProps} onBack={onBack} />)
-    fireEvent.click(screen.getByText('‹ Retour'))
+    fireEvent.click(screen.getByLabelText('Retour'))
     expect(onBack).toHaveBeenCalled()
   })
 
-  it('renders messages from other users aligned left', () => {
-    const messages = [{ id: 'msg-1', content: 'Bonjour', sender_id: 'other-user', created_at: '2026-01-01T10:00:00Z' }]
-    render(<ChatView {...defaultProps} chatMessages={messages} />)
+  it('renders messages from partner', () => {
+    mockUseChatReturn.messages = [
+      { id: 'msg-1', content: 'Bonjour', sender_id: 'partner-1', created_at: '2026-01-01T10:00:00Z' },
+    ]
+    render(<ChatView {...defaultProps} />)
     expect(screen.getByText('Bonjour')).toBeTruthy()
   })
 
   it('renders own messages', () => {
-    const messages = [{ id: 'msg-2', content: 'Hello moi', sender_id: 'user-1', created_at: '2026-01-01T10:01:00Z' }]
-    render(<ChatView {...defaultProps} chatMessages={messages} />)
+    mockUseChatReturn.messages = [
+      { id: 'msg-2', content: 'Hello moi', sender_id: 'user-1', created_at: '2026-01-01T10:01:00Z' },
+    ]
+    render(<ChatView {...defaultProps} />)
     expect(screen.getByText('Hello moi')).toBeTruthy()
   })
 
-  it('send button is disabled when chatInput is empty', () => {
-    render(<ChatView {...defaultProps} chatInput="" />)
+  it('send button is disabled when input is empty', () => {
+    render(<ChatView {...defaultProps} />)
     const sendBtn = screen.getByText('Envoyer')
     expect(sendBtn.disabled).toBe(true)
   })
 
-  it('send button is disabled when sendingMsg is true', () => {
-    render(<ChatView {...defaultProps} chatInput="test" sendingMsg={true} />)
+  it('send button is disabled when sending', () => {
+    mockUseChatReturn.input = 'test'
+    mockUseChatReturn.sending = true
+    render(<ChatView {...defaultProps} />)
     const sendBtn = screen.getByText('...')
     expect(sendBtn.disabled).toBe(true)
   })
 
-  it('send button is enabled when chatInput has content', () => {
-    render(<ChatView {...defaultProps} chatInput="mon message" />)
+  it('send button is enabled when input has content', () => {
+    mockUseChatReturn.input = 'mon message'
+    render(<ChatView {...defaultProps} />)
     const sendBtn = screen.getByText('Envoyer')
     expect(sendBtn.disabled).toBe(false)
   })
 
-  it('calls setChatInput on input change', () => {
-    const setChatInput = vi.fn()
-    render(<ChatView {...defaultProps} setChatInput={setChatInput} />)
+  it('calls setInput on input change', () => {
+    render(<ChatView {...defaultProps} />)
     const input = screen.getByPlaceholderText('Votre message...')
     fireEvent.change(input, { target: { value: 'nouveau message' } })
-    expect(setChatInput).toHaveBeenCalledWith('nouveau message')
+    expect(mockSetInput).toHaveBeenCalledWith('nouveau message')
   })
 
-  it('calls onSend when send button clicked', () => {
-    const onSend = vi.fn()
-    render(<ChatView {...defaultProps} chatInput="test" onSend={onSend} />)
+  it('calls send when send button clicked', () => {
+    mockUseChatReturn.input = 'test'
+    render(<ChatView {...defaultProps} />)
     fireEvent.click(screen.getByText('Envoyer'))
-    expect(onSend).toHaveBeenCalled()
+    expect(mockSend).toHaveBeenCalled()
+  })
+
+  it('shows typing indicator when partner is typing', () => {
+    mockUseChatReturn.partnerTyping = true
+    render(<ChatView {...defaultProps} />)
+    expect(screen.getByText(/ecrit/)).toBeTruthy()
   })
 })

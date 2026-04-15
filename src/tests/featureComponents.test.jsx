@@ -34,6 +34,12 @@ vi.mock('../lib/formatters', () => ({
 vi.mock('../lib/supabase', () => ({
   supabase: {},
   markNotifsRead: vi.fn().mockResolvedValue({ error: null }),
+  getConversations: vi.fn().mockResolvedValue({ data: [], error: null }),
+  subscribeToMessages: vi.fn(() => ({ unsubscribe: vi.fn() })),
+}))
+
+vi.mock('../hooks/shared/useConversations', () => ({
+  useConversations: () => ({ conversations: [], loading: false, refreshing: false, refresh: vi.fn(), error: null }),
 }))
 
 vi.mock('../lib/legal', () => ({
@@ -642,55 +648,13 @@ describe('WorkerAlerts', () => {
   })
 })
 
-// ── WorkerMessages ───────────────────────────────────────────────
+// ── WorkerMessages (thin wrapper over ConversationsList) ─────────
 
 describe('WorkerMessages', () => {
-  const acceptedApp = {
-    id: 'app1',
-    status: 'accepted',
-    missions: {
-      id: 'm1',
-      title: 'Cariste',
-      company_id: 'co1',
-      companies: { id: 'co1', name: 'ACME Corp' },
-      status: 'active',
-    },
-  }
-
-  const defaultProps = {
-    allMissions: [],
-    onOpenChat: vi.fn(),
-  }
-
-  beforeEach(() => vi.clearAllMocks())
-
-  it('shows empty state when no accepted applications', () => {
-    render(<WorkerMessages {...defaultProps} />)
-    expect(screen.getByText(/messagerie est disponible/)).toBeTruthy()
-  })
-
-  it('renders conversations when accepted apps exist', () => {
-    render(<WorkerMessages {...defaultProps} allMissions={[acceptedApp]} />)
-    expect(screen.getByText('ACME Corp')).toBeTruthy()
-    expect(screen.getByText('Cariste')).toBeTruthy()
-  })
-
-  it('calls onOpenChat when a conversation is clicked', () => {
-    const onOpenChat = vi.fn()
-    render(<WorkerMessages {...defaultProps} allMissions={[acceptedApp]} onOpenChat={onOpenChat} />)
-    fireEvent.click(screen.getByText('ACME Corp').closest('[class*="card"]') || screen.getByText('ACME Corp').closest('div[style]'))
-    expect(onOpenChat).toHaveBeenCalled()
-  })
-
-  it('renders Messages heading in both states', () => {
-    render(<WorkerMessages {...defaultProps} />)
+  it('renders header and empty state via ConversationsList', () => {
+    render(<WorkerMessages userId="worker-1" onOpenChat={vi.fn()} />)
     expect(screen.getByText('Messages')).toBeTruthy()
-  })
-
-  it('shows completed missions in conversations', () => {
-    const completedApp = { ...acceptedApp, id: 'app2', status: 'pending', missions: { ...acceptedApp.missions, status: 'completed' } }
-    render(<WorkerMessages {...defaultProps} allMissions={[completedApp]} />)
-    expect(screen.getByText('ACME Corp')).toBeTruthy()
+    expect(screen.getByText(/entreprises/i)).toBeTruthy()
   })
 })
 
