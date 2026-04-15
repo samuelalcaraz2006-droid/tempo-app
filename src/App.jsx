@@ -53,82 +53,19 @@ const TravailleurApp = React.lazy(() => import('./pages/TravailleurApp.jsx'))
 const EntrepriseApp  = React.lazy(() => import('./pages/EntrepriseApp.jsx'))
 const AdminApp       = React.lazy(() => import('./pages/AdminApp.jsx'))
 const Legal          = React.lazy(() => import('./pages/Legal.jsx'))
+const GodModePicker  = React.lazy(() => import('./pages/GodModePicker.jsx'))
 import CookieBanner from './components/CookieBanner'
 import FeedbackWidget from './components/FeedbackWidget'
-
-// ── Écran de sélection de rôle pour l'admin ───────────────────
-const AdminRoleSelector = ({ onSelect, onLogout }) => (
-  <div style={{
-    minHeight: '100vh', background: 'var(--navy)', display: 'flex',
-    alignItems: 'center', justifyContent: 'center', padding: 24,
-  }}>
-    <div style={{ maxWidth: 480, width: '100%', textAlign: 'center' }}>
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 40 }}>
-        <div style={{ width: 36, height: 36, background: 'var(--brand)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
-        </div>
-        <span style={{ fontWeight: 700, letterSpacing: '2.5px', fontSize: 18, color: '#fff' }}>TEMPO</span>
-      </div>
-
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,85,0,.15)', border: '1px solid rgba(255,85,0,.3)', borderRadius: 99, padding: '4px 14px', marginBottom: 24 }}>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--brand)', display: 'inline-block' }}></span>
-        <span style={{ fontSize: 12, color: 'var(--brand-m)' }}>Mode Administrateur</span>
-      </div>
-
-      <h2 style={{ fontSize: 28, fontWeight: 600, color: '#fff', marginBottom: 8, letterSpacing: '-0.5px' }}>
-        Choisir une vue
-      </h2>
-      <p style={{ fontSize: 14, color: 'rgba(255,255,255,.4)', marginBottom: 36 }}>
-        Navigue entre les différents espaces de l'application
-      </p>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-        {[
-          { role: 'travailleur', icon: '👷', title: 'Espace Travailleur', desc: 'Missions, candidatures, gains, profil' },
-          { role: 'entreprise',  icon: '🏢', title: 'Espace Entreprise',  desc: 'Tableau de bord, publication, contrats' },
-        ].map(({ role, icon, title, desc }) => (
-          <button key={role} onClick={() => onSelect(role)} style={{
-            background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)',
-            borderRadius: 14, padding: '20px 16px', cursor: 'pointer', textAlign: 'center',
-            transition: 'all .15s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,85,0,.12)'; e.currentTarget.style.borderColor = 'rgba(255,85,0,.4)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,.1)' }}
-          >
-            <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 4 }}>{title}</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', lineHeight: 1.4 }}>{desc}</div>
-          </button>
-        ))}
-      </div>
-
-      <button onClick={() => onSelect('admin')} style={{
-        width: '100%', background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)',
-        borderRadius: 14, padding: '16px', cursor: 'pointer', textAlign: 'center', transition: 'all .15s',
-      }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.08)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,.05)' }}
-      >
-        <div style={{ fontSize: 22, marginBottom: 4 }}>⚙️</div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 2 }}>Panel Admin</div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)' }}>Gestion utilisateurs, KYC, statistiques globales</div>
-      </button>
-
-      <button onClick={onLogout} style={{
-        marginTop: 24, background: 'none', border: 'none', fontSize: 13,
-        color: 'rgba(255,255,255,.3)', cursor: 'pointer',
-      }}>
-        Se déconnecter
-      </button>
-    </div>
-  </div>
-)
+import ImpersonationBanner from './components/ImpersonationBanner'
 
 // ── Router principal ──────────────────────────────────────────
 const AppRouter = () => {
-  const { user, profile, loading, recovering, isWorker, isCompany, isAdmin, logout } = useAuth()
+  const {
+    user, profile, loading, recovering,
+    isWorker, isCompany, isAdmin,
+    realProfile, viewAs, resetView,
+  } = useAuth()
   const [forcedPage, setForcedPage] = React.useState(null)
-  const [adminView, setAdminView] = React.useState(null)
   const [showLoginAfterReset, setShowLoginAfterReset] = React.useState(false)
 
   React.useEffect(() => { setSentryUser(user || null) }, [user?.id])
@@ -167,22 +104,21 @@ const AppRouter = () => {
   // ── Utilisateur connecté ──────────────────────────────────
   if (user && profile) {
 
-    // Admin : sélecteur de vue + switch barre flottante
-    if (isAdmin) {
-      if (!adminView) {
-        return <AdminRoleSelector onSelect={setAdminView} onLogout={logout} />
-      }
-      return (
-        <>
-          {adminView === 'travailleur' && <TravailleurApp onNavigate={setForcedPage} onLogoClick={() => setAdminView(null)} />}
-          {adminView === 'entreprise'  && <EntrepriseApp  onNavigate={setForcedPage} onLogoClick={() => setAdminView(null)} />}
-          {adminView === 'admin'       && <AdminApp onLogoClick={() => setAdminView(null)} />}
-        </>
-      )
+    // God Mode : admin pas encore choisi son point de vue
+    if (realProfile?.role === 'admin' && viewAs === null) {
+      return <GodModePicker />
     }
 
-    if (isWorker)  return <TravailleurApp onNavigate={setForcedPage} />
-    if (isCompany) return <EntrepriseApp  onNavigate={setForcedPage} />
+    // Vue effective (admin en impersonation a isWorker / isCompany vrais)
+    const view = (
+      <>
+        <ImpersonationBanner />
+        {isWorker  && <TravailleurApp onNavigate={setForcedPage} onLogoClick={realProfile?.role === 'admin' ? resetView : undefined} />}
+        {isCompany && <EntrepriseApp  onNavigate={setForcedPage} onLogoClick={realProfile?.role === 'admin' ? resetView : undefined} />}
+        {isAdmin   && <AdminApp       onLogoClick={resetView} />}
+      </>
+    )
+    if (isWorker || isCompany || isAdmin) return view
   }
 
   // ── Pages legales ────────────────────────────────────────

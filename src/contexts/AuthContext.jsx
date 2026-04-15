@@ -12,6 +12,12 @@ export const AuthProvider = ({ children }) => {
   const [recovering, setRecovering] = useState(false)
   const isRecovery = useRef(false)
 
+  // God Mode impersonation
+  // null         → admin lands on the picker
+  // 'admin'      → view as real admin
+  // { role, targetId, profile, roleData } → impersonating a worker/company
+  const [viewAs, setViewAs] = useState(null)
+
   // ── Chargement du profil (séparé de onAuthStateChange) ────
   const loadProfile = useCallback(async (userId) => {
     try {
@@ -64,6 +70,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null)
         setProfile(null)
         setRoleData(null)
+        setViewAs(null)
         setLoading(false)
         return
       }
@@ -139,6 +146,7 @@ export const AuthProvider = ({ children }) => {
     // Nettoyer les donnees utilisateur du localStorage
     const tempoKeys = Object.keys(localStorage).filter(k => k.startsWith('tempo_'))
     tempoKeys.forEach(k => localStorage.removeItem(k))
+    setViewAs(null)
     try {
       await supabase.auth.signOut()
     } catch (err) {
@@ -151,17 +159,73 @@ export const AuthProvider = ({ children }) => {
   }
 
   const refreshRoleData = async () => {
-    if (user) await loadProfile(user.id)
+    if (!user) return
+    if (viewAs && typeof viewAs === 'object' && viewAs.targetId) {
+      const table = viewAs.role === 'travailleur' ? 'workers' : 'companies'
+      const [{ data: prof }, { data: role }] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', viewAs.targetId).maybeSingle(),
+        supabase.from(table).select('*').eq('id', viewAs.targetId).maybeSingle(),
+      ])
+      setViewAs(v => (v && typeof v === 'object' ? { ...v, profile: prof, roleData: role } : v))
+      return
+    }
+    await loadProfile(user.id)
   }
+
+  // Admin prend l'identite d'un travailleur ou d'une entreprise
+  const impersonate = useCallback(async (role, targetId) => {
+    const table = role === 'travailleur' ? 'workers' : 'companies'
+    const [{ data: prof }, { data: roleRow }] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', targetId).maybeSingle(),
+      supabase.from(table).select('*').eq('id', targetId).maybeSingle(),
+    ])
+    setViewAs({ role, targetId, profile: prof, roleData: roleRow })
+  }, [])
+
+  const viewAsAdmin = useCallback(() => setViewAs('admin'), [])
+  const resetView   = useCallback(() => setViewAs(null), [])
+
+  // ── Valeurs "effectives" exposees a l'app ──────────────────
+  const isImpersonating = viewAs && typeof viewAs === 'object'
+  const effectiveProfile  = isImpersonating ? viewAs.profile  : profile
+  const effectiveRoleData = isImpersonating ? viewAs.roleData : roleData
+  const effectiveUser = isImpersonating && user
+    ? { ...user, id: viewAs.targetId, email: viewAs.profile?.email || user.email }
+    : user
+
+  // Pour un admin en God Mode :
+  //  - viewAs === null        → defaut admin (la page App.jsx intercepte
+  //    avant le rendu et affiche le picker)
+  //  - viewAs === 'admin'     → admin
+  //  - isImpersonating        → role cible (travailleur / entreprise)
+  const effectiveRole = (() => {
+    if (!profile) return null
+    if (profile.role !== 'admin') return profile.role
+    if (isImpersonating) return viewAs.role
+    return 'admin'
+  })()
 
   return (
     <AuthContext.Provider value={{
-      user, profile, roleData, loading, recovering,
-      isWorker:   profile?.role === 'travailleur',
-      isCompany:  profile?.role === 'entreprise',
-      isAdmin:    profile?.role === 'admin',
-      isVerified: profile?.status === 'verified',
+      user:       effectiveUser,
+      profile:    effectiveProfile,
+      roleData:   effectiveRoleData,
+      loading, recovering,
+      isWorker:   effectiveRole === 'travailleur',
+      isCompany:  effectiveRole === 'entreprise',
+      isAdmin:    effectiveRole === 'admin',
+      isVerified: effectiveProfile?.status === 'verified',
       register, login, logout, refreshRoleData,
+
+      // God Mode API
+      realUser:       user,
+      realProfile:    profile,
+      canImpersonate: profile?.role === 'admin',
+      viewAs,
+      isImpersonating,
+      impersonate,
+      viewAsAdmin,
+      resetView,
     }}>
       {children}
     </AuthContext.Provider>
