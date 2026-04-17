@@ -538,9 +538,11 @@ a { text-decoration: none; color: inherit; }
    RESPONSIVE
 ══════════════════════════════════════════════════════════════ */
 
-/* Empêche tout débordement horizontal global (sources communes
-   d'affichage cassé sur mobile: emojis larges, blobs animés, etc.) */
-html, body { max-width: 100%; overflow-x: hidden; }
+/* Empêche tout débordement horizontal global.
+   NB : on évite `overflow-x: hidden` sur html/body qui casse `position: sticky`
+   sur iOS Safari. `overflow-x: clip` est équivalent sans cet effet de bord. */
+html, body { max-width: 100%; }
+body { overflow-x: clip; }
 
 /* Images / médias: ne jamais dépasser la largeur du conteneur */
 img, svg, video, canvas { max-width: 100%; height: auto; }
