@@ -5,6 +5,8 @@ import { useEffect, useRef } from 'react'
 const CURRENT_BUILD_ID = typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'
 
 const POLL_INTERVAL_MS = 5 * 60 * 1000 // 5 min
+const RELOAD_ATTEMPT_KEY = 'tempo_update_reload_attempts'
+const RELOAD_ATTEMPT_MAX = 3
 
 /**
  * Détecte qu'une nouvelle version a été déployée et recharge la page.
@@ -16,7 +18,9 @@ const POLL_INTERVAL_MS = 5 * 60 * 1000 // 5 min
  *  - à chaque retour de visibilité (onglet repassé en foreground)
  *  - toutes les POLL_INTERVAL_MS tant que l'onglet est actif
  *
- * Si le build côté serveur ≠ build embarqué, on recharge tout de suite.
+ * Garde-fou anti-boucle : au-delà de RELOAD_ATTEMPT_MAX tentatives
+ * dans une même session (sessionStorage), on arrête d'essayer pour
+ * ne pas recharger en boucle si le déploiement est bancal.
  */
 export function useUpdateChecker() {
   const reloadingRef = useRef(false)
@@ -26,8 +30,15 @@ export function useUpdateChecker() {
 
     let cancelled = false
 
+    const readAttempts = () => {
+      const raw = sessionStorage.getItem(RELOAD_ATTEMPT_KEY)
+      const n = Number.parseInt(raw || '0', 10)
+      return Number.isFinite(n) ? n : 0
+    }
+
     const check = async () => {
       if (reloadingRef.current) return
+      if (readAttempts() >= RELOAD_ATTEMPT_MAX) return
       try {
         const res = await fetch(`/version.json?t=${Date.now()}`, {
           cache: 'no-store',
@@ -38,8 +49,12 @@ export function useUpdateChecker() {
         if (cancelled || !buildId) return
         if (buildId !== CURRENT_BUILD_ID) {
           reloadingRef.current = true
+          sessionStorage.setItem(RELOAD_ATTEMPT_KEY, String(readAttempts() + 1))
           // Petit délai pour laisser une éventuelle navigation en cours se finir
           setTimeout(() => window.location.reload(), 50)
+        } else {
+          // Versions alignées : on peut remettre le compteur à zéro.
+          sessionStorage.removeItem(RELOAD_ATTEMPT_KEY)
         }
       } catch {
         // Offline ou erreur réseau — on retente au prochain cycle
