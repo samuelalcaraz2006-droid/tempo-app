@@ -545,6 +545,13 @@ html, body { max-width: 100%; overflow-x: hidden; }
 /* Images / médias: ne jamais dépasser la largeur du conteneur */
 img, svg, video, canvas { max-width: 100%; height: auto; }
 
+/* Landing wrapper navbar (App.jsx) — 54px en desktop, masquée sur mobile
+   pour laisser la navbar de Landing (avec burger menu) prendre la relève */
+.app-landing-pad { padding-top: 54px; }
+@media (max-width: 768px) {
+  .app-landing-pad { padding-top: 0 !important; }
+}
+
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
   .show-mobile { display: flex !important; }
