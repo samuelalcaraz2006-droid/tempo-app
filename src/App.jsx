@@ -57,6 +57,7 @@ const GodModePicker  = React.lazy(() => import('./pages/GodModePicker.jsx'))
 import CookieBanner from './components/CookieBanner'
 import FeedbackWidget from './components/FeedbackWidget'
 import ImpersonationBanner from './components/ImpersonationBanner'
+import { useUpdateChecker } from './hooks/useUpdateChecker'
 
 // ── Router principal ──────────────────────────────────────────
 const AppRouter = () => {
@@ -166,6 +167,7 @@ const LazyFallback = () => (
 )
 
 export default function App() {
+  useUpdateChecker()
   return (
     <ErrorBoundary>
       <I18nProvider>
