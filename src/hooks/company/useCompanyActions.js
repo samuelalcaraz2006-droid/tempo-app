@@ -11,6 +11,7 @@ import {
   createInvoice,
   supabase,
 } from '../../lib/supabase'
+import { getRecurrenceCounts } from '../../lib/recurrenceCheck'
 
 export function useCompanyActions(userId, { showToast, setMissions, setInvoices, missions, refreshRoleData }) {
   const [publishing, setPublishing] = useState(false)
@@ -117,9 +118,25 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     setSelectedMissionId(missionId)
     const { data, error } = await getMissionApplications(missionId)
     if (error) showToast('Erreur lors du chargement des candidatures', 'error')
-    if (data) setCandidates(data)
+    if (data) {
+      // Enrichit chaque candidat avec son historique de missions avec cette
+      // entreprise (pour afficher l'alerte anti-requalification à côté du
+      // bouton Accepter).
+      const workerIds = data
+        .map((c) => c.workers?.id || c.worker_id)
+        .filter(Boolean)
+      let enriched = data
+      if (userId && workerIds.length) {
+        const { data: counts } = await getRecurrenceCounts(userId, workerIds)
+        enriched = data.map((c) => ({
+          ...c,
+          recurrence_count: counts[c.workers?.id || c.worker_id] || 0,
+        }))
+      }
+      setCandidates(enriched)
+    }
     return { data, error }
-  }, [showToast])
+  }, [userId, showToast])
 
   const handleAccept = useCallback(async (candidate) => {
     const key = candidate.id
