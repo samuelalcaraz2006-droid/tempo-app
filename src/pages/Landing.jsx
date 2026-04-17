@@ -116,9 +116,9 @@ function Navbar({ onNavigate }) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button className="btn-ghost" onClick={() => onNavigate('auth')} style={{ fontSize: 14, padding: '9px 20px' }}>Connexion</button>
-          <button className="btn-primary" onClick={() => onNavigate('auth')} style={{ fontSize: 14, padding: '9px 20px' }}>Demarrer <ArrowRight size={14} /></button>
-          <button aria-label="Menu mobile" onClick={() => setMobileOpen(o => !o)} style={{ background: 'none', border: 'none', color: '#fff', display: 'none' }} className="nav-mobile-btn">
+          <button className="btn-ghost nav-desktop-cta" onClick={() => onNavigate('auth')} style={{ fontSize: 14, padding: '9px 20px' }}>Connexion</button>
+          <button className="btn-primary nav-desktop-cta" onClick={() => onNavigate('auth')} style={{ fontSize: 14, padding: '9px 20px' }}>Demarrer <ArrowRight size={14} /></button>
+          <button aria-label="Menu mobile" onClick={() => setMobileOpen(o => !o)} style={{ background: 'none', border: 'none', color: '#fff', display: 'none', cursor:'pointer', padding:8 }} className="nav-mobile-btn">
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
@@ -132,6 +132,10 @@ function Navbar({ onNavigate }) {
                 {label}
               </button>
             ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 16 }}>
+              <button type="button" className="btn-ghost" onClick={() => { setMobileOpen(false); onNavigate('auth') }} style={{ fontSize: 14, padding: '11px 20px', justifyContent: 'center' }}>Connexion</button>
+              <button type="button" className="btn-primary" onClick={() => { setMobileOpen(false); onNavigate('auth') }} style={{ fontSize: 14, padding: '11px 20px', justifyContent: 'center' }}>Demarrer <ArrowRight size={14} /></button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -205,8 +209,8 @@ export default function Landing({ onNavigate }) {
       <Navbar onNavigate={onNavigate} />
 
       <section id="hero" style={{ background: 'var(--navy)', minHeight: '100dvh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 68 }}>
-        <div className="blob-animate" style={{ position: 'absolute', top: '-20%', left: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(37,99,235,0.22) 0%, transparent 70%)' }} />
-        <div className="blob-animate" style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)', animationDelay: '4s' }} />
+        <div className="blob-animate hero-blob" style={{ position: 'absolute', top: '-20%', left: '-10%', width: 'clamp(300px, 55vw, 600px)', height: 'clamp(300px, 55vw, 600px)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(37,99,235,0.22) 0%, transparent 70%)' }} />
+        <div className="blob-animate hero-blob" style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: 'clamp(260px, 45vw, 500px)', height: 'clamp(260px, 45vw, 500px)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)', animationDelay: '4s' }} />
 
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '60px 24px', width: '100%', display: 'flex', alignItems: 'center', gap: 60 }} className="hero-grid">
           <motion.div initial="hidden" animate="visible" variants={stagger} style={{ flex: 1 }}>
@@ -435,10 +439,33 @@ export default function Landing({ onNavigate }) {
 
       <style>{`
         @media (max-width: 768px) {
-          .hero-grid { flex-direction: column !important; text-align: center; }
+          .hero-grid {
+            flex-direction: column !important;
+            text-align: center;
+            gap: 32px !important;
+            padding: 40px 20px !important;
+          }
           .hero-mockup { display: none !important; }
           .nav-desktop { display: none !important; }
-          .nav-mobile-btn { display: block !important; }
+          .nav-mobile-btn { display: flex !important; align-items: center; }
+          .nav-desktop-cta { display: none !important; }
+          #hero { min-height: auto !important; }
+          section:not(#hero) {
+            padding-top: 56px !important;
+            padding-bottom: 56px !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+          }
+          .hero-grid h1 {
+            font-size: clamp(28px, 8vw, 40px) !important;
+          }
+          .hero-grid p {
+            font-size: 15px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          #hero { padding-top: 60px !important; }
+          .hero-grid { padding: 32px 16px !important; }
         }
       `}</style>
     </div>

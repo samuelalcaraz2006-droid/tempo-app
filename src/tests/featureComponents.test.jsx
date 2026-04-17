@@ -17,6 +17,7 @@ vi.mock('lucide-react', () => ({
   Sun: () => <svg data-testid="sun-icon" />,
   Download: () => <svg data-testid="download-icon" />,
   RefreshCw: () => <svg data-testid="refreshcw-icon" />,
+  LogOut: () => <svg data-testid="logout-icon" />,
 }))
 
 vi.mock('../lib/formatters', () => ({

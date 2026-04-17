@@ -432,7 +432,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
         />
       )}
 
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '20px 16px' }}>
+      <div className="app-main-container" style={{ maxWidth: 680, margin: '0 auto', padding: '20px 16px' }}>
         {screen === 'accueil' && (
           <WorkerDashboard
             worker={worker}
