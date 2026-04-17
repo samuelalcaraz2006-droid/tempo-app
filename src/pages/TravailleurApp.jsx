@@ -301,7 +301,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
           className={disponible ? 'pulse' : ''}
           style={{ width: 7, height: 7, borderRadius: '50%', background: disponible ? 'var(--gr)' : 'var(--g4)', display: 'inline-block' }}
         ></span>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,.7)' }}>{disponible ? 'Disponible' : 'Indisponible'}</span>
+        <span className="hide-mobile" style={{ fontSize: 12, color: 'rgba(255,255,255,.7)' }}>{disponible ? 'Disponible' : 'Indisponible'}</span>
         <input
           type="checkbox"
           checked={disponible}
