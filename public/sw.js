@@ -1,62 +1,48 @@
-const CACHE_NAME = 'tempo-v2'
-const PRECACHE = ['/', '/index.html']
+// Cache busté à chaque déploiement pour éviter que les clients restent
+// coincés sur d'anciens assets (bug: UI mobile qui revient en arrière).
+// Bump le suffixe quand le SW lui-même change.
+const CACHE_NAME = 'tempo-v3'
 
-// Assets statiques : JS, CSS, fonts, images
-const STATIC_EXTS = /\.(js|css|woff2?|ttf|svg|png|webp|ico)(\?.*)?$/
-
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE))
-  )
+self.addEventListener('install', () => {
+  // Active immédiatement le nouveau SW sans attendre la fermeture des onglets
   self.skipWaiting()
 })
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
-  )
-  self.clients.claim()
+  e.waitUntil((async () => {
+    // Supprime tous les anciens caches (purge complète à chaque nouveau SW)
+    const keys = await caches.keys()
+    await Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    await self.clients.claim()
+  })())
 })
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return
 
   const url = new URL(e.request.url)
-  const isSupabase = url.hostname.includes('supabase')
-  const isStatic = STATIC_EXTS.test(url.pathname)
+  if (url.hostname.includes('supabase')) return
 
-  if (isSupabase) {
-    // Network-only pour les appels API Supabase (données temps réel)
-    return
-  }
+  const isNavigate = e.request.mode === 'navigate'
+  const isHTML = isNavigate || e.request.headers.get('accept')?.includes('text/html')
 
-  if (isStatic) {
-    // Cache-first pour les assets statiques (JS/CSS/fonts)
+  if (isHTML) {
+    // Network-first pour les pages HTML : garantit que le client récupère
+    // toujours la dernière version (qui référence les bons hash d'assets).
     e.respondWith(
-      caches.match(e.request).then((cached) => {
-        if (cached) return cached
-        return fetch(e.request).then((res) => {
+      fetch(e.request)
+        .then((res) => {
           const clone = res.clone()
           caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone))
           return res
         })
-      })
+        .catch(() => caches.match(e.request).then((cached) => cached || caches.match('/'))),
     )
     return
   }
 
-  // Network-first pour les pages HTML et le reste
-  e.respondWith(
-    fetch(e.request)
-      .then((res) => {
-        const clone = res.clone()
-        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone))
-        return res
-      })
-      .catch(() => caches.match(e.request))
-  )
+  // Pour tout le reste (JS/CSS/fonts avec hash Vite dans le filename),
+  // on laisse faire le cache HTTP (Cache-Control immutable dans vercel.json).
 })
 
 // Push notification handler
