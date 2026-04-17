@@ -66,10 +66,10 @@ export default function DashboardLayout({ role, tabs, activeTab, onTabChange, on
         )}
 
         <div className="app-header-actions" style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0, marginLeft: isWorker ? 0 : 'auto' }} role="toolbar" aria-label="Actions rapides">
-          <button type="button" onClick={() => switchLocale(locale === 'fr' ? 'en' : 'fr')} aria-label={locale === 'fr' ? 'Switch to English' : 'Passer en francais'} className="hide-mobile" style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border: isWorker ? 'none' : '1px solid var(--g2)', borderRadius: isWorker ? 8 : 6, padding: isWorker ? '6px 10px' : '4px 8px', color: headerColor, cursor:'pointer', fontSize:11, fontWeight:600, letterSpacing:'0.5px' }}>
+          <button type="button" onClick={() => switchLocale(locale === 'fr' ? 'en' : 'fr')} aria-label={locale === 'fr' ? 'Switch to English' : 'Passer en francais'} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border: isWorker ? 'none' : '1px solid var(--g2)', borderRadius: isWorker ? 8 : 6, padding: isWorker ? '6px 10px' : '4px 8px', color: headerColor, cursor:'pointer', fontSize:11, fontWeight:600, letterSpacing:'0.5px' }}>
             {locale === 'fr' ? 'EN' : 'FR'}
           </button>
-          <button type="button" onClick={toggleDarkMode} aria-label={darkMode ? 'Passer en mode clair' : 'Passer en mode sombre'} className="hide-mobile" style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }}>
+          <button type="button" onClick={toggleDarkMode} aria-label={darkMode ? 'Passer en mode clair' : 'Passer en mode sombre'} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }}>
             {darkMode ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           {onNotifClick && (
