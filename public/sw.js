@@ -1,65 +1,29 @@
-const CACHE_NAME = 'tempo-v2'
-const PRECACHE = ['/', '/index.html']
+// Service worker minimaliste : PAS de cache applicatif.
+// Les assets Vite ont déjà un hash unique dans leur filename (immutable
+// via Cache-Control dans vercel.json), donc le cache HTTP du navigateur
+// gère tout correctement. Un cache SW custom était la source des bugs
+// de mise à jour où les clients restaient bloqués sur d'anciens assets.
+//
+// Ce SW ne sert plus qu'aux push notifications. Au premier chargement
+// d'une version récente de l'app, on purge tous les anciens caches
+// (tempo-v2, tempo-v3, etc.) et on désinscrit les stratégies fetch.
 
-// Assets statiques : JS, CSS, fonts, images
-const STATIC_EXTS = /\.(js|css|woff2?|ttf|svg|png|webp|ico)(\?.*)?$/
-
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE))
-  )
+self.addEventListener('install', () => {
   self.skipWaiting()
 })
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
-  )
-  self.clients.claim()
+  e.waitUntil((async () => {
+    const keys = await caches.keys()
+    await Promise.all(keys.map((k) => caches.delete(k)))
+    await self.clients.claim()
+  })())
 })
 
-self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') return
+// Pas de handler fetch : toutes les requêtes passent directement au réseau
+// (et au cache HTTP natif du navigateur). Un handler vide empêche même
+// le SW d'intercepter la moindre requête, éliminant toute source de bug.
 
-  const url = new URL(e.request.url)
-  const isSupabase = url.hostname.includes('supabase')
-  const isStatic = STATIC_EXTS.test(url.pathname)
-
-  if (isSupabase) {
-    // Network-only pour les appels API Supabase (données temps réel)
-    return
-  }
-
-  if (isStatic) {
-    // Cache-first pour les assets statiques (JS/CSS/fonts)
-    e.respondWith(
-      caches.match(e.request).then((cached) => {
-        if (cached) return cached
-        return fetch(e.request).then((res) => {
-          const clone = res.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone))
-          return res
-        })
-      })
-    )
-    return
-  }
-
-  // Network-first pour les pages HTML et le reste
-  e.respondWith(
-    fetch(e.request)
-      .then((res) => {
-        const clone = res.clone()
-        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone))
-        return res
-      })
-      .catch(() => caches.match(e.request))
-  )
-})
-
-// Push notification handler
 self.addEventListener('push', (e) => {
   const data = e.data ? e.data.json() : {}
   const title = data.title || 'TEMPO'

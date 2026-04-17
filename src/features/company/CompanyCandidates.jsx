@@ -1,4 +1,46 @@
 import React from 'react'
+import { getRecurrenceLevel, getRecurrenceMessage } from '../../lib/recurrenceCheck'
+
+const RECURRENCE_STYLES = {
+  info: {
+    background: 'var(--bl-l)',
+    color: 'var(--brand-d)',
+    border: '1px solid rgba(37,99,235,.18)',
+  },
+  warn: {
+    background: 'var(--am-l)',
+    color: '#92400E',
+    border: '1px solid rgba(245,158,11,.25)',
+  },
+  danger: {
+    background: 'var(--rd-l)',
+    color: 'var(--rd)',
+    border: '1px solid rgba(239,68,68,.3)',
+  },
+}
+
+function RecurrenceBanner({ count }) {
+  const level = getRecurrenceLevel(count)
+  const msg = getRecurrenceMessage(count, level)
+  if (!msg) return null
+  const style = RECURRENCE_STYLES[msg.tone] || RECURRENCE_STYLES.info
+  return (
+    <div
+      role="alert"
+      style={{
+        marginTop: 10,
+        padding: '8px 12px',
+        borderRadius: 8,
+        fontSize: 12,
+        lineHeight: 1.4,
+        ...style,
+      }}
+    >
+      <div style={{ fontWeight: 600, marginBottom: 2 }}>{msg.title}</div>
+      <div style={{ opacity: 0.9 }}>{msg.body}</div>
+    </div>
+  )
+}
 
 export default function CompanyCandidates({
   candidates,
@@ -52,6 +94,7 @@ export default function CompanyCandidates({
                   )}
                 </div>
               </div>
+              <RecurrenceBanner count={c.recurrence_count || 0} />
               {isPending && (
                 <div style={{ display: 'flex', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid #F4F4F2' }}>
                   <button style={{ flex: 1, padding: '8px', border: '1.5px solid var(--g2)', borderRadius: 8, background: 'var(--wh)', fontSize: 13, color: 'var(--g6)', cursor: 'pointer', fontWeight: 500, transition: 'all .15s' }}

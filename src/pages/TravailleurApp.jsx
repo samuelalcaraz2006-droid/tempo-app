@@ -191,6 +191,16 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
     }
   })
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('tempo_onboarding_done'))
+  // Rappel discret qui apparait près du toggle quand le travailleur est
+  // indisponible. Affiché à chaque session (pas une seule fois dans la vie
+  // du compte) via sessionStorage : si l'utilisateur reste indisponible,
+  // on le relance à chaque connexion — mais une fois dismissé dans une
+  // session, on ne le réaffiche pas jusqu'à la prochaine ouverture.
+  const [showDispoReminder, setShowDispoReminder] = useState(false)
+  const dismissDispoReminder = () => {
+    setShowDispoReminder(false)
+    sessionStorage.setItem('tempo_dispo_reminder_dismissed', '1')
+  }
 
   const data = useWorkerData(user?.id, worker)
   const actions = useWorkerActions(user?.id, {
@@ -207,19 +217,40 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const urgentMissions = data.missions.filter((m) => m.urgency === 'immediate' || m.urgency === 'urgent')
 
   useEffect(() => {
-    if (worker) {
-      setDisponible(worker.is_available || false)
-      setProfileForm({
-        first_name: worker.first_name || '',
-        last_name: worker.last_name || '',
-        city: worker.city || '',
-        siret: worker.siret || '',
-        radius_km: worker.radius_km || 10,
-        skills: worker.skills || [],
-        certifications: worker.certifications || [],
-      })
+    if (!worker) return
+    // Nouveau compte : is_available est null/undefined → on bascule en
+    // "Disponible" par défaut et on persiste. Le travailleur peut toujours
+    // se mettre en indisponible après, mais on part du bon pied.
+    if (worker.is_available == null) {
+      setDisponible(true)
+      actions.toggleDispo(true, () => {})
+    } else {
+      setDisponible(worker.is_available)
     }
+    setProfileForm({
+      first_name: worker.first_name || '',
+      last_name: worker.last_name || '',
+      city: worker.city || '',
+      siret: worker.siret || '',
+      radius_km: worker.radius_km || 10,
+      skills: worker.skills || [],
+      certifications: worker.certifications || [],
+    })
   }, [worker?.id])
+
+  // Affiche le rappel si le travailleur est indisponible et n'a pas
+  // encore dismissé le message dans cette session.
+  useEffect(() => {
+    if (!worker) return
+    if (disponible) {
+      setShowDispoReminder(false)
+      return
+    }
+    if (sessionStorage.getItem('tempo_dispo_reminder_dismissed')) return
+    // Petit délai pour laisser la page s'installer avant de popover
+    const timer = setTimeout(() => setShowDispoReminder(true), 900)
+    return () => clearTimeout(timer)
+  }, [disponible, worker?.id])
 
   const badges = React.useMemo(() => {
     const b = []
@@ -301,12 +332,16 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
           className={disponible ? 'pulse' : ''}
           style={{ width: 7, height: 7, borderRadius: '50%', background: disponible ? 'var(--gr)' : 'var(--g4)', display: 'inline-block' }}
         ></span>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,.7)' }}>{disponible ? 'Disponible' : 'Indisponible'}</span>
+        <span className="hide-mobile" style={{ fontSize: 12, color: 'rgba(255,255,255,.7)' }}>{disponible ? 'Disponible' : 'Indisponible'}</span>
         <input
           type="checkbox"
           checked={disponible}
-          onChange={(e) => actions.toggleDispo(e.target.checked, setDisponible)}
+          onChange={(e) => {
+            actions.toggleDispo(e.target.checked, setDisponible)
+            if (e.target.checked) dismissDispoReminder()
+          }}
           style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--or)' }}
+          aria-describedby={showDispoReminder ? 'dispo-reminder' : undefined}
         />
       </div>
     </div>
@@ -333,6 +368,93 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
       onNotifClick={() => setScreen('notifs')}
     >
       <Toast toast={toast} onDismiss={dismissToast} />
+
+      {showDispoReminder && !showOnboarding && (
+        <div
+          id="dispo-reminder"
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'fixed',
+            top: 'calc(54px + env(safe-area-inset-top, 0px) + 8px)',
+            right: 12,
+            zIndex: 90,
+            width: 'min(280px, calc(100vw - 24px))',
+            background: 'var(--wh2)',
+            border: '1px solid var(--g2)',
+            borderRadius: 12,
+            boxShadow: '0 12px 32px rgba(15,23,42,.18)',
+            padding: '12px 14px',
+            animation: 'fadeUp .25s ease-out',
+          }}
+        >
+          {/* Petite pointe qui connecte visuellement la bulle au toggle au-dessus */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              top: -6,
+              right: 22,
+              width: 12,
+              height: 12,
+              background: 'var(--wh2)',
+              borderLeft: '1px solid var(--g2)',
+              borderTop: '1px solid var(--g2)',
+              transform: 'rotate(45deg)',
+            }}
+          />
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+            <span
+              aria-hidden="true"
+              style={{
+                flexShrink: 0,
+                width: 8,
+                height: 8,
+                marginTop: 6,
+                borderRadius: '50%',
+                background: 'var(--g4)',
+                boxShadow: '0 0 0 4px rgba(148,163,184,.25)',
+              }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--bk)', marginBottom: 2 }}>
+                Tu es indisponible
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--g5)', lineHeight: 1.5, marginBottom: 10 }}>
+                Coche la case à côté du point pour passer en <strong style={{ color: 'var(--gr-d)' }}>Disponible</strong> et recevoir des missions.
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    actions.toggleDispo(true, setDisponible)
+                    dismissDispoReminder()
+                  }}
+                  className="btn-primary"
+                  style={{ flex: 1, justifyContent: 'center', padding: '7px 12px', fontSize: 12 }}
+                >
+                  Me mettre dispo
+                </button>
+                <button
+                  type="button"
+                  onClick={dismissDispoReminder}
+                  aria-label="Plus tard"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--g5)',
+                    fontSize: 12,
+                    padding: '7px 8px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Plus tard
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showOnboarding && (
         <div
@@ -368,9 +490,10 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
               <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Bienvenue sur TEMPO !</div>
             </div>
             {[
-              ['Completez votre profil', "Competences, certifications et zone d'intervention."],
-              ['Parcourez les missions', 'Filtres, recherche et score de matching.'],
-              ['Postulez et travaillez', 'Contrat et paiement securises.'],
+              ['Tu es déjà disponible', "Le point vert en haut à droite signale que tu es prêt à recevoir des missions. Coche / décoche la case quand tu veux faire une pause."],
+              ['Complete ton profil', "Competences, certifications et zone d'intervention."],
+              ['Parcours les missions', 'Filtres, recherche et score de matching.'],
+              ['Postule et travaille', 'Contrat et paiement securises.'],
             ].map(([t, d], i) => (
               <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
                 <div
@@ -432,7 +555,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
         />
       )}
 
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '20px 16px' }}>
+      <div className="app-main-container" style={{ maxWidth: 680, margin: '0 auto', padding: '20px 16px' }}>
         {screen === 'accueil' && (
           <WorkerDashboard
             worker={worker}

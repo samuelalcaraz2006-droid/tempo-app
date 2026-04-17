@@ -124,29 +124,62 @@ describe('useCompanyActions', () => {
       useCompanyActions('user-1', { showToast, setMissions, setInvoices, missions })
     )
 
+  const VALID_FORM = {
+    title: 'New',
+    sector: 'logistique',
+    objet_prestation: 'Objet suffisamment long pour passer la validation des 40 caractères minimum requis.',
+    motif_recours: 'accroissement_temporaire',
+    pricing_mode: 'forfait',
+    forfait_total: '200',
+    total_hours: '8',
+    hourly_rate: '',
+    city: 'Lyon',
+    start_date: '2025-06-10',
+    urgency: 'normal',
+    legal_confirmed: true,
+  }
+
   it('handlePublish shows error when required fields missing', async () => {
     const { result } = makeHook()
     await act(async () => {
-      await result.current.handlePublish({ title: '', hourly_rate: '', city: '', start_date: '' })
+      await result.current.handlePublish({ title: '', city: '', start_date: '' })
     })
-    expect(showToast).toHaveBeenCalledWith(expect.stringContaining('obligatoires'), 'error')
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining('titre'), 'error')
+    expect(createMission).not.toHaveBeenCalled()
+  })
+
+  it('handlePublish shows error when objet_prestation too short', async () => {
+    const { result } = makeHook()
+    await act(async () => {
+      await result.current.handlePublish({ ...VALID_FORM, objet_prestation: 'trop court' })
+    })
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining('objet'), 'error')
+    expect(createMission).not.toHaveBeenCalled()
+  })
+
+  it('handlePublish shows error when legal_confirmed is false', async () => {
+    const { result } = makeHook()
+    await act(async () => {
+      await result.current.handlePublish({ ...VALID_FORM, legal_confirmed: false })
+    })
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining('engagement'), 'error')
     expect(createMission).not.toHaveBeenCalled()
   })
 
   it('handlePublish shows error for invalid date', async () => {
     const { result } = makeHook()
     await act(async () => {
-      await result.current.handlePublish({ title: 'Mission', hourly_rate: '15', city: 'Lyon', start_date: 'not-a-date' })
+      await result.current.handlePublish({ ...VALID_FORM, start_date: 'not-a-date' })
     })
     expect(showToast).toHaveBeenCalledWith(expect.stringContaining('date'), 'error')
   })
 
-  it('handlePublish shows error for invalid hourly_rate', async () => {
+  it('handlePublish shows error for invalid forfait', async () => {
     const { result } = makeHook()
     await act(async () => {
-      await result.current.handlePublish({ title: 'Mission', hourly_rate: '-5', city: 'Lyon', start_date: '2025-01-10' })
+      await result.current.handlePublish({ ...VALID_FORM, forfait_total: '-5' })
     })
-    expect(showToast).toHaveBeenCalledWith(expect.stringContaining('taux horaire'), 'error')
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining('montant'), 'error')
   })
 
   it('handlePublish succeeds and updates missions', async () => {
@@ -155,10 +188,7 @@ describe('useCompanyActions', () => {
     const { result } = makeHook()
     const onSuccess = vi.fn()
     await act(async () => {
-      await result.current.handlePublish(
-        { title: 'New', hourly_rate: '15', city: 'Lyon', start_date: '2025-06-10', sector: 'logistique', urgency: 'normal' },
-        onSuccess
-      )
+      await result.current.handlePublish(VALID_FORM, onSuccess)
     })
     expect(createMission).toHaveBeenCalled()
     expect(setMissions).toHaveBeenCalled()
@@ -238,7 +268,7 @@ describe('useCompanyActions', () => {
     await act(async () => {
       await result.current.handleSignContract('base64-sig')
     })
-    expect(saveContract).toHaveBeenCalledWith(expect.objectContaining({ mission_id: 'm1', company_signature: 'base64-sig' }))
+    expect(saveContract).toHaveBeenCalledWith(expect.objectContaining({ mission_id: 'm1', status: 'signed_company' }))
     expect(showToast).toHaveBeenCalledWith(expect.stringContaining('signé'))
   })
 

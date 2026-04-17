@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import React from 'react'
 import { I18nProvider, useI18n } from '../contexts/I18nContext'
@@ -7,8 +7,14 @@ import { I18nProvider, useI18n } from '../contexts/I18nContext'
 const wrapper = ({ children }) => <I18nProvider>{children}</I18nProvider>
 
 describe('useI18n', () => {
+  let langSpy
   beforeEach(() => {
     localStorage.clear()
+    // Simule un navigateur francophone : sans ça, jsdom renvoie 'en-US'
+    langSpy = vi.spyOn(navigator, 'language', 'get').mockReturnValue('fr-FR')
+  })
+  afterEach(() => {
+    langSpy?.mockRestore()
   })
 
   it('locale par défaut est fr si rien en localStorage', () => {

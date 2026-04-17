@@ -57,6 +57,7 @@ const GodModePicker  = React.lazy(() => import('./pages/GodModePicker.jsx'))
 import CookieBanner from './components/CookieBanner'
 import FeedbackWidget from './components/FeedbackWidget'
 import ImpersonationBanner from './components/ImpersonationBanner'
+import { useUpdateChecker } from './hooks/useUpdateChecker'
 
 // ── Router principal ──────────────────────────────────────────
 const AppRouter = () => {
@@ -134,7 +135,7 @@ const AppRouter = () => {
   // ── Landing ───────────────────────────────────────────────
   return (
     <div>
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: 'rgba(17,17,17,.96)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '0 24px', display: 'flex', alignItems: 'center', height: 54 }}>
+      <nav className="app-landing-nav hide-mobile" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: 'rgba(17,17,17,.96)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '0 24px', display: 'flex', alignItems: 'center', height: 54 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 'auto' }}>
             <div style={{ width: 26, height: 26, background: 'var(--brand)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -143,13 +144,13 @@ const AppRouter = () => {
             <span style={{ fontWeight: 600, letterSpacing: '2px', fontSize: 13, color: '#fff' }}>TEMPO</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button onClick={() => setForcedPage('auth')} style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,.15)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,.75)', cursor: 'pointer' }}>Connexion</button>
-            <button onClick={() => setForcedPage('travailleur')} style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,.15)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,.75)', cursor: 'pointer' }}>Espace Travailleur</button>
-            <button onClick={() => setForcedPage('entreprise')} style={{ padding: '8px 18px', background: 'var(--brand)', border: 'none', borderRadius: 8, fontSize: 13, color: '#fff', cursor: 'pointer', fontWeight: 500 }}>Espace Entreprise</button>
+            <button type="button" onClick={() => setForcedPage('auth')} style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,.15)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,.75)', cursor: 'pointer' }}>Connexion</button>
+            <button type="button" onClick={() => setForcedPage('travailleur')} style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,.15)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,.75)', cursor: 'pointer' }}>Espace Travailleur</button>
+            <button type="button" onClick={() => setForcedPage('entreprise')} style={{ padding: '8px 18px', background: 'var(--brand)', border: 'none', borderRadius: 8, fontSize: 13, color: '#fff', cursor: 'pointer', fontWeight: 500 }}>Espace Entreprise</button>
           </div>
         </div>
       </nav>
-      <div style={{ paddingTop: 54 }}>
+      <div className="app-landing-pad">
         <Landing onNavigate={setForcedPage} />
       </div>
     </div>
@@ -166,6 +167,7 @@ const LazyFallback = () => (
 )
 
 export default function App() {
+  useUpdateChecker()
   return (
     <ErrorBoundary>
       <I18nProvider>

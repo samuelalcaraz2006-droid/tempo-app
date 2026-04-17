@@ -11,6 +11,7 @@ import {
   createInvoice,
   supabase,
 } from '../../lib/supabase'
+import { getRecurrenceCounts } from '../../lib/recurrenceCheck'
 
 export function useCompanyActions(userId, { showToast, setMissions, setInvoices, missions, refreshRoleData }) {
   const [publishing, setPublishing] = useState(false)
@@ -34,8 +35,20 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
   })
 
   const handlePublish = useCallback(async (form, onSuccess) => {
-    if (!form.title || !form.hourly_rate || !form.city || !form.start_date) {
-      showToast('Veuillez remplir tous les champs obligatoires', 'error')
+    if (!form.title?.trim() || !form.city?.trim() || !form.start_date) {
+      showToast('Veuillez remplir le titre, la ville et la date de début', 'error')
+      return
+    }
+    if (!form.objet_prestation || form.objet_prestation.trim().length < 40) {
+      showToast('L\'objet de la prestation doit être précis (40 caractères minimum)', 'error')
+      return
+    }
+    if (!form.motif_recours) {
+      showToast('Veuillez préciser le motif de recours', 'error')
+      return
+    }
+    if (!form.legal_confirmed) {
+      showToast('Merci de confirmer l\'engagement juridique avant de publier', 'error')
       return
     }
     const parsedDate = new Date(form.start_date)
@@ -43,18 +56,44 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
       showToast('La date de début est invalide', 'error')
       return
     }
-    const hourlyRate = parseFloat(form.hourly_rate)
-    if (isNaN(hourlyRate) || hourlyRate <= 0) {
-      showToast('Le taux horaire doit être un nombre positif', 'error')
+
+    // Normalisation rémunération : on stocke toujours un forfait_total et,
+    // quand on peut, un hourly_rate dérivé. La facture finale est forfaitaire.
+    const totalHours = form.total_hours ? parseFloat(form.total_hours) : null
+    const forfaitInput = parseFloat(form.forfait_total) || 0
+    const hourlyInput = parseFloat(form.hourly_rate) || 0
+    const pricingMode = form.pricing_mode === 'horaire' ? 'horaire' : 'forfait'
+
+    let forfaitTotal = null
+    let hourlyRate = null
+    if (pricingMode === 'forfait') {
+      forfaitTotal = forfaitInput || (hourlyInput && totalHours ? hourlyInput * totalHours : 0)
+      hourlyRate = totalHours && forfaitTotal ? forfaitTotal / totalHours : (hourlyInput || null)
+    } else {
+      hourlyRate = hourlyInput
+      forfaitTotal = totalHours && hourlyInput ? hourlyInput * totalHours : null
+    }
+
+    if (!forfaitTotal && !hourlyRate) {
+      showToast('Veuillez renseigner le montant de la prestation', 'error')
       return
     }
+    if ((forfaitTotal != null && forfaitTotal <= 0) || (hourlyRate != null && hourlyRate <= 0)) {
+      showToast('Le montant doit être un nombre positif', 'error')
+      return
+    }
+
     setPublishing(true)
     const { data, error } = await createMission({
       company_id: userId,
       title: form.title.trim(),
       sector: form.sector,
+      objet_prestation: form.objet_prestation.trim(),
+      motif_recours: form.motif_recours,
+      pricing_mode: pricingMode,
+      forfait_total: forfaitTotal,
       hourly_rate: hourlyRate,
-      total_hours: form.total_hours ? parseFloat(form.total_hours) : null,
+      total_hours: totalHours,
       start_date: parsedDate.toISOString(),
       city: form.city.trim(),
       address: form.address?.trim() || '',
@@ -62,6 +101,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
       required_skills: form.required_skills,
       required_certs: form.required_certs,
       urgency: form.urgency,
+      legal_confirmation_at: new Date().toISOString(),
     })
     setPublishing(false)
     if (error) {
@@ -69,7 +109,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     } else {
       setPublished(true)
       setMissions(prev => [data, ...prev])
-      showToast('Mission publiée — les travailleurs sont notifiés !')
+      showToast('Mission publiée — les prestataires sont notifiés !')
       if (onSuccess) onSuccess()
     }
   }, [userId, showToast, setMissions])
@@ -78,9 +118,25 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     setSelectedMissionId(missionId)
     const { data, error } = await getMissionApplications(missionId)
     if (error) showToast('Erreur lors du chargement des candidatures', 'error')
-    if (data) setCandidates(data)
+    if (data) {
+      // Enrichit chaque candidat avec son historique de missions avec cette
+      // entreprise (pour afficher l'alerte anti-requalification à côté du
+      // bouton Accepter).
+      const workerIds = data
+        .map((c) => c.workers?.id || c.worker_id)
+        .filter(Boolean)
+      let enriched = data
+      if (userId && workerIds.length) {
+        const { data: counts } = await getRecurrenceCounts(userId, workerIds)
+        enriched = data.map((c) => ({
+          ...c,
+          recurrence_count: counts[c.workers?.id || c.worker_id] || 0,
+        }))
+      }
+      setCandidates(enriched)
+    }
     return { data, error }
-  }, [showToast])
+  }, [userId, showToast])
 
   const handleAccept = useCallback(async (candidate) => {
     const key = candidate.id
@@ -152,15 +208,21 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
 
   const duplicateMission = useCallback((m, setForm, setScreen) => {
     setForm({
-      title: m.title || '', sector: m.sector || 'logistique', hourly_rate: m.hourly_rate?.toString() || '',
+      title: m.title || '', sector: m.sector || 'logistique',
+      objet_prestation: m.objet_prestation || '',
+      motif_recours: m.motif_recours || 'accroissement_temporaire',
+      pricing_mode: m.pricing_mode || 'forfait',
+      forfait_total: m.forfait_total?.toString() || '',
+      hourly_rate: m.hourly_rate?.toString() || '',
       total_hours: m.total_hours?.toString() || '', start_date: '', city: m.city || '',
       address: m.address || '', description: m.description || '',
       required_skills: m.required_skills || [], required_certs: m.required_certs || [],
       urgency: m.urgency || 'normal',
+      legal_confirmed: false,
     })
     setPublished(false)
     setScreen('publier')
-    showToast('Mission dupliquée — modifiez et publiez')
+    showToast('Mission dupliquée — vérifiez les informations et publiez')
   }, [showToast])
 
   const saveAsTemplate = useCallback((name, form) => {
@@ -173,11 +235,17 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
 
   const loadTemplate = useCallback((tpl, setForm) => {
     setForm({
-      title: tpl.title || '', sector: tpl.sector || 'logistique', hourly_rate: tpl.hourly_rate?.toString() || '',
+      title: tpl.title || '', sector: tpl.sector || 'logistique',
+      objet_prestation: tpl.objet_prestation || '',
+      motif_recours: tpl.motif_recours || 'accroissement_temporaire',
+      pricing_mode: tpl.pricing_mode || 'forfait',
+      forfait_total: tpl.forfait_total?.toString() || '',
+      hourly_rate: tpl.hourly_rate?.toString() || '',
       total_hours: tpl.total_hours?.toString() || '', start_date: '', city: tpl.city || '',
       address: tpl.address || '', description: tpl.description || '',
       required_skills: tpl.required_skills || [], required_certs: tpl.required_certs || [],
       urgency: tpl.urgency || 'normal',
+      legal_confirmed: false,
     })
     setShowTemplates(false)
     showToast('Template chargé — complétez les informations')
@@ -293,15 +361,21 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
 
   const handleRepublishRecurring = useCallback((m, setForm, setScreen) => {
     setForm({
-      title: m.title || '', sector: m.sector || 'logistique', hourly_rate: m.hourly_rate?.toString() || '',
+      title: m.title || '', sector: m.sector || 'logistique',
+      objet_prestation: m.objet_prestation || '',
+      motif_recours: m.motif_recours || 'accroissement_temporaire',
+      pricing_mode: m.pricing_mode || 'forfait',
+      forfait_total: m.forfait_total?.toString() || '',
+      hourly_rate: m.hourly_rate?.toString() || '',
       total_hours: m.total_hours?.toString() || '', start_date: '', city: m.city || '',
       address: m.address || '', description: m.description || '',
       required_skills: m.required_skills || [], required_certs: m.required_certs || [],
       urgency: m.urgency || 'normal',
+      legal_confirmed: false,
     })
     setPublished(false)
     setScreen('publier')
-    showToast('Mission récurrente — ajustez la date et publiez')
+    showToast('Mission récurrente — ajustez la date, confirmez l\'engagement et publiez')
   }, [showToast])
 
   return {

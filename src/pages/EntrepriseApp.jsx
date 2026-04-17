@@ -21,6 +21,10 @@ const ContractModal = lazy(() => import('../components/ContractModal'))
 const EMPTY_FORM = {
   title: '',
   sector: 'logistique',
+  objet_prestation: '',
+  motif_recours: 'accroissement_temporaire',
+  pricing_mode: 'forfait',
+  forfait_total: '',
   hourly_rate: '',
   total_hours: '',
   start_date: '',
@@ -30,6 +34,7 @@ const EMPTY_FORM = {
   required_skills: [],
   required_certs: [],
   urgency: 'normal',
+  legal_confirmed: false,
 }
 
 export default function EntrepriseApp({ onLogoClick }) {
@@ -218,7 +223,7 @@ export default function EntrepriseApp({ onLogoClick }) {
         </div>
       )}
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 20px', width: '100%' }}>
+      <div className="app-main-container" style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 20px', width: '100%' }}>
         {screen === 'dashboard' && (
           <CompanyDashboard
             displayName={displayName}

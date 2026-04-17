@@ -10,6 +10,10 @@ vi.mock('lucide-react', () => ({
   MessageCircle: (props) => <svg data-testid="icon-message-circle" {...props} />,
   X: (props) => <svg data-testid="icon-x" {...props} />,
   Search: (props) => <svg data-testid="icon-search" {...props} />,
+  ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
+  ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
+  Info: (props) => <svg data-testid="icon-info" {...props} />,
+  Sparkles: (props) => <svg data-testid="icon-sparkles" {...props} />,
 }))
 
 vi.mock('../hooks/shared/useConversations', () => ({
@@ -60,6 +64,10 @@ const FAKE_MISSIONS_WITH_WORKER = [
 const DEFAULT_FORM = {
   title: '',
   sector: 'logistique',
+  objet_prestation: '',
+  motif_recours: 'accroissement_temporaire',
+  pricing_mode: 'forfait',
+  forfait_total: '',
   hourly_rate: '',
   total_hours: '',
   start_date: '',
@@ -69,6 +77,7 @@ const DEFAULT_FORM = {
   required_skills: [],
   required_certs: [],
   urgency: 'normal',
+  legal_confirmed: false,
 }
 
 // ── CompanyContracts ──────────────────────────────────────────────────────────
@@ -148,10 +157,21 @@ describe('CompanyPublishMission', () => {
     vi.clearAllMocks()
   })
 
+  const COMPLETE_FORM = {
+    ...DEFAULT_FORM,
+    title: 'Test mission',
+    objet_prestation: 'Objet de prestation suffisamment long pour passer les 40 caractères.',
+    forfait_total: '200',
+    total_hours: '8',
+    start_date: '2026-05-01',
+    city: 'Lyon',
+    legal_confirmed: true,
+  }
+
   it('renders the publish form when not published', () => {
     render(<CompanyPublishMission {...defaultProps} />)
     expect(screen.getByText('Publier une mission')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText(/opérateur logistique/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/palettes sur site logistique/i)).toBeInTheDocument()
   })
 
   it('shows publish button in default state', () => {
@@ -161,15 +181,22 @@ describe('CompanyPublishMission', () => {
 
   it('disables publish button when publishing=true', () => {
     render(<CompanyPublishMission {...defaultProps} publishing={true} />)
-    const btn = screen.getByText('Publication en cours...')
+    const btn = screen.getByText(/Publication en cours/i)
     expect(btn).toBeDisabled()
   })
 
-  it('calls onPublish when publish button clicked', () => {
+  it('calls onPublish when publish button clicked (complete form)', () => {
     const onPublish = vi.fn()
-    render(<CompanyPublishMission {...defaultProps} onPublish={onPublish} />)
+    render(<CompanyPublishMission {...defaultProps} form={COMPLETE_FORM} onPublish={onPublish} />)
     fireEvent.click(screen.getByText('Publier la mission →'))
     expect(onPublish).toHaveBeenCalled()
+  })
+
+  it('keeps publish button disabled when form incomplete', () => {
+    const onPublish = vi.fn()
+    render(<CompanyPublishMission {...defaultProps} onPublish={onPublish} />)
+    const btn = screen.getByText('Publier la mission →')
+    expect(btn).toBeDisabled()
   })
 
   it('renders success screen when published=true', () => {
@@ -205,9 +232,9 @@ describe('CompanyPublishMission', () => {
     expect(setShowTemplates).toHaveBeenCalledWith(true)
   })
 
-  it('shows cost estimation when hourly_rate and total_hours provided', () => {
-    render(<CompanyPublishMission {...defaultProps} form={{ ...DEFAULT_FORM, hourly_rate: '15', total_hours: '40' }} />)
-    expect(screen.getByText('Coût estimé')).toBeInTheDocument()
+  it('shows cost estimation when forfait_total provided', () => {
+    render(<CompanyPublishMission {...defaultProps} form={{ ...DEFAULT_FORM, forfait_total: '600', total_hours: '40' }} />)
+    expect(screen.getByText('Estimation du coût')).toBeInTheDocument()
   })
 
   // i18n locale objects

@@ -56,9 +56,23 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
+      // bfcache buster — évite qu'iOS Safari restaure un rendu obsolète
+      // quand l'utilisateur fait "marche arrière" après une mise à jour.
+      window.addEventListener('pageshow', (e) => {
+        if (e.persisted) window.location.reload()
+      })
+
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then((reg) => {
+            reg.update()
+            let refreshing = false
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              if (refreshing) return
+              refreshing = true
+              window.location.reload()
+            })
+          })
         })
       }
     </script>
