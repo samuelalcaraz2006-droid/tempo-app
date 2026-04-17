@@ -191,16 +191,15 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
     }
   })
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('tempo_onboarding_done'))
-  // Hint expliquant le toggle de disponibilité. Indépendant de l'onboarding :
-  // s'affiche même si l'utilisateur skip le tuto initial, tant qu'il n'a pas
-  // cliqué "Compris" ou activé sa dispo au moins une fois (sinon il risque de
-  // rester indisponible sans comprendre pourquoi il ne reçoit rien).
-  const [showDispoHint, setShowDispoHint] = useState(
-    () => !localStorage.getItem('tempo_dispo_hint_seen'),
-  )
-  const dismissDispoHint = () => {
-    setShowDispoHint(false)
-    localStorage.setItem('tempo_dispo_hint_seen', '1')
+  // Rappel discret qui apparait près du toggle quand le travailleur est
+  // indisponible. Affiché à chaque session (pas une seule fois dans la vie
+  // du compte) via sessionStorage : si l'utilisateur reste indisponible,
+  // on le relance à chaque connexion — mais une fois dismissé dans une
+  // session, on ne le réaffiche pas jusqu'à la prochaine ouverture.
+  const [showDispoReminder, setShowDispoReminder] = useState(false)
+  const dismissDispoReminder = () => {
+    setShowDispoReminder(false)
+    sessionStorage.setItem('tempo_dispo_reminder_dismissed', '1')
   }
 
   const data = useWorkerData(user?.id, worker)
@@ -218,19 +217,40 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const urgentMissions = data.missions.filter((m) => m.urgency === 'immediate' || m.urgency === 'urgent')
 
   useEffect(() => {
-    if (worker) {
-      setDisponible(worker.is_available || false)
-      setProfileForm({
-        first_name: worker.first_name || '',
-        last_name: worker.last_name || '',
-        city: worker.city || '',
-        siret: worker.siret || '',
-        radius_km: worker.radius_km || 10,
-        skills: worker.skills || [],
-        certifications: worker.certifications || [],
-      })
+    if (!worker) return
+    // Nouveau compte : is_available est null/undefined → on bascule en
+    // "Disponible" par défaut et on persiste. Le travailleur peut toujours
+    // se mettre en indisponible après, mais on part du bon pied.
+    if (worker.is_available == null) {
+      setDisponible(true)
+      actions.toggleDispo(true, () => {})
+    } else {
+      setDisponible(worker.is_available)
     }
+    setProfileForm({
+      first_name: worker.first_name || '',
+      last_name: worker.last_name || '',
+      city: worker.city || '',
+      siret: worker.siret || '',
+      radius_km: worker.radius_km || 10,
+      skills: worker.skills || [],
+      certifications: worker.certifications || [],
+    })
   }, [worker?.id])
+
+  // Affiche le rappel si le travailleur est indisponible et n'a pas
+  // encore dismissé le message dans cette session.
+  useEffect(() => {
+    if (!worker) return
+    if (disponible) {
+      setShowDispoReminder(false)
+      return
+    }
+    if (sessionStorage.getItem('tempo_dispo_reminder_dismissed')) return
+    // Petit délai pour laisser la page s'installer avant de popover
+    const timer = setTimeout(() => setShowDispoReminder(true), 900)
+    return () => clearTimeout(timer)
+  }, [disponible, worker?.id])
 
   const badges = React.useMemo(() => {
     const b = []
@@ -318,10 +338,10 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
           checked={disponible}
           onChange={(e) => {
             actions.toggleDispo(e.target.checked, setDisponible)
-            if (showDispoHint) dismissDispoHint()
+            if (e.target.checked) dismissDispoReminder()
           }}
           style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--or)' }}
-          aria-describedby={showDispoHint ? 'dispo-hint' : undefined}
+          aria-describedby={showDispoReminder ? 'dispo-reminder' : undefined}
         />
       </div>
     </div>
@@ -349,51 +369,90 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
     >
       <Toast toast={toast} onDismiss={dismissToast} />
 
-      {showDispoHint && !showOnboarding && (
+      {showDispoReminder && !showOnboarding && (
         <div
-          id="dispo-hint"
+          id="dispo-reminder"
           role="status"
+          aria-live="polite"
           style={{
-            position: 'sticky',
-            top: 54,
+            position: 'fixed',
+            top: 'calc(54px + env(safe-area-inset-top, 0px) + 8px)',
+            right: 12,
             zIndex: 90,
-            margin: '0 auto',
-            maxWidth: 680,
-            padding: '10px 14px',
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 10,
-            background: 'var(--brand-l)',
-            borderLeft: '3px solid var(--brand)',
-            borderBottom: '1px solid rgba(37,99,235,.15)',
-            color: 'var(--brand-d)',
+            width: 'min(280px, calc(100vw - 24px))',
+            background: 'var(--wh2)',
+            border: '1px solid var(--g2)',
+            borderRadius: 12,
+            boxShadow: '0 12px 32px rgba(15,23,42,.18)',
+            padding: '12px 14px',
+            animation: 'fadeUp .25s ease-out',
           }}
         >
-          <span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1 }}>↑</span>
-          <div style={{ flex: 1, fontSize: 13, lineHeight: 1.45 }}>
-            <div style={{ fontWeight: 700, marginBottom: 2 }}>Active ta disponibilité en haut à droite</div>
-            <div style={{ color: 'var(--brand-d)', opacity: 0.85 }}>
-              Tant que le point est gris, tu ne reçois pas de missions. Clique sur la case pour passer en vert (Disponible) et commencer à recevoir des offres.
+          {/* Petite pointe qui connecte visuellement la bulle au toggle au-dessus */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              top: -6,
+              right: 22,
+              width: 12,
+              height: 12,
+              background: 'var(--wh2)',
+              borderLeft: '1px solid var(--g2)',
+              borderTop: '1px solid var(--g2)',
+              transform: 'rotate(45deg)',
+            }}
+          />
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+            <span
+              aria-hidden="true"
+              style={{
+                flexShrink: 0,
+                width: 8,
+                height: 8,
+                marginTop: 6,
+                borderRadius: '50%',
+                background: 'var(--g4)',
+                boxShadow: '0 0 0 4px rgba(148,163,184,.25)',
+              }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--bk)', marginBottom: 2 }}>
+                Tu es indisponible
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--g5)', lineHeight: 1.5, marginBottom: 10 }}>
+                Coche la case à côté du point pour passer en <strong style={{ color: 'var(--gr-d)' }}>Disponible</strong> et recevoir des missions.
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    actions.toggleDispo(true, setDisponible)
+                    dismissDispoReminder()
+                  }}
+                  className="btn-primary"
+                  style={{ flex: 1, justifyContent: 'center', padding: '7px 12px', fontSize: 12 }}
+                >
+                  Me mettre dispo
+                </button>
+                <button
+                  type="button"
+                  onClick={dismissDispoReminder}
+                  aria-label="Plus tard"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--g5)',
+                    fontSize: 12,
+                    padding: '7px 8px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Plus tard
+                </button>
+              </div>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={dismissDispoHint}
-            aria-label="J'ai compris, fermer ce message"
-            style={{
-              flexShrink: 0,
-              background: 'var(--brand)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 6,
-              padding: '6px 10px',
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            Compris
-          </button>
         </div>
       )}
 
@@ -431,7 +490,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
               <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Bienvenue sur TEMPO !</div>
             </div>
             {[
-              ['Active ta disponibilité en haut à droite', "Tant que le point est gris, tu ne reçois pas de missions. Passe-le en vert dès que tu es prêt à travailler."],
+              ['Tu es déjà disponible', "Le point vert en haut à droite signale que tu es prêt à recevoir des missions. Coche / décoche la case quand tu veux faire une pause."],
               ['Complete ton profil', "Competences, certifications et zone d'intervention."],
               ['Parcours les missions', 'Filtres, recherche et score de matching.'],
               ['Postule et travaille', 'Contrat et paiement securises.'],
