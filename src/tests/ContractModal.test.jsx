@@ -19,6 +19,10 @@ import ContractModal from '../components/ContractModal'
 
 const mission = {
   title: 'Mission logistique',
+  objet_prestation: 'Déchargement de palettes et rangement en zone B2 selon plan.',
+  motif_recours: 'accroissement_temporaire',
+  pricing_mode: 'forfait',
+  forfait_total: 160,
   hourly_rate: 20,
   total_hours: 8,
   start_date: '2026-05-01',
@@ -53,19 +57,25 @@ describe('ContractModal', () => {
     expect(screen.getByText('Acme Corp')).toBeInTheDocument()
   })
 
-  it('affiche le nom du travailleur', () => {
+  it('affiche le nom du prestataire', () => {
     render(<ContractModal {...defaultProps} />)
     expect(screen.getByText('Marie Martin')).toBeInTheDocument()
   })
 
-  it('affiche le taux horaire', () => {
+  it('affiche l\'objet précis de la prestation', () => {
     render(<ContractModal {...defaultProps} />)
-    expect(screen.getByText('20 €/h')).toBeInTheDocument()
+    expect(screen.getByText(/Déchargement de palettes/i)).toBeInTheDocument()
   })
 
-  it('affiche la durée en heures', () => {
+  it('affiche la rémunération en forfait', () => {
     render(<ContractModal {...defaultProps} />)
-    expect(screen.getByText('8 heures')).toBeInTheDocument()
+    expect(screen.getByText(/Forfait 160 € HT/)).toBeInTheDocument()
+  })
+
+  it('affiche la rémunération en tarif horaire indicatif quand pricing_mode=horaire', () => {
+    const m = { ...mission, pricing_mode: 'horaire' }
+    render(<ContractModal {...defaultProps} mission={m} />)
+    expect(screen.getByText(/Tarif indicatif 20 €\/h/)).toBeInTheDocument()
   })
 
   it('affiche la ville', () => {
@@ -73,22 +83,15 @@ describe('ContractModal', () => {
     expect(screen.getByText('Lyon')).toBeInTheDocument()
   })
 
-  it('calcule le montant net pour le worker (78%)', () => {
+  it('calcule le net prestataire (≈78%) pour le worker', () => {
     render(<ContractModal {...defaultProps} role="worker" />)
-    // 20 * 8 * 0.78 = 124.8 → 125
-    expect(screen.getByText('125 € net')).toBeInTheDocument()
+    // 160 * 0.78 = 124.8 → 125
+    expect(screen.getByText(/125 € après commission/)).toBeInTheDocument()
   })
 
-  it('calcule le montant HT pour l\'entreprise (100%)', () => {
+  it('n\'affiche pas le net pour le rôle entreprise', () => {
     render(<ContractModal {...defaultProps} role="company" />)
-    // 20 * 8 = 160
-    expect(screen.getByText('160 € HT')).toBeInTheDocument()
-  })
-
-  it('n\'affiche pas le montant si hourly_rate ou total_hours est absent', () => {
-    const missionNoHours = { ...mission, total_hours: null }
-    render(<ContractModal {...defaultProps} mission={missionNoHours} />)
-    expect(screen.queryByText(/net|HT/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/après commission/)).not.toBeInTheDocument()
   })
 
   it('affiche — quand company est null', () => {
@@ -158,9 +161,9 @@ describe('ContractModal', () => {
     expect(defaultProps.onClose).not.toHaveBeenCalled()
   })
 
-  it('affiche "Signature en cours..." quand signing=true', () => {
+  it('affiche "Signature en cours" quand signing=true', () => {
     render(<ContractModal {...defaultProps} signing={true} />)
-    expect(screen.getByText('Signature en cours...')).toBeInTheDocument()
+    expect(screen.getByText(/Signature en cours/)).toBeInTheDocument()
   })
 
   it('a le role dialog avec aria-modal', () => {
@@ -169,13 +172,13 @@ describe('ContractModal', () => {
     expect(dialog).toHaveAttribute('aria-modal', 'true')
   })
 
-  it('affiche le label du canvas pour le worker', () => {
+  it('affiche le label du canvas pour le prestataire', () => {
     render(<ContractModal {...defaultProps} role="worker" />)
-    expect(screen.getByText('Signature du travailleur')).toBeInTheDocument()
+    expect(screen.getByText('Signature du prestataire')).toBeInTheDocument()
   })
 
-  it('affiche le label du canvas pour l\'entreprise', () => {
+  it('affiche le label du canvas pour le donneur d\'ordre', () => {
     render(<ContractModal {...defaultProps} role="company" />)
-    expect(screen.getByText("Signature de l'entreprise")).toBeInTheDocument()
+    expect(screen.getByText("Signature du donneur d'ordre")).toBeInTheDocument()
   })
 })
