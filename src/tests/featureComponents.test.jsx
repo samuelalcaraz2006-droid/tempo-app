@@ -19,6 +19,8 @@ vi.mock('lucide-react', () => ({
   RefreshCw: () => <svg data-testid="refreshcw-icon" />,
   LogOut: () => <svg data-testid="logout-icon" />,
   Menu: () => <svg data-testid="menu-icon" />,
+  DollarSign: () => <svg data-testid="dollarsign-icon" />,
+  ClipboardList: () => <svg data-testid="clipboardlist-icon" />,
 }))
 
 vi.mock('../lib/formatters', () => ({
@@ -899,7 +901,7 @@ describe('CompanyDashboard', () => {
 
   it('renders empty state when no missions', () => {
     render(<CompanyDashboard {...defaultProps} missions={[]} />)
-    expect(screen.getByText('Aucune mission publiée')).toBeTruthy()
+    expect(screen.getByText('Aucune mission publiee')).toBeTruthy()
   })
 
   it('renders Publier une mission button', () => {

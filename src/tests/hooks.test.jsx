@@ -35,14 +35,14 @@ describe('useToast', () => {
     expect(result.current.toast?.type).toBe('success')
   })
 
-  it('toast disparaît après la durée (3000 ms par défaut)', () => {
+  it('toast disparaît après la durée (5000 ms par défaut)', () => {
     const { result } = renderHook(() => useToast())
     act(() => {
       result.current.showToast('test')
     })
     expect(result.current.toast).not.toBeNull()
     act(() => {
-      vi.advanceTimersByTime(3000)
+      vi.advanceTimersByTime(5000)
     })
     expect(result.current.toast).toBeNull()
   })
