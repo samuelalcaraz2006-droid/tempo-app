@@ -66,16 +66,16 @@ export default function DashboardLayout({ role, tabs, activeTab, onTabChange, on
         )}
 
         <div className="app-header-actions" style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0, marginLeft: isWorker ? 0 : 'auto' }} role="toolbar" aria-label="Actions rapides">
-          <button type="button" onClick={() => switchLocale(locale === 'fr' ? 'en' : 'fr')} aria-label={locale === 'fr' ? 'Switch to English' : 'Passer en francais'} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border: isWorker ? 'none' : '1px solid var(--g2)', borderRadius: isWorker ? 8 : 6, padding: isWorker ? '6px 10px' : '4px 8px', color: headerColor, cursor:'pointer', fontSize:11, fontWeight:600, letterSpacing:'0.5px' }}>
+          <button type="button" onClick={() => switchLocale(locale === 'fr' ? 'en' : 'fr')} aria-label={locale === 'fr' ? 'Switch to English' : 'Passer en francais'} className="hide-mobile" style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border: isWorker ? 'none' : '1px solid var(--g2)', borderRadius: isWorker ? 8 : 6, padding: isWorker ? '6px 10px' : '4px 8px', color: headerColor, cursor:'pointer', fontSize:11, fontWeight:600, letterSpacing:'0.5px' }}>
             {locale === 'fr' ? 'EN' : 'FR'}
           </button>
-          <button type="button" onClick={toggleDarkMode} aria-label={darkMode ? 'Passer en mode clair' : 'Passer en mode sombre'} style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }}>
+          <button type="button" onClick={toggleDarkMode} aria-label={darkMode ? 'Passer en mode clair' : 'Passer en mode sombre'} className="hide-mobile" style={{ background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }}>
             {darkMode ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           {onNotifClick && (
             <button type="button" onClick={onNotifClick} aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} non lues)` : ''}`} style={{ position:'relative', background: isWorker ? 'rgba(255,255,255,.08)' : 'none', border:'none', borderRadius:8, padding:'6px 10px', color: headerColor, cursor:'pointer', display:'flex', alignItems:'center' }}>
               <Bell size={18} />
-              {unreadCount > 0 && <span aria-hidden="true" style={{ position:'absolute', top:-3, right:-3, background:'var(--or)', color:'#fff', borderRadius:'50%', width:16, height:16, fontSize:10, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:600 }}>{unreadCount}</span>}
+              {unreadCount > 0 && <span aria-hidden="true" style={{ position:'absolute', top:2, right:2, background:'var(--or)', color:'#fff', borderRadius:'50%', minWidth:14, height:14, padding:'0 3px', fontSize:9, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, lineHeight:1 }}>{unreadCount > 9 ? '9+' : unreadCount}</span>}
             </button>
           )}
           <button type="button" onClick={async () => { await logout() }} aria-label="Se deconnecter" style={{ fontSize:12, color: headerColor, background:'none', border:'none', cursor:'pointer', padding:'6px 8px', display:'flex', alignItems:'center', gap:4 }}>
