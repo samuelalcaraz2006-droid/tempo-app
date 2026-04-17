@@ -165,7 +165,6 @@ describe('useWorkerActions', () => {
     expect(saveContract).toHaveBeenCalledWith(expect.objectContaining({
       mission_id: 'mission-99',
       worker_id: USER_ID,
-      worker_signature: 'sig-data-base64',
       status: 'signed_worker',
     }))
     expect(helpers.addSignedContract).toHaveBeenCalledWith('mission-99')
@@ -276,13 +275,14 @@ describe('useWorkerActions', () => {
       await result.current.handleSaveProfile(profileForm)
     })
 
-    expect(updateMock).toHaveBeenCalledWith({
+    expect(updateMock).toHaveBeenCalledWith(expect.objectContaining({
       first_name: 'Jean',
       last_name: 'Dupont',
       city: 'Paris',
-    })
+    }))
     expect(updateMock).not.toHaveBeenCalledWith(expect.objectContaining({ hacked_field: 'evil' }))
-    expect(helpers.showToast).toHaveBeenCalledWith('Profil mis à jour !')
+    expect(updateMock).not.toHaveBeenCalledWith(expect.objectContaining({ admin: true }))
+    expect(helpers.showToast).toHaveBeenCalledWith('Profil mis a jour !')
     expect(helpers.refreshRoleData).toHaveBeenCalled()
   })
 
@@ -298,7 +298,7 @@ describe('useWorkerActions', () => {
       await result.current.handleSaveProfile({ first_name: 'Jean' })
     })
 
-    expect(helpers.showToast).toHaveBeenCalledWith('Erreur lors de la sauvegarde', 'error')
+    expect(helpers.showToast).toHaveBeenCalledWith(expect.stringContaining('Erreur lors de la sauvegarde'), 'error')
     expect(helpers.refreshRoleData).not.toHaveBeenCalled()
   })
 

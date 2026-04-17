@@ -537,8 +537,17 @@ a { text-decoration: none; color: inherit; }
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════════════════════════ */
+
+/* Empêche tout débordement horizontal global (sources communes
+   d'affichage cassé sur mobile: emojis larges, blobs animés, etc.) */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* Images / médias: ne jamais dépasser la largeur du conteneur */
+img, svg, video, canvas { max-width: 100%; height: auto; }
+
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
+  .show-mobile { display: flex !important; }
   .mobile-full { width: 100% !important; }
   .mobile-stack { flex-direction: column !important; }
   .mobile-p0 { padding-left: 0 !important; padding-right: 0 !important; }
@@ -574,11 +583,41 @@ a { text-decoration: none; color: inherit; }
   [data-theme="dark"] .mobile-bottom-nav { background: var(--navy2); border-color: rgba(255,255,255,.07); }
 
   .entreprise-tabs { font-size: 12px !important; }
+
+  /* Dashboard header: plus compact sur mobile (onglets remplacés par un drawer) */
+  .app-header { padding-left: 12px !important; padding-right: 12px !important; }
+  .app-header-logo-role { display: none !important; }
+  .app-header-actions { gap: 4px !important; }
+  .app-header-actions .logout-label { display: none !important; }
+  .app-burger-btn { display: inline-flex !important; }
+
+  /* Conteneur principal: réduire padding + marge basse pour ne pas coller à l'iOS safe area */
+  .app-main-container {
+    padding: 12px !important;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Tables: scroll horizontal sur mobile si cellules trop larges */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Typographie: adoucir l'échelle sur très petits écrans */
+  .h1 { font-size: 32px !important; }
+  .h2 { font-size: 26px !important; }
+  .h3 { font-size: 20px !important; }
+}
+
+@media (min-width: 769px) {
+  .show-mobile { display: none !important; }
 }
 
 @media (max-width: 480px) {
   .grid-4-mobile-2 { grid-template-columns: 1fr 1fr !important; }
   .metric-value { font-size: 18px !important; }
+  .app-header-nav button { font-size: 11px !important; padding: 0 8px !important; }
 }
 
 @media (max-width: 768px) {

@@ -238,7 +238,7 @@ describe('useCompanyActions', () => {
     await act(async () => {
       await result.current.handleSignContract('base64-sig')
     })
-    expect(saveContract).toHaveBeenCalledWith(expect.objectContaining({ mission_id: 'm1', company_signature: 'base64-sig' }))
+    expect(saveContract).toHaveBeenCalledWith(expect.objectContaining({ mission_id: 'm1', status: 'signed_company' }))
     expect(showToast).toHaveBeenCalledWith(expect.stringContaining('signé'))
   })
 

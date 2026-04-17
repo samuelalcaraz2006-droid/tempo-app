@@ -28,11 +28,11 @@ describe('useToast', () => {
     expect(result.current.toast).toEqual({ msg: 'Erreur survenue', type: 'error' })
   })
 
-  it('toast disparaît après la durée par défaut (3000ms)', () => {
+  it('toast disparaît après la durée par défaut (5000ms)', () => {
     const { result } = renderHook(() => useToast())
     act(() => { result.current.showToast('Hello') })
     expect(result.current.toast).not.toBeNull()
-    act(() => { vi.advanceTimersByTime(3000) })
+    act(() => { vi.advanceTimersByTime(5000) })
     expect(result.current.toast).toBeNull()
   })
 
@@ -61,7 +61,7 @@ describe('useToast', () => {
     act(() => { result.current.showToast('Premier') })
     act(() => { vi.advanceTimersByTime(1500) })
     act(() => { result.current.showToast('Deuxième') })
-    act(() => { vi.advanceTimersByTime(3000) })
+    act(() => { vi.advanceTimersByTime(5000) })
     expect(result.current.toast).toBeNull()
   })
 

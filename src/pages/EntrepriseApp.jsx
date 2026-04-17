@@ -218,7 +218,7 @@ export default function EntrepriseApp({ onLogoClick }) {
         </div>
       )}
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 20px', width: '100%' }}>
+      <div className="app-main-container" style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 20px', width: '100%' }}>
         {screen === 'dashboard' && (
           <CompanyDashboard
             displayName={displayName}
