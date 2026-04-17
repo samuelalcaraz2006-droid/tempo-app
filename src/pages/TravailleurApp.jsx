@@ -191,6 +191,17 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
     }
   })
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('tempo_onboarding_done'))
+  // Hint expliquant le toggle de disponibilité. Indépendant de l'onboarding :
+  // s'affiche même si l'utilisateur skip le tuto initial, tant qu'il n'a pas
+  // cliqué "Compris" ou activé sa dispo au moins une fois (sinon il risque de
+  // rester indisponible sans comprendre pourquoi il ne reçoit rien).
+  const [showDispoHint, setShowDispoHint] = useState(
+    () => !localStorage.getItem('tempo_dispo_hint_seen'),
+  )
+  const dismissDispoHint = () => {
+    setShowDispoHint(false)
+    localStorage.setItem('tempo_dispo_hint_seen', '1')
+  }
 
   const data = useWorkerData(user?.id, worker)
   const actions = useWorkerActions(user?.id, {
@@ -305,8 +316,12 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
         <input
           type="checkbox"
           checked={disponible}
-          onChange={(e) => actions.toggleDispo(e.target.checked, setDisponible)}
+          onChange={(e) => {
+            actions.toggleDispo(e.target.checked, setDisponible)
+            if (showDispoHint) dismissDispoHint()
+          }}
           style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--or)' }}
+          aria-describedby={showDispoHint ? 'dispo-hint' : undefined}
         />
       </div>
     </div>
@@ -333,6 +348,54 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
       onNotifClick={() => setScreen('notifs')}
     >
       <Toast toast={toast} onDismiss={dismissToast} />
+
+      {showDispoHint && !showOnboarding && (
+        <div
+          id="dispo-hint"
+          role="status"
+          style={{
+            position: 'sticky',
+            top: 54,
+            zIndex: 90,
+            margin: '0 auto',
+            maxWidth: 680,
+            padding: '10px 14px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 10,
+            background: 'var(--brand-l)',
+            borderLeft: '3px solid var(--brand)',
+            borderBottom: '1px solid rgba(37,99,235,.15)',
+            color: 'var(--brand-d)',
+          }}
+        >
+          <span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1 }}>↑</span>
+          <div style={{ flex: 1, fontSize: 13, lineHeight: 1.45 }}>
+            <div style={{ fontWeight: 700, marginBottom: 2 }}>Active ta disponibilité en haut à droite</div>
+            <div style={{ color: 'var(--brand-d)', opacity: 0.85 }}>
+              Tant que le point est gris, tu ne reçois pas de missions. Clique sur la case pour passer en vert (Disponible) et commencer à recevoir des offres.
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={dismissDispoHint}
+            aria-label="J'ai compris, fermer ce message"
+            style={{
+              flexShrink: 0,
+              background: 'var(--brand)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 6,
+              padding: '6px 10px',
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Compris
+          </button>
+        </div>
+      )}
 
       {showOnboarding && (
         <div
@@ -368,9 +431,10 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
               <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Bienvenue sur TEMPO !</div>
             </div>
             {[
-              ['Completez votre profil', "Competences, certifications et zone d'intervention."],
-              ['Parcourez les missions', 'Filtres, recherche et score de matching.'],
-              ['Postulez et travaillez', 'Contrat et paiement securises.'],
+              ['Active ta disponibilité en haut à droite', "Tant que le point est gris, tu ne reçois pas de missions. Passe-le en vert dès que tu es prêt à travailler."],
+              ['Complete ton profil', "Competences, certifications et zone d'intervention."],
+              ['Parcours les missions', 'Filtres, recherche et score de matching.'],
+              ['Postule et travaille', 'Contrat et paiement securises.'],
             ].map(([t, d], i) => (
               <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
                 <div
