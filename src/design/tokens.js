@@ -44,9 +44,3 @@ export const T = {
     lg:   '0 20px 40px rgba(15,23,42,0.12)',
   },
 }
-
-// Alias pour import nommé « plus sémantique » dans les primitives
-export const C = T.color
-export const F = T.font
-export const R = T.radius
-export const S = T.shadow
