@@ -102,7 +102,7 @@ function Navbar({ onNavigate }) {
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 68 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div style={{ width: 32, height: 32, background: 'var(--bl)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(29,78,216,.5)' }}>
-            <svg width="13" height="13" viewBox="0 0 13 13"><path d="M2 1.5L11 6.5L2 11.5Z" fill="white"/></svg>
+            <svg aria-hidden="true" width="13" height="13" viewBox="0 0 13 13"><path d="M2 1.5L11 6.5L2 11.5Z" fill="white"/></svg>
           </div>
           <span style={{ fontWeight: 800, letterSpacing: '2.5px', fontSize: 15, color: '#fff' }}>TEMPO</span>
         </div>
@@ -429,7 +429,7 @@ export default function Landing({ onNavigate }) {
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 28, height: 28, background: 'var(--bl)', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="11" height="11" viewBox="0 0 13 13"><path d="M2 1.5L11 6.5L2 11.5Z" fill="white"/></svg>
+              <svg aria-hidden="true" width="11" height="11" viewBox="0 0 13 13"><path d="M2 1.5L11 6.5L2 11.5Z" fill="white"/></svg>
             </div>
             <span style={{ fontWeight: 700, letterSpacing: '2px', fontSize: 13, color: 'rgba(255,255,255,.7)' }}>TEMPO</span>
           </div>

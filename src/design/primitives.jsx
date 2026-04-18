@@ -16,7 +16,7 @@ export function TempoLogoA({ size = 28, dark = true }) {
         borderRadius: size * 0.26, display: 'grid', placeItems: 'center',
         boxShadow: '0 0 14px rgba(37,99,235,.5)', flexShrink: 0,
       }}>
-        <svg width={size * 0.4} height={size * 0.4} viewBox="0 0 13 13">
+        <svg aria-hidden="true" width={size * 0.4} height={size * 0.4} viewBox="0 0 13 13">
           <path d="M2 1.5L11 6.5L2 11.5Z" fill="#fff" />
         </svg>
       </div>

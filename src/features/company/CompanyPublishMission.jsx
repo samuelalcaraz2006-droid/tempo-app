@@ -374,13 +374,12 @@ export default function CompanyPublishMission({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             {/* ─── Bloc 1 : L'essentiel ─── */}
             <div>
-              <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Titre de la mission *</label>
-              <input
+              <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Titre de la mission *<input
                 className="input"
                 placeholder="Ex: Déchargement de palettes sur site logistique"
                 value={form.title}
                 onChange={(e) => setF('title', e.target.value)}
-              />
+              /></label>
             </div>
 
             <div>
@@ -417,19 +416,16 @@ export default function CompanyPublishMission({
             {/* ─── Bloc 2 : Quand ─── */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Date de début *</label>
-                <input className="input" type="date" value={form.start_date} onChange={(e) => setF('start_date', e.target.value)} />
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Date de début *<input className="input" type="date" value={form.start_date} onChange={(e) => setF('start_date', e.target.value)} /></label>
               </div>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Durée estimée (h)</label>
-                <input className="input" type="number" placeholder="8" value={form.total_hours} onChange={(e) => setF('total_hours', e.target.value)} />
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Durée estimée (h)<input className="input" type="number" placeholder="8" value={form.total_hours} onChange={(e) => setF('total_hours', e.target.value)} /></label>
               </div>
             </div>
 
             {/* ─── Bloc 3 : Où ─── */}
             <div>
-              <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Ville *</label>
-              <input className="input" placeholder="Lyon" value={form.city} onChange={(e) => setF('city', e.target.value)} />
+              <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Ville *<input className="input" placeholder="Lyon" value={form.city} onChange={(e) => setF('city', e.target.value)} /></label>
               <input
                 className="input"
                 placeholder="Adresse précise (facultative, communiquée après acceptation)"
@@ -442,16 +438,14 @@ export default function CompanyPublishMission({
             {/* ─── Bloc 4 : Qui ─── */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Secteur</label>
-                <select className="input" value={form.sector} onChange={(e) => setF('sector', e.target.value)}>
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Secteur<select className="input" value={form.sector} onChange={(e) => setF('sector', e.target.value)}>
                   {SECTORS.map((s) => <option key={s} value={s}>{SECTOR_LABELS[s]}</option>)}
-                </select>
+                </select></label>
               </div>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Motif de recours</label>
-                <select className="input" value={form.motif_recours} onChange={(e) => setF('motif_recours', e.target.value)}>
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Motif de recours<select className="input" value={form.motif_recours} onChange={(e) => setF('motif_recours', e.target.value)}>
                   {RECOURS_MOTIVES.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-                </select>
+                </select></label>
               </div>
             </div>
 
@@ -497,15 +491,14 @@ export default function CompanyPublishMission({
               {form.pricing_mode === 'forfait' ? (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
-                    <label style={{ fontSize: 12, color: 'var(--g5)', marginBottom: 4, display: 'block' }}>Montant forfait *</label>
-                    <input
+                    <label style={{ fontSize: 12, color: 'var(--g5)', marginBottom: 4, display: 'block' }}>Montant forfait *<input
                       className="input"
                       type="number"
                       placeholder="200"
                       value={form.forfait_total}
                       onChange={(e) => setF('forfait_total', e.target.value)}
                       style={rateUnderWarning ? { borderColor: 'var(--rd)' } : undefined}
-                    />
+                    /></label>
                   </div>
                   <div>
                     <label style={{ fontSize: 12, color: 'var(--g5)', marginBottom: 4, display: 'block' }}>Soit ≈</label>
@@ -517,15 +510,14 @@ export default function CompanyPublishMission({
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
-                    <label style={{ fontSize: 12, color: 'var(--g5)', marginBottom: 4, display: 'block' }}>Tarif horaire indicatif *</label>
-                    <input
+                    <label style={{ fontSize: 12, color: 'var(--g5)', marginBottom: 4, display: 'block' }}>Tarif horaire indicatif *<input
                       className="input"
                       type="number"
                       placeholder="25"
                       value={form.hourly_rate}
                       onChange={(e) => setF('hourly_rate', e.target.value)}
                       style={rateUnderWarning ? { borderColor: 'var(--rd)' } : undefined}
-                    />
+                    /></label>
                   </div>
                   <div>
                     <label style={{ fontSize: 12, color: 'var(--g5)', marginBottom: 4, display: 'block' }}>Forfait estimé</label>
@@ -555,23 +547,21 @@ export default function CompanyPublishMission({
             {advancedOpen && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingLeft: 10, borderLeft: '2px solid var(--g2)' }}>
                 <div>
-                  <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Urgence</label>
-                  <select className="input" value={form.urgency} onChange={(e) => setF('urgency', e.target.value)}>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Urgence<select className="input" value={form.urgency} onChange={(e) => setF('urgency', e.target.value)}>
                     <option value="normal">Normal</option>
                     <option value="urgent">Urgent</option>
                     <option value="immediate">Immédiat</option>
-                  </select>
+                  </select></label>
                 </div>
                 <div>
-                  <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Informations complémentaires (facultatif)</label>
-                  <textarea
+                  <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Informations complémentaires (facultatif)<textarea
                     className="input"
                     rows={3}
                     style={{ resize: 'none' }}
                     placeholder="Contexte, particularités du site, EPI apportés par l'entreprise…"
                     value={form.description}
                     onChange={(e) => setF('description', e.target.value)}
-                  />
+                  /></label>
                 </div>
               </div>
             )}

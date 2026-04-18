@@ -24,7 +24,7 @@ class ErrorBoundary extends React.Component {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, background: 'var(--wh)', padding: 24 }}>
         <div style={{ width: 48, height: 48, background: 'var(--rd)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 6v4m0 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 6v4m0 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
         </div>
         <div style={{ textAlign: 'center', maxWidth: 560 }}>
           <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--bk)', marginBottom: 8 }}>Une erreur est survenue</div>
@@ -92,7 +92,7 @@ const AppRouter = () => {
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, background: 'var(--wh)' }}>
       <div style={{ width: 36, height: 36, background: 'var(--brand)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
       </div>
       <div style={{ fontSize: 13, color: 'var(--g4)' }}>Chargement TEMPO...</div>
     </div>
@@ -103,7 +103,7 @@ const AppRouter = () => {
     return (
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:16, background:'var(--wh)' }}>
         <div style={{ width:36, height:36, background:'var(--brand)', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center' }}>
-          <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
+          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
         </div>
         <div style={{ fontSize:13, color:'var(--g4)' }}>Chargement du profil...</div>
       </div>
@@ -147,7 +147,7 @@ const AppRouter = () => {
         <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 'auto' }}>
             <div style={{ width: 26, height: 26, background: 'var(--brand)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 1L8.5 5L1.5 9Z" fill="white"/></svg>
+              <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 1L8.5 5L1.5 9Z" fill="white"/></svg>
             </div>
             <span style={{ fontWeight: 600, letterSpacing: '2px', fontSize: 13, color: '#fff' }}>TEMPO</span>
           </div>
@@ -168,7 +168,7 @@ const AppRouter = () => {
 const LazyFallback = () => (
   <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, background: 'var(--wh)' }}>
     <div style={{ width: 36, height: 36, background: 'var(--brand)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white"/></svg>
     </div>
     <div style={{ fontSize: 13, color: 'var(--g4)' }}>Chargement...</div>
   </div>

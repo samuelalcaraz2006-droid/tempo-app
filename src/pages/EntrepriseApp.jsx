@@ -136,7 +136,7 @@ export default function EntrepriseApp({ onLogoClick }) {
         <div
           style={{ width: 32, height: 32, background: 'var(--or)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <svg width="12" height="12" viewBox="0 0 12 12">
+          <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12">
             <path d="M2 1.5L10 6L2 10.5Z" fill="white" />
           </svg>
         </div>

@@ -26,14 +26,12 @@ export default function WorkerAlerts({ savedAlerts, setSavedAlerts, filters, pro
         <div style={{ fontSize:14, fontWeight:600, marginBottom:10 }}>Creer une alerte</div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:10 }}>
           <div>
-            <label style={{ fontSize:11, color:'var(--g4)', display:'block', marginBottom:3 }}>Secteur</label>
-            <select className="input" value={filters.filterSecteur} onChange={e => filters.setFilterSecteur(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }}>
+            <label style={{ fontSize:11, color:'var(--g4)', display:'block', marginBottom:3 }}>Secteur<select className="input" value={filters.filterSecteur} onChange={e => filters.setFilterSecteur(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }}>
               <option value="tous">Tous</option><option value="logistique">Logistique</option><option value="btp">BTP</option><option value="industrie">Industrie</option><option value="hotellerie">Hotellerie</option><option value="proprete">Proprete</option>
-            </select>
+            </select></label>
           </div>
           <div>
-            <label style={{ fontSize:11, color:'var(--g4)', display:'block', marginBottom:3 }}>Taux min (€/h)</label>
-            <input className="input" type="number" placeholder="15" value={filters.filterRateMin} onChange={e => filters.setFilterRateMin(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }} />
+            <label style={{ fontSize:11, color:'var(--g4)', display:'block', marginBottom:3 }}>Taux min (€/h)<input className="input" type="number" placeholder="15" value={filters.filterRateMin} onChange={e => filters.setFilterRateMin(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }} /></label>
           </div>
         </div>
         <button type="button" className="btn-primary" style={{ fontSize:12, padding:'8px 16px' }} onClick={saveAlert}>Creer l'alerte</button>

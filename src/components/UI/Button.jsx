@@ -1,7 +1,7 @@
 
 
 const Spinner = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin .6s linear infinite' }}>
+  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin .6s linear infinite' }}>
     <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" opacity=".25" />
     <path d="M14 8a6 6 0 00-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
