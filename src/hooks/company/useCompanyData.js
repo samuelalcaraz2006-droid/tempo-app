@@ -40,6 +40,7 @@ export function useCompanyData(userId) {
     invoices,
     setInvoices,
     notifs,
+    setNotifs,
     loading,
     loadData,
   }

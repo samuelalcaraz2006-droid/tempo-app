@@ -16,6 +16,7 @@ import WorkerMessages from '../features/worker/WorkerMessages'
 import WorkerMissionDetail from '../features/worker/WorkerMissionDetail'
 import WorkerMissionsList from '../features/worker/WorkerMissionsList'
 import WorkerNotifications from '../features/worker/WorkerNotifications'
+import NotificationsView from '../features/shared/NotificationsView'
 import WorkerProfile from '../features/worker/WorkerProfile'
 import { useDarkMode } from '../hooks/useDarkMode'
 import { useToast } from '../hooks/useToast'
@@ -720,12 +721,35 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
         )}
 
         {screen === 'notifs' && (
-          <WorkerNotifications
+          <NotificationsView
             notifs={data.notifs}
             setNotifs={data.setNotifs}
             userId={user?.id}
             unreadCount={unreadCount}
+            role="worker"
             onBack={() => setScreen('accueil')}
+            onNavigate={(target, payload) => {
+              if (target === 'mission-detail' && payload?.missionId) {
+                const m = data.missions.find(x => x.id === payload.missionId)
+                  || data.allMissions.find(x => (x?.missions?.id || x?.id) === payload.missionId)
+                if (m) {
+                  setSelectedMission(m.missions || m)
+                  setScreen('mission-detail')
+                  return
+                }
+              }
+              if (target === 'chat' && payload?.partnerId) {
+                openChatNav(payload.partnerId, '', payload.missionId || null)
+                return
+              }
+              if (target === 'disputes') {
+                setScreen('suivi') // à défaut de page disputes dédiée
+                return
+              }
+              if (['missions', 'suivi', 'gains', 'profil', 'accueil', 'messages'].includes(target)) {
+                setScreen(target)
+              }
+            }}
           />
         )}
 
