@@ -129,7 +129,10 @@ describe('ResetPassword', () => {
         submitForm()
         await Promise.resolve()
       })
-      expect(screen.getByText(/mot de passe mis à jour/i)).toBeDefined()
+      // Le titre de succès est splitté par <span>, on vérifie plutôt le
+      // sous-texte du panneau success et la présence des fragments.
+      expect(screen.getByText(/vous allez être redirigé/i)).toBeDefined()
+      expect(screen.getByText(/mis à jour/i)).toBeDefined()
     })
 
     it('appelle logout + onDone après délai de 2s', async () => {

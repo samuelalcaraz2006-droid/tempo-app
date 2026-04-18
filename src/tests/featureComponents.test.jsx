@@ -5,23 +5,9 @@ import React from 'react'
 
 // ── Global mocks ────────────────────────────────────────────────
 
-vi.mock('lucide-react', () => ({
-  Search: () => <svg data-testid="search-icon" />,
-  Heart: ({ size, style }) => <svg data-testid="heart-icon" style={style} />,
-  PenLine: () => <svg data-testid="penline-icon" />,
-  MessageCircle: () => <svg data-testid="messagecircle-icon" />,
-  Star: () => <svg data-testid="star-icon" />,
-  X: () => <svg data-testid="x-icon" />,
-  Bell: () => <svg data-testid="bell-icon" />,
-  Moon: () => <svg data-testid="moon-icon" />,
-  Sun: () => <svg data-testid="sun-icon" />,
-  Download: () => <svg data-testid="download-icon" />,
-  RefreshCw: () => <svg data-testid="refreshcw-icon" />,
-  LogOut: () => <svg data-testid="logout-icon" />,
-  Menu: () => <svg data-testid="menu-icon" />,
-  DollarSign: () => <svg data-testid="dollarsign-icon" />,
-  ClipboardList: () => <svg data-testid="clipboardlist-icon" />,
-}))
+// Mock centralisé lucide-react — ajoute toutes les icônes utilisées par
+// les features (voir src/tests/mocks/lucide.jsx).
+vi.mock('lucide-react', async () => (await import('./mocks/lucide.jsx')).default)
 
 vi.mock('../lib/formatters', () => ({
   formatDate: (d) => d ? '1 janv.' : '—',
@@ -40,6 +26,10 @@ vi.mock('../lib/supabase', () => ({
   markNotifsRead: vi.fn().mockResolvedValue({ error: null }),
   getConversations: vi.fn().mockResolvedValue({ data: [], error: null }),
   subscribeToMessages: vi.fn(() => ({ unsubscribe: vi.fn() })),
+  // Utilisés par CompanyDashboard + WorkerMissionDetail (lazy import)
+  getMissionApplications: vi.fn().mockResolvedValue({ data: [], error: null }),
+  getMissionApplicationsCount: vi.fn().mockResolvedValue({ data: [], error: null }),
+  getCompanyReviews: vi.fn().mockResolvedValue({ data: [], error: null }),
 }))
 
 vi.mock('../hooks/shared/useConversations', () => ({
@@ -132,15 +122,19 @@ describe('WorkerDashboard', () => {
 
   beforeEach(() => vi.clearAllMocks())
 
-  it('renders displayName in the header', () => {
+  it('renders greeting with firstName in the header', () => {
     render(<WorkerDashboard {...defaultProps} />)
-    expect(screen.getByText('Jean Dupont')).toBeTruthy()
+    // Le header éditorial est split en fragments texte/serif : on vérifie
+    // la présence du prénom via un matcher souple.
+    expect(screen.getByText(/bonjour jean/i)).toBeTruthy()
   })
 
-  it('renders stats grid with missions_completed and rating', () => {
+  it('renders KPI cards with missions_completed and rating', () => {
     render(<WorkerDashboard {...defaultProps} />)
+    // KpiCard "MISSIONS RÉALISÉES" affiche la valeur 5
     expect(screen.getByText('5')).toBeTruthy()
-    expect(screen.getByText('4.5')).toBeTruthy()
+    // KpiCard "NOTE MOYENNE" affiche 4,5/5 (comma + slash)
+    expect(screen.getByText(/4,5\/5/)).toBeTruthy()
   })
 
   it('renders urgent missions banner when urgentMissions is not empty', () => {
@@ -164,15 +158,15 @@ describe('WorkerDashboard', () => {
     expect(screen.getByText('Aucune mission disponible')).toBeTruthy()
   })
 
-  it('renders Tout voir button when missions exist', () => {
+  it('renders "Voir les X missions du jour" link when missions exist', () => {
     render(<WorkerDashboard {...defaultProps} />)
-    expect(screen.getByText(/Tout voir/)).toBeTruthy()
+    expect(screen.getByText(/voir les .* missions du jour/i)).toBeTruthy()
   })
 
-  it('calls onNavigate when Tout voir is clicked', () => {
+  it('calls onNavigate when "Voir les missions du jour" is clicked', () => {
     const onNavigate = vi.fn()
     render(<WorkerDashboard {...defaultProps} onNavigate={onNavigate} />)
-    fireEvent.click(screen.getByText(/Tout voir/))
+    fireEvent.click(screen.getByText(/voir les .* missions du jour/i))
     expect(onNavigate).toHaveBeenCalledWith('missions')
   })
 
@@ -184,10 +178,12 @@ describe('WorkerDashboard', () => {
     expect(onNavigate).toHaveBeenCalledWith('missions')
   })
 
-  it('shows city and radius info', () => {
+  it('shows city in the TopBar subtitle', () => {
     render(<WorkerDashboard {...defaultProps} />)
-    expect(screen.getByText(/Paris/)).toBeTruthy()
-    expect(screen.getByText(/20 km/)).toBeTruthy()
+    // La ville apparaît dans le subtitle TopBarA ("Travailleur · Paris")
+    expect(screen.getByText(/paris/i)).toBeTruthy()
+    // NB : "radius_km" n'est plus affiché sur le dashboard refondu — il est
+    // désormais géré dans le profil / les filtres, donc on retire l'assertion.
   })
 })
 
@@ -266,7 +262,7 @@ describe('WorkerApplications', () => {
       missions: { ...baseMission, id: 'm3', title: 'Mission terminee', status: 'completed' },
     }
     render(<WorkerApplications {...defaultProps} allMissions={[doneApp]} />)
-    expect(screen.getByText(/Evaluer/)).toBeTruthy()
+    expect(screen.getByText(/Évaluer/)).toBeTruthy()
   })
 
   it('shows evaluated label when mission already rated', () => {
@@ -277,7 +273,7 @@ describe('WorkerApplications', () => {
       missions: { ...baseMission, id: 'm3', title: 'Mission terminee', status: 'completed' },
     }
     render(<WorkerApplications {...defaultProps} allMissions={[doneApp]} ratedMissions={new Set(['m3'])} />)
-    expect(screen.getByText(/Mission evaluee/)).toBeTruthy()
+    expect(screen.getByText(/Mission évaluée/)).toBeTruthy()
   })
 
   it('renders empty state when allMissions is empty', () => {
@@ -410,22 +406,27 @@ describe('WorkerMissionDetail', () => {
 
   it('renders skill tags', () => {
     render(<WorkerMissionDetail {...defaultProps} />)
-    expect(screen.getByText('CACES 1')).toBeTruthy()
+    // "CACES 1" apparaît à la fois comme critère de match et comme compétence
+    // (et dans le matching card en haut). On accepte ≥ 1 occurrence.
+    expect(screen.getAllByText(/CACES 1/).length).toBeGreaterThan(0)
   })
 
   it('renders hourly rate info', () => {
     render(<WorkerMissionDetail {...defaultProps} />)
-    expect(screen.getByText(/12 €\/h/)).toBeTruthy()
+    // La key-facts strip affiche "12 €" (brut · majoré dimanche) sans /h.
+    expect(screen.getByText('12 €')).toBeTruthy()
   })
 
   it('shows apply button when not applied', () => {
     render(<WorkerMissionDetail {...defaultProps} />)
-    expect(screen.getByText('Postuler →')).toBeTruthy()
+    // Nouveau CTA éditorial : "Postuler → Confirmer en 1 clic"
+    expect(screen.getByText(/postuler.*confirmer/i)).toBeTruthy()
   })
 
   it('shows already applied state when hasApplied is true', () => {
     render(<WorkerMissionDetail {...defaultProps} hasApplied={true} />)
-    expect(screen.getByText('✓ Candidature envoyee')).toBeTruthy()
+    // Accent "✓ Candidature envoyée" (avec é)
+    expect(screen.getByText(/candidature envoyée/i)).toBeTruthy()
   })
 
   it('shows Envoi when applying is true', () => {
@@ -433,10 +434,11 @@ describe('WorkerMissionDetail', () => {
     expect(screen.getByText('Envoi...')).toBeTruthy()
   })
 
-  it('calls onBack when back button clicked', () => {
+  it('calls onBack when breadcrumb "Missions" is clicked', () => {
     const onBack = vi.fn()
     render(<WorkerMissionDetail {...defaultProps} onBack={onBack} />)
-    fireEvent.click(screen.getByText('‹ Retour'))
+    // Le bouton "Retour" a été remplacé par un breadcrumb cliquable "Missions"
+    fireEvent.click(screen.getByRole('button', { name: /^missions$/i }))
     expect(onBack).toHaveBeenCalled()
   })
 
@@ -878,55 +880,65 @@ describe('CompanyDashboard', () => {
 
   beforeEach(() => vi.clearAllMocks())
 
-  it('renders dashboard title', () => {
+  it('renders the navy TopBar with "Tableau de bord" subtitle', () => {
     render(<CompanyDashboard {...defaultProps} />)
-    expect(screen.getByText('Tableau de bord')).toBeTruthy()
+    // Le TopBarA affiche le subtitle mono "Tableau de bord · —" (company undefined)
+    expect(screen.getByText(/tableau de bord/i)).toBeTruthy()
   })
 
-  it('renders displayName in welcome message', () => {
+  it('renders firstName in the editorial headline', () => {
     render(<CompanyDashboard {...defaultProps} />)
-    expect(screen.getByText(/Entreprise ACME/)).toBeTruthy()
+    // "Bonjour Entreprise, ..." (firstName = premier mot du displayName)
+    expect(screen.getByText(/bonjour entreprise/i)).toBeTruthy()
   })
 
-  it('renders KPI cards', () => {
+  it('renders new KPI cards (missions actives, candidats, match, budget)', () => {
     render(<CompanyDashboard {...defaultProps} />)
-    expect(screen.getByText('Missions actives')).toBeTruthy()
-    expect(screen.getByText('Missions terminées')).toBeTruthy()
+    // Les KpiCard ont des labels en MAJUSCULES avec accents
+    expect(screen.getByText('MISSIONS ACTIVES')).toBeTruthy()
+    expect(screen.getByText('CANDIDATS RETENUS')).toBeTruthy()
+    expect(screen.getByText('TEMPS MOYEN MATCH')).toBeTruthy()
+    expect(screen.getByText('BUDGET MENSUEL')).toBeTruthy()
   })
 
-  it('renders mission list when missions exist', () => {
+  it('renders the current mission card with mission title', () => {
     render(<CompanyDashboard {...defaultProps} />)
-    expect(screen.getByText('Cariste H/F')).toBeTruthy()
+    // La mission en cours ("open" est dans activeMissions) affiche son titre
+    // dans la MissionEnCoursCard (format "Cariste H/F · Shift Xh-Yh" si total_hours, sinon juste titre).
+    expect(screen.getByText(/Cariste H\/F/)).toBeTruthy()
   })
 
   it('renders empty state when no missions', () => {
     render(<CompanyDashboard {...defaultProps} missions={[]} />)
-    expect(screen.getByText('Aucune mission publiee')).toBeTruthy()
+    // Empty state refondu : "Aucune mission active" avec CTA "+ Publier une mission"
+    expect(screen.getByText(/\+ publier une mission/i)).toBeTruthy()
   })
 
-  it('renders Publier une mission button', () => {
+  it('renders "Nouvelle mission" TopBar CTA', () => {
     render(<CompanyDashboard {...defaultProps} />)
-    expect(screen.getAllByText(/Publier une mission/).length).toBeGreaterThan(0)
+    // L'action principale de la TopBar est désormais "Nouvelle mission"
+    // (plusieurs occurrences possibles : bouton TopBar + sub de KPI)
+    expect(screen.getAllByText(/nouvelle mission/i).length).toBeGreaterThan(0)
   })
 
-  it('calls onDuplicate when Dupliquer button is clicked', () => {
-    const onDuplicate = vi.fn()
-    render(<CompanyDashboard {...defaultProps} onDuplicate={onDuplicate} />)
-    fireEvent.click(screen.getByText(/Dupliquer/))
-    expect(onDuplicate).toHaveBeenCalledWith(openMission)
-  })
-
-  it('calls onLoadCandidates for open missions', () => {
-    const onLoadCandidates = vi.fn()
-    render(<CompanyDashboard {...defaultProps} onLoadCandidates={onLoadCandidates} />)
-    fireEvent.click(screen.getByText('Candidatures'))
-    expect(onLoadCandidates).toHaveBeenCalledWith('m1')
-  })
-
-  it('shows Export CSV button', () => {
+  it('renders "Exporter" TopBar button', () => {
     render(<CompanyDashboard {...defaultProps} />)
-    expect(screen.getByText(/Export CSV/)).toBeTruthy()
+    // Ancien "Export CSV" → nouveau "Exporter" dans la TopBar
+    expect(screen.getByText(/exporter/i)).toBeTruthy()
   })
+
+  it('calls onExportMissions when Exporter is clicked', () => {
+    const onExportMissions = vi.fn()
+    render(<CompanyDashboard {...defaultProps} onExportMissions={onExportMissions} />)
+    fireEvent.click(screen.getByText(/exporter/i))
+    expect(onExportMissions).toHaveBeenCalled()
+  })
+
+  // NB : tests supprimés (logique disparue avec la refonte Style A) —
+  // "Dupliquer", "Candidatures" inline et le bouton par-mission "Publier une mission"
+  // ont été remplacés par une carte "Mission en cours" avec flux candidat direct
+  // (onLoadCandidates via le lien "Voir tous →"). La navigation "publier" est
+  // désormais testée par l'existence de "Nouvelle mission" dans la TopBar.
 })
 
 // ── CompanyCandidates ────────────────────────────────────────────
@@ -1141,7 +1153,9 @@ describe('DashboardLayout', () => {
 
   it('renders TEMPO logo text', () => {
     render(<DashboardLayout {...defaultWorkerProps} />)
-    expect(screen.getByText('TEMPO')).toBeTruthy()
+    // TempoLogoA rend "TEMPO" à la fois dans la sidebar desktop + la brand mobile.
+    // Avec les media queries JSDOM, le brand mobile est présent dans le DOM (display:none).
+    expect(screen.getAllByText('TEMPO').length).toBeGreaterThan(0)
   })
 
   it('renders worker sub-nav tabs below header for worker role', () => {
@@ -1171,7 +1185,8 @@ describe('DashboardLayout', () => {
   it('calls onLogoClick when logo is clicked', () => {
     const onLogoClick = vi.fn()
     render(<DashboardLayout {...defaultWorkerProps} onLogoClick={onLogoClick} />)
-    fireEvent.click(screen.getByText('TEMPO'))
+    // Plusieurs instances TEMPO (sidebar + brand mobile) → on clique la première
+    fireEvent.click(screen.getAllByText('TEMPO')[0])
     expect(onLogoClick).toHaveBeenCalled()
   })
 
@@ -1190,13 +1205,18 @@ describe('DashboardLayout', () => {
     expect(screen.getByText('3')).toBeTruthy()
   })
 
-  it('shows Espace Entreprise label for company role', () => {
+  it('shows "Entreprise" role label in sidebar for company role', () => {
     render(<DashboardLayout {...defaultCompanyProps} />)
-    expect(screen.getByText('Espace Entreprise')).toBeTruthy()
+    // Refonte : "Espace Entreprise" → simplement "Entreprise" (eyebrow mono
+    // dans la sidebar + drawer mobile).
+    expect(screen.getAllByText('Entreprise').length).toBeGreaterThan(0)
   })
 
-  it('renders Deconnexion button', () => {
+  it('renders Déconnexion button with accent', () => {
     render(<DashboardLayout {...defaultWorkerProps} />)
-    expect(screen.getByText('Deconnexion')).toBeTruthy()
+    // La slim utility bar rend un bouton "Déconnexion" (accent é) avec
+    // aria-label "Se déconnecter".
+    expect(screen.getByLabelText(/se déconnecter/i)).toBeTruthy()
+    expect(screen.getByText('Déconnexion')).toBeTruthy()
   })
 })
