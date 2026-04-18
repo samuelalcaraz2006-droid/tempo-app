@@ -560,6 +560,8 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
           worker={worker}
           displayName={displayName}
           missions={data.missions}
+          allMissions={data.allMissions}
+          invoices={data.invoices}
           urgentMissions={urgentMissions}
           applications={data.applications}
           onNavigate={navigate}
