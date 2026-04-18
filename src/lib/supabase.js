@@ -502,6 +502,38 @@ export const getContract = async (missionId) => {
   return { data, error }
 }
 
+// Récupère les avis récents d'une entreprise (limit configurable).
+// Fallback défensif : data toujours un tableau, jamais null.
+export const getCompanyReviews = async (companyId, limit = 2) => {
+  try {
+    const { data, error } = await supabase
+      .from('ratings')
+      .select('id, score, comment, created_at, rater:rater_id(first_name, last_name)')
+      .eq('rated_id', companyId)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+    return { data: data || [], error }
+  } catch (e) {
+    return { data: [], error: e }
+  }
+}
+
+// Récupère les candidatures d'une mission (avec nom worker) — pour
+// afficher la count + initiales sur la fiche mission côté worker.
+export const getMissionApplicationsCount = async (missionId, limit = 20) => {
+  try {
+    const { data, error } = await supabase
+      .from('applications')
+      .select('id, status, created_at, workers:worker_id(first_name, last_name)')
+      .eq('mission_id', missionId)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+    return { data: data || [], error }
+  } catch (e) {
+    return { data: [], error: e }
+  }
+}
+
 export const getSignedContractsByWorker = async (workerId) => {
   const { data, error } = await supabase.from('contracts').select('mission_id').eq('worker_id', workerId).not('signed_worker_at', 'is', null)
   return { data: data?.map((c) => c.mission_id) || [], error }
