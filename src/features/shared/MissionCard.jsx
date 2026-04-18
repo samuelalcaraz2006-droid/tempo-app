@@ -2,7 +2,8 @@ import React from 'react'
 import { Heart } from 'lucide-react'
 import { formatDate } from '../../lib/formatters'
 
-export default function MissionCard({ mission, applied, saved, applying, onApply, onToggleSave, onSelect }) {
+export default function MissionCard({ mission, applied, saved, applying, onApply, onToggleSave, onSelect, onViewCompany }) {
+  const companyId = mission.company_id || mission.companies?.id
   return (
     <div
       className={`card-mission${(mission.urgency === 'urgent' || mission.urgency === 'immediate') ? ' is-urgent' : ''}`}
@@ -12,7 +13,22 @@ export default function MissionCard({ mission, applied, saved, applying, onApply
       <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
         <div style={{ flex:1, minWidth:0, marginRight:10 }}>
           <div style={{ fontSize:14, fontWeight:600, marginBottom:2 }}>{mission.title}</div>
-          <div style={{ fontSize:12, color:'var(--g4)' }}>{mission.companies?.name} · {mission.city}</div>
+          <div style={{ fontSize:12, color:'var(--g4)' }}>
+            {onViewCompany && companyId && mission.companies?.name ? (
+              <button
+                type="button"
+                onClick={e => { e.stopPropagation(); onViewCompany(companyId, mission.companies) }}
+                style={{
+                  background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                  color: 'var(--brand)', fontWeight: 600, fontSize: 'inherit', fontFamily: 'inherit',
+                  textDecoration: 'underline', textUnderlineOffset: 2, textDecorationColor: 'rgba(37,99,235,.3)',
+                }}
+              >{mission.companies.name}</button>
+            ) : (
+              <span>{mission.companies?.name || '—'}</span>
+            )}
+            {' · '}{mission.city}
+          </div>
         </div>
         <div style={{ display:'flex', alignItems:'flex-start', gap:6, flexShrink:0 }}>
           {onToggleSave && (

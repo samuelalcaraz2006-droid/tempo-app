@@ -5,7 +5,7 @@ import EmptyState from '../../components/UI/EmptyState'
 
 const MissionsMap = lazy(() => import('../../components/MissionsMap'))
 
-export default function WorkerMissionsList({ filters, missions, hasApplied, applying, onApply, savedMissions, onToggleSave, onNavigate, mapView, setMapView }) {
+export default function WorkerMissionsList({ filters, missions, hasApplied, applying, onApply, savedMissions, onToggleSave, onNavigate, onViewCompany, mapView, setMapView }) {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
@@ -68,7 +68,7 @@ export default function WorkerMissionsList({ filters, missions, hasApplied, appl
         </Suspense>
       ) : filters.filteredMissions.length === 0
         ? <EmptyState icon={Search} title="Aucune mission trouvee" description="Essayez d'ajuster vos filtres ou revenez plus tard" />
-        : filters.filteredMissions.map(m => <MissionCard key={m.id} mission={m} applied={hasApplied(m.id)} saved={savedMissions.includes(m.id)} applying={applying[m.id]} onApply={() => onApply(m, hasApplied(m.id))} onToggleSave={onToggleSave} onSelect={() => onNavigate('mission-detail', m)} />)
+        : filters.filteredMissions.map(m => <MissionCard key={m.id} mission={m} applied={hasApplied(m.id)} saved={savedMissions.includes(m.id)} applying={applying[m.id]} onApply={() => onApply(m, hasApplied(m.id))} onToggleSave={onToggleSave} onSelect={() => onNavigate('mission-detail', m)} onViewCompany={onViewCompany} />)
       }
     </div>
   )

@@ -10,7 +10,7 @@ import { formatDate } from '../../lib/formatters'
 export default function WorkerDashboard({
   worker, displayName, missions, allMissions = [], invoices = [],
   urgentMissions, applications,
-  onNavigate, onApply, applying, savedMissions, onToggleSave, t,
+  onNavigate, onApply, applying, savedMissions, onToggleSave, onViewCompany, t,
 }) {
   const hasApplied = (id) => applications.some(a => a.mission_id === id)
   const firstName = (displayName || '').split(' ')[0] || ''
@@ -41,6 +41,10 @@ export default function WorkerDashboard({
       id: m.id,
       title: m.title,
       accent: tagline,
+      companyName,
+      companyId: m.company_id || m.companies?.id,
+      companies: m.companies,
+      city: m.city,
       subtitle: [companyName, m.city].filter(Boolean).join(' · '),
       raw: m,
     }
@@ -250,6 +254,7 @@ export default function WorkerDashboard({
                     onApply={() => onApply(m, hasApplied(m.id))}
                     onToggleSave={onToggleSave}
                     onSelect={() => onNavigate('mission-detail', m)}
+                    onViewCompany={onViewCompany}
                   />
                 </div>
               ))}
@@ -291,9 +296,22 @@ export default function WorkerDashboard({
                         {currentMission.accent}.
                       </span>
                     </div>
-                    {currentMission.subtitle && (
+                    {(currentMission.companyName || currentMission.city) && (
                       <div style={{ marginTop: 12, fontSize: 12.5, color: 'rgba(255,255,255,0.65)' }}>
-                        {currentMission.subtitle}
+                        {onViewCompany && currentMission.companyId && currentMission.companyName ? (
+                          <button
+                            type="button"
+                            onClick={() => onViewCompany(currentMission.companyId, currentMission.companies)}
+                            style={{
+                              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                              color: T.color.brandXL, fontWeight: 600, fontSize: 'inherit', fontFamily: 'inherit',
+                              textDecoration: 'underline', textUnderlineOffset: 2, textDecorationColor: 'rgba(96,165,250,.4)',
+                            }}
+                          >{currentMission.companyName}</button>
+                        ) : (
+                          <span>{currentMission.companyName || '—'}</span>
+                        )}
+                        {currentMission.city ? ` · ${currentMission.city}` : ''}
                       </div>
                     )}
                     <button
