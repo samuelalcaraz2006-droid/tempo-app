@@ -5,16 +5,7 @@ import React from 'react'
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('lucide-react', () => ({
-  Download: (props) => <svg data-testid="icon-download" {...props} />,
-  MessageCircle: (props) => <svg data-testid="icon-message-circle" {...props} />,
-  X: (props) => <svg data-testid="icon-x" {...props} />,
-  Search: (props) => <svg data-testid="icon-search" {...props} />,
-  ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
-  ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
-  Info: (props) => <svg data-testid="icon-info" {...props} />,
-  Sparkles: (props) => <svg data-testid="icon-sparkles" {...props} />,
-}))
+vi.mock('lucide-react', async () => (await import('./mocks/lucide.jsx')).default)
 
 vi.mock('../hooks/shared/useConversations', () => ({
   useConversations: () => ({ conversations: [], loading: false, refreshing: false, refresh: vi.fn(), error: null }),

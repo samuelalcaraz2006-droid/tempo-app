@@ -4,15 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 
 // ── Mock lucide-react ─────────────────────────────────────────
-vi.mock('lucide-react', () => ({
-  Heart: ({ size, style }) => <svg data-testid="heart-icon" style={style} />,
-  ChevronLeft: () => <svg data-testid="chevron-left" />,
-  Briefcase: () => <svg data-testid="briefcase" />,
-  Check: () => <svg data-testid="check" />,
-  CheckCheck: () => <svg data-testid="check-check" />,
-  MessageCircle: () => <svg data-testid="message-circle" />,
-  Search: () => <svg data-testid="search" />,
-}))
+vi.mock('lucide-react', async () => (await import('./mocks/lucide.jsx')).default)
 
 // ── Mock formatters ───────────────────────────────────────────
 vi.mock('../lib/formatters', () => ({
