@@ -130,30 +130,45 @@ export function Eyebrow({ children, style, color }) {
 // Le <em> est automatiquement stylé.
 export function HeadlineA({ children, size = 'lg', color, style }) {
   const sizes = {
-    xxl: { fs: 72, lh: 0.96, tr: '-0.04em' },
-    xl:  { fs: 60, lh: 0.98, tr: '-0.035em' },
-    lg:  { fs: 52, lh: 1.0,  tr: '-0.03em' },
-    md:  { fs: 32, lh: 1.08, tr: '-0.025em' },
-    sm:  { fs: 24, lh: 1.15, tr: '-0.02em' },
+    xxl: { fs: 48, lh: 1.02, tr: '-0.028em' },
+    xl:  { fs: 40, lh: 1.05, tr: '-0.025em' },
+    lg:  { fs: 32, lh: 1.08, tr: '-0.022em' },
+    md:  { fs: 24, lh: 1.15, tr: '-0.018em' },
+    sm:  { fs: 20, lh: 1.2,  tr: '-0.015em' },
   }
   const s = sizes[size] || sizes.lg
+  // Sur fond sombre (navy) la couleur de base est blanche → l'accent
+  // italique prend brandXL (bleu clair). Sur fond clair, accent = brand.
+  const accentColor = (color && color !== '#fff') ? T.color.brand : T.color.brandXL
+
+  // Walk récursif : wrappe chaque <em> rencontré, même à l'intérieur
+  // d'un <Fragment> passé par le caller.
+  const transform = (node) => {
+    if (Array.isArray(node)) return node.map((n, i) => <React.Fragment key={i}>{transform(n)}</React.Fragment>)
+    if (!React.isValidElement(node)) return node
+    if (node.type === 'em') {
+      return React.cloneElement(node, {
+        style: {
+          fontFamily: T.font.serif, fontStyle: 'italic',
+          fontWeight: 400, color: accentColor,
+          ...node.props.style,
+        },
+      })
+    }
+    // Fragment ou autre composant : descend dans ses children
+    if (node.props && node.props.children) {
+      return React.cloneElement(node, {}, transform(node.props.children))
+    }
+    return node
+  }
+
   return (
     <h1 style={{
       margin: 0, fontSize: s.fs, fontWeight: 800, lineHeight: s.lh,
       color: color || '#fff', letterSpacing: s.tr, fontFamily: T.font.body,
       ...style,
     }}>
-      {React.Children.map(children, (child) => {
-        if (React.isValidElement(child) && child.type === 'em') {
-          return React.cloneElement(child, {
-            style: {
-              fontFamily: T.font.serif, fontStyle: 'italic',
-              fontWeight: 400, color: T.color.brandXL, ...child.props.style,
-            },
-          })
-        }
-        return child
-      })}
+      {transform(children)}
     </h1>
   )
 }
@@ -163,16 +178,16 @@ export function KpiCard({ label, value, sub, accentColor }) {
   return (
     <div style={{
       background: '#fff', border: `1px solid ${T.color.g2}`,
-      borderRadius: T.radius.lg, padding: '24px 24px 22px', boxShadow: T.shadow.soft,
+      borderRadius: T.radius.lg, padding: '20px 22px', boxShadow: T.shadow.soft,
       position: 'relative', overflow: 'hidden',
     }}>
-      <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>{label}</Eyebrow>
+      <Eyebrow style={{ fontSize: 10, letterSpacing: 1.4 }}>{label}</Eyebrow>
       <div style={{
-        marginTop: 18, fontSize: 44, fontWeight: 800,
-        color: accentColor || T.color.ink, letterSpacing: '-0.03em',
-        fontFamily: T.font.body, lineHeight: 0.95,
+        marginTop: 12, fontSize: 28, fontWeight: 700,
+        color: accentColor || T.color.ink, letterSpacing: '-0.02em',
+        fontFamily: T.font.body, lineHeight: 1.05,
       }}>{value}</div>
-      {sub && <div style={{ marginTop: 10, fontSize: 12, color: T.color.g5 }}>{sub}</div>}
+      {sub && <div style={{ marginTop: 6, fontSize: 11.5, color: T.color.g5 }}>{sub}</div>}
     </div>
   )
 }

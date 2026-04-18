@@ -8,7 +8,7 @@ import { GridBg, HeadlineA, Eyebrow } from './primitives'
 export default function TopBarA({ subtitle, title, actions, children, size = 'lg' }) {
   return (
     <div style={{
-      padding: '28px 48px 32px', background: T.color.navy,
+      padding: '24px 40px 24px', background: T.color.navy,
       borderBottom: '1px solid rgba(255,255,255,0.06)',
       position: 'relative', overflow: 'hidden',
     }}>
@@ -27,7 +27,7 @@ export default function TopBarA({ subtitle, title, actions, children, size = 'lg
           {subtitle && (
             <Eyebrow
               color="rgba(255,255,255,0.55)"
-              style={{ marginBottom: 14, fontSize: 11, letterSpacing: 1.6 }}
+              style={{ marginBottom: 10, fontSize: 10.5, letterSpacing: 1.4 }}
             >{subtitle}</Eyebrow>
           )}
           {title && <HeadlineA size={size} color="#fff">{title}</HeadlineA>}
