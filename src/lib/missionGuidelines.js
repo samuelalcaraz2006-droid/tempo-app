@@ -122,6 +122,46 @@ export function getRecoursLabel(value) {
   return RECOURS_MOTIVES.find((m) => m.value === value)?.label || value
 }
 
+// Suggestions de compétences / qualifications les plus demandées
+// par secteur. L'entreprise clique pour ajouter, ça évite d'avoir
+// à saisir le texte exact et ça normalise les intitulés.
+export const SKILL_SUGGESTIONS = {
+  logistique: [
+    'CACES R489 cat. 1', 'CACES R489 cat. 3', 'CACES R489 cat. 5',
+    'CACES R485 (gerbeur)', 'CACES R486 (nacelle)',
+    'Préparation de commandes', 'Picking / packing', 'Scan code-barres',
+    'Gestion WMS', 'Port de charges lourdes', 'Inventaire tournant',
+  ],
+  btp: [
+    'Habilitation électrique B0/H0', 'Habilitation B1V / B2V',
+    'AIPR opérateur', 'Travail en hauteur', 'Port EPI complet',
+    'Lecture de plans', 'Pose placo', 'Carrelage', 'Peinture',
+    'Maçonnerie traditionnelle', 'Démolition', 'Conduite engin (CACES R482)',
+  ],
+  industrie: [
+    'Réglage machine-outil', 'Commande numérique (CN)', 'Lecture de plans',
+    'Contrôle qualité dimensionnel', 'Contrôle visuel', 'Métrologie',
+    'Soudure TIG', 'Soudure MIG/MAG', 'Maintenance niveau 1',
+    'Sécurité atelier', 'Port EPI', '5S',
+  ],
+  hotellerie: [
+    'Service en salle', 'Accueil clientèle', 'Connaissance HACCP',
+    'Plonge batterie', 'Mise en place', 'Dressage assiettes',
+    'Cuisson (chaud)', 'Cuisson (froid)', 'Pâtisserie de base',
+    'Bar / cocktails', 'Anglais conversationnel', 'Tenue noire/blanche',
+  ],
+  proprete: [
+    'Nettoyage tertiaire', 'Remise en état après travaux', 'Vitres',
+    'Lavage mécanisé (auto-laveuse)', 'Décapage sol', 'Cristallisation',
+    'Nettoyage après sinistre', 'Désinfection', 'Produits professionnels',
+    'Port EPI', 'Autonomie d\'intervention',
+  ],
+}
+
+export function getSkillSuggestions(sector) {
+  return SKILL_SUGGESTIONS[sector] || []
+}
+
 // ─────────────────────────────────────────────────────────────
 // Détecteur de red flags dans le texte.
 // Non bloquant : on affiche une suggestion de reformulation

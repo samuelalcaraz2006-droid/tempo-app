@@ -7,9 +7,169 @@ import {
   RECOURS_MOTIVES,
   RATE_WARNING_RATIO,
   detectRedFlags,
+  getSkillSuggestions,
 } from '../../lib/missionGuidelines'
 
 const SECTORS = ['logistique', 'btp', 'industrie', 'hotellerie', 'proprete']
+
+// ─────────────────────────────────────────────────────────────
+// Champ compétences en mode « chips » : on tape une entrée,
+// Entrée ou virgule → chip. Backspace sur champ vide → retire le
+// dernier chip. Sous le champ, suggestions cliquables pour le
+// secteur courant (ajoute en un clic, hide si déjà présent).
+// ─────────────────────────────────────────────────────────────
+function SkillsInput({ value, onChange, sector }) {
+  const [draft, setDraft] = useState('')
+  const suggestions = useMemo(() => getSkillSuggestions(sector), [sector])
+  const current = Array.isArray(value) ? value : []
+
+  const addSkill = (raw) => {
+    const clean = (raw || '').trim()
+    if (!clean) return
+    if (current.some((s) => s.toLowerCase() === clean.toLowerCase())) return
+    onChange([...current, clean])
+  }
+  const removeAt = (i) => onChange(current.filter((_, idx) => idx !== i))
+
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      addSkill(draft)
+      setDraft('')
+    } else if (e.key === 'Backspace' && !draft && current.length) {
+      e.preventDefault()
+      removeAt(current.length - 1)
+    }
+  }
+
+  const onPaste = (e) => {
+    const pasted = e.clipboardData.getData('text')
+    if (pasted.includes(',') || pasted.includes('\n')) {
+      e.preventDefault()
+      pasted.split(/[,\n]/).forEach((s) => addSkill(s))
+      setDraft('')
+    }
+  }
+
+  const visibleSuggestions = suggestions.filter(
+    (s) => !current.some((c) => c.toLowerCase() === s.toLowerCase())
+  )
+
+  return (
+    <div>
+      <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>
+        Compétences / qualifications attendues
+      </label>
+      <div
+        className="input"
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 6,
+          alignItems: 'center',
+          padding: '6px 8px',
+          minHeight: 40,
+          cursor: 'text',
+        }}
+        onClick={(e) => {
+          const input = e.currentTarget.querySelector('input')
+          if (input) input.focus()
+        }}
+      >
+        {current.map((skill, i) => (
+          <span
+            key={`${skill}-${i}`}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: '3px 4px 3px 10px',
+              background: 'var(--or-l, #fff4ea)',
+              color: 'var(--or, #d96c1a)',
+              borderRadius: 14,
+              fontSize: 12,
+              fontWeight: 500,
+              lineHeight: 1.4,
+            }}
+          >
+            {skill}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); removeAt(i) }}
+              aria-label={`Retirer ${skill}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 18,
+                height: 18,
+                border: 'none',
+                background: 'transparent',
+                color: 'inherit',
+                cursor: 'pointer',
+                borderRadius: '50%',
+                padding: 0,
+              }}
+            >
+              <X size={12} />
+            </button>
+          </span>
+        ))}
+        <input
+          type="text"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={onKeyDown}
+          onPaste={onPaste}
+          onBlur={() => { if (draft.trim()) { addSkill(draft); setDraft('') } }}
+          placeholder={current.length ? '' : 'Ex : CACES R489 cat. 3, HACCP…'}
+          style={{
+            flex: 1,
+            minWidth: 140,
+            border: 'none',
+            outline: 'none',
+            background: 'transparent',
+            fontSize: 14,
+            padding: '4px 2px',
+            color: 'inherit',
+          }}
+        />
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--g4)', marginTop: 3 }}>
+        Tapez une compétence puis Entrée (ou virgule). Décrivez ce que le prestataire doit maîtriser, pas des conditions de travail imposées.
+      </div>
+
+      {visibleSuggestions.length > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <div style={{ fontSize: 11, color: 'var(--g5)', marginBottom: 4 }}>
+            Suggestions pour ce secteur — cliquez pour ajouter :
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {visibleSuggestions.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => addSkill(s)}
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: 14,
+                  border: '1px dashed var(--g2)',
+                  background: 'var(--wh)',
+                  color: 'var(--g6)',
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  lineHeight: 1.4,
+                }}
+              >
+                + {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 // Highlight des red flags sous le champ Objet : on montre chaque
 // occurrence + la suggestion de reformulation. Non bloquant.
@@ -292,16 +452,12 @@ export default function CompanyPublishMission({
               </div>
             </div>
 
-            <div>
-              <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Compétences / qualifications attendues</label>
-              <input
-                className="input"
-                placeholder="Ex: CACES 3, expérience logistique 2 ans"
-                value={(form.required_skills || []).join(', ')}
-                onChange={(e) => setF('required_skills', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
-              />
-              <div style={{ fontSize: 11, color: 'var(--g4)', marginTop: 3 }}>Séparez par des virgules. Décrivez ce que le prestataire doit maîtriser, pas des conditions de travail imposées.</div>
-            </div>
+            <SkillsInput
+              value={form.required_skills || []}
+              onChange={(next) => setF('required_skills', next)}
+              sector={form.sector}
+            />
+
 
             {/* ─── Bloc 5 : Rémunération ─── */}
             <div style={{ padding: 14, background: 'var(--g1)', borderRadius: 10 }}>
