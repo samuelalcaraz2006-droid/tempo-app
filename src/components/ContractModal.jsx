@@ -59,7 +59,7 @@ export default function ContractModal({ mission, company, worker, role, onSign, 
         {/* En-tête */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
           <div style={{ width: 36, height: 36, background: 'var(--or)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white" /></svg>
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14"><path d="M2 1.5L12 7L2 12.5Z" fill="white" /></svg>
           </div>
           <div>
             <div id={titleId} style={{ fontSize: 16, fontWeight: 600 }}>Contrat de prestation de service</div>

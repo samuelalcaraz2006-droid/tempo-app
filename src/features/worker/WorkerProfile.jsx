@@ -31,23 +31,18 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
 
         <div className="a-eyebrow" style={{ marginBottom: 12, fontSize: 10.5 }}>Informations personnelles</div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
-          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Prenom</label>
-            <input className="input" value={profileForm.first_name || ''} onChange={e => setProfileForm(f => ({ ...f, first_name: e.target.value }))} /></div>
-          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Nom</label>
-            <input className="input" value={profileForm.last_name || ''} onChange={e => setProfileForm(f => ({ ...f, last_name: e.target.value }))} /></div>
+          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Prenom<input className="input" value={profileForm.first_name || ''} onChange={e => setProfileForm(f => ({ ...f, first_name: e.target.value }))} /></label></div>
+          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Nom<input className="input" value={profileForm.last_name || ''} onChange={e => setProfileForm(f => ({ ...f, last_name: e.target.value }))} /></label></div>
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
-          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Ville</label>
-            <input className="input" value={profileForm.city || ''} onChange={e => setProfileForm(f => ({ ...f, city: e.target.value }))} placeholder="Ex: Lyon" /></div>
-          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>SIRET</label>
-            <input className="input" value={profileForm.siret || ''} onChange={e => setProfileForm(f => ({ ...f, siret: e.target.value }))} placeholder="12345678900012" maxLength={14} /></div>
+          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Ville<input className="input" value={profileForm.city || ''} onChange={e => setProfileForm(f => ({ ...f, city: e.target.value }))} placeholder="Ex: Lyon" /></label></div>
+          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>SIRET<input className="input" value={profileForm.siret || ''} onChange={e => setProfileForm(f => ({ ...f, siret: e.target.value }))} placeholder="12345678900012" maxLength={14} /></label></div>
         </div>
 
         <div style={{ marginBottom:16 }}>
-          <label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Rayon d'intervention : <strong>{profileForm.radius_km || 10} km</strong></label>
-          <input type="range" min="1" max="100" value={profileForm.radius_km || 10}
+          <label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Rayon d'intervention : <strong>{profileForm.radius_km || 10} km</strong><input type="range" min="1" max="100" value={profileForm.radius_km || 10}
             onChange={e => setProfileForm(f => ({ ...f, radius_km: parseInt(e.target.value, 10) }))}
-            style={{ width:'100%', accentColor:'var(--or)' }} />
+            style={{ width:'100%', accentColor:'var(--or)' }} /></label>
           <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'var(--g4)' }}>
             <span>1 km</span><span>50 km</span><span>100 km</span>
           </div>

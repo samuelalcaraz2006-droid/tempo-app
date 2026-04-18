@@ -10,8 +10,7 @@ const SECTORS = ['Logistique', 'BTP', 'Industrie', 'Hôtellerie', 'Propreté']
 // Field gardé EN DEHORS d'Auth pour éviter la recréation à chaque frappe.
 const Field = ({ label, id, form, set, ...props }) => (
   <div style={{ marginBottom: 14 }}>
-    <label className="a-label" htmlFor={id}>{label}</label>
-    <input id={id} className="a-input" {...props} onChange={e => set(id, e.target.value)} value={form[id] || ''} />
+    <label className="a-label" htmlFor={id}>{label}<input id={id} className="a-input" {...props} onChange={e => set(id, e.target.value)} value={form[id] || ''} /></label>
   </div>
 )
 
@@ -46,7 +45,7 @@ const PasswordStrength = ({ password }) => {
 }
 
 const Spinner = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin .6s linear infinite' }}>
+  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin .6s linear infinite' }}>
     <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" opacity=".25" />
     <path d="M14 8a6 6 0 00-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
@@ -465,11 +464,10 @@ export default function Auth({ onNavigate }) {
                   </div>
                   <Field form={form} set={set} label="Téléphone" id="phone" type="tel" placeholder="06 12 34 56 78" />
                   <div style={{ marginBottom: 14 }}>
-                    <label className="a-label">Secteur principal</label>
-                    <select className="a-input" value={form.sector} onChange={e => set('sector', e.target.value)}>
+                    <label className="a-label">Secteur principal<select className="a-input" value={form.sector} onChange={e => set('sector', e.target.value)}>
                       <option value="">Choisir...</option>
                       {SECTORS.map(s => <option key={s}>{s}</option>)}
-                    </select>
+                    </select></label>
                   </div>
                 </>}
                 {step === 2 && <>
@@ -481,12 +479,11 @@ export default function Auth({ onNavigate }) {
                     <Field form={form} set={set} label="Ville" id="city" placeholder="Lyon" required />
                   </div>
                   <div style={{ marginBottom: 14 }}>
-                    <label className="a-label">Rayon de recherche missions : <strong>{form.radiusKm} km</strong></label>
-                    <input type="range" min={5} max={50} step={5} value={form.radiusKm}
+                    <label className="a-label">Rayon de recherche missions : <strong>{form.radiusKm} km</strong><input type="range" min={5} max={50} step={5} value={form.radiusKm}
                       onChange={e => set('radiusKm', e.target.value)}
                       style={{ width: '100%' }}
                       aria-label={`Rayon de recherche : ${form.radiusKm} km`}
-                      aria-valuenow={form.radiusKm} aria-valuemin={5} aria-valuemax={50} />
+                      aria-valuenow={form.radiusKm} aria-valuemin={5} aria-valuemax={50} /></label>
                   </div>
                 </>}
                 {step === 3 && <>

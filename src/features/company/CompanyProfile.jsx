@@ -54,32 +54,29 @@ export default function CompanyProfile({
         <div style={{ marginBottom: 12 }}>
           <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>
             Nom de l'entreprise
-          </label>
           <input
             className="input"
             value={profileForm.name || ''}
             onChange={e => setProfileForm(f => ({ ...f, name: e.target.value }))}
             placeholder="Ex: Dupont Logistics SAS"
-          />
+          /></label>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
           <div>
             <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>
               SIRET
-            </label>
             <input
               className="input"
               value={profileForm.siret || ''}
               onChange={e => setProfileForm(f => ({ ...f, siret: e.target.value }))}
               placeholder="12345678900012"
               maxLength={14}
-            />
+            /></label>
           </div>
           <div>
             <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>
               Secteur
-            </label>
             <select
               className="input"
               value={profileForm.sector || ''}
@@ -89,7 +86,7 @@ export default function CompanyProfile({
               {SECTORS.map(([v, l]) => (
                 <option key={v} value={v}>{l}</option>
               ))}
-            </select>
+            </select></label>
           </div>
         </div>
 
@@ -97,24 +94,22 @@ export default function CompanyProfile({
           <div>
             <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>
               Ville
-            </label>
             <input
               className="input"
               value={profileForm.city || ''}
               onChange={e => setProfileForm(f => ({ ...f, city: e.target.value }))}
               placeholder="Ex: Paris"
-            />
+            /></label>
           </div>
           <div>
             <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>
               Adresse
-            </label>
             <input
               className="input"
               value={profileForm.address || ''}
               onChange={e => setProfileForm(f => ({ ...f, address: e.target.value }))}
               placeholder="Ex: 12 rue du Commerce"
-            />
+            /></label>
           </div>
         </div>
 
@@ -125,24 +120,22 @@ export default function CompanyProfile({
           <div>
             <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>
               Nom du contact
-            </label>
             <input
               className="input"
               value={profileForm.contact_name || ''}
               onChange={e => setProfileForm(f => ({ ...f, contact_name: e.target.value }))}
               placeholder="Ex: Jean Dupont"
-            />
+            /></label>
           </div>
           <div>
             <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>
               Téléphone
-            </label>
             <input
               className="input"
               value={profileForm.contact_phone || ''}
               onChange={e => setProfileForm(f => ({ ...f, contact_phone: e.target.value }))}
               placeholder="Ex: 06 12 34 56 78"
-            />
+            /></label>
           </div>
         </div>
 

@@ -10,16 +10,20 @@ export default function FormField({
 }) {
   return (
     <div style={style}>
-      {label && (
-        <label className="label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {label}
-          {required && <span style={{ color: 'var(--rd)', fontWeight: 600 }}>*</span>}
+      {label ? (
+        <label className="label" style={{ display: 'block' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {label}
+            {required && <span style={{ color: 'var(--rd)', fontWeight: 600 }}>*</span>}
+          </span>
+          {children}
         </label>
+      ) : (
+        children
       )}
-      {children}
       {error && (
         <div style={{ fontSize: 12, color: 'var(--rd)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5.5" stroke="currentColor" /><path d="M6 3.5v3M6 8h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+          <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5.5" stroke="currentColor" /><path d="M6 3.5v3M6 8h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
           {error}
         </div>
       )}
