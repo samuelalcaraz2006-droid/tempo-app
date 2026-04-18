@@ -182,7 +182,7 @@ export default function AdminApp({ onLogoClick }) {
           background: T.color.g1, borderRadius: 999, marginBottom: 24,
         }}>
           {[['users', 'Utilisateurs'], ['kyc', 'KYC'], ['stats', 'Statistiques']].map(([k, l]) => (
-            <button
+            <button type="button"
               key={k}
               onClick={() => setTab(k)}
               style={{
@@ -245,7 +245,7 @@ export default function AdminApp({ onLogoClick }) {
               style={{ width: '100%', minHeight: 80, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--g2)', fontSize: 13, resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit' }}
             />
             <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-              <button
+              <button type="button"
                 className="btn-secondary"
                 style={{ flex: 1, justifyContent: 'center' }}
                 onClick={() => { setKycReject(null); setKycRejectReason('') }}
@@ -253,7 +253,7 @@ export default function AdminApp({ onLogoClick }) {
               >
                 Annuler
               </button>
-              <button
+              <button type="button"
                 style={{ flex: 2, background: 'var(--rd)', color: 'white', border: 'none', borderRadius: 8, padding: '10px 0', fontWeight: 600, cursor: kycRejectReason.trim() && !kycLoading ? 'pointer' : 'not-allowed', opacity: kycRejectReason.trim() && !kycLoading ? 1 : 0.5 }}
                 onClick={handleKycRejectConfirm}
                 disabled={!kycRejectReason.trim() || kycLoading}
@@ -278,7 +278,7 @@ export default function AdminApp({ onLogoClick }) {
               <span style={{ color: 'var(--brand)', fontSize: 12 }}>Cette action est irréversible et sera enregistrée dans le journal d'audit.</span>
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button
+              <button type="button"
                 className="btn-secondary"
                 style={{ flex: 1, justifyContent: 'center' }}
                 onClick={() => setKycConfirm(null)}
@@ -286,7 +286,7 @@ export default function AdminApp({ onLogoClick }) {
               >
                 Annuler
               </button>
-              <button
+              <button type="button"
                 className="btn-primary"
                 style={{ flex: 2, justifyContent: 'center' }}
                 onClick={handleKycConfirm}

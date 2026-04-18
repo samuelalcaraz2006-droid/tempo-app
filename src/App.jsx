@@ -39,13 +39,13 @@ class ErrorBoundary extends React.Component {
               </pre>
             </details>
           )}
-          <button
+          <button type="button"
             onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload() }}
             style={{ padding: '10px 24px', background: 'var(--brand)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
           >
             Recharger l'application
           </button>
-          <button
+          <button type="button"
             onClick={() => { this.setState({ hasError: false, error: null }); window.location.href = '/' }}
             style={{ marginTop: 8, padding: '8px 20px', background: 'transparent', color: 'var(--g6)', border: '1px solid var(--g2)', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
           >

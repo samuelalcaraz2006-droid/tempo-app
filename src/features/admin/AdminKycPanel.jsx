@@ -28,7 +28,7 @@ function KycWorkerCard({ u, onApproveAll, onApproveField, onReject, kycFieldLoad
         </div>
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           {hasAnyDoc && (
-            <button
+            <button type="button"
               className="btn-primary"
               style={{ padding: '4px 10px', fontSize: 11 }}
               onClick={() => onApproveAll(u)}
@@ -36,7 +36,7 @@ function KycWorkerCard({ u, onApproveAll, onApproveField, onReject, kycFieldLoad
               ✓ Tout valider
             </button>
           )}
-          <button
+          <button type="button"
             style={{ padding: '4px 10px', fontSize: 11, background: 'var(--rd-l)', color: 'var(--rd)', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
             onClick={() => onReject(u)}
           >
@@ -58,7 +58,7 @@ function KycWorkerCard({ u, onApproveAll, onApproveField, onReject, kycFieldLoad
           {doc.verified ? (
             <span className="badge badge-green" style={{ fontSize: 10 }}>✓ Vérifié</span>
           ) : doc.url ? (
-            <button
+            <button type="button"
               className="btn-secondary"
               style={{ padding: '3px 8px', fontSize: 10, opacity: kycFieldLoading === `${u.id}_${doc.key}` ? 0.5 : 1 }}
               disabled={!!kycFieldLoading}

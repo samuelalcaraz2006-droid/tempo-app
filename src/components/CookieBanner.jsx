@@ -21,7 +21,7 @@ export default function CookieBanner() {
         TEMPO utilise uniquement des <strong>cookies strictement necessaires</strong> au fonctionnement du service (authentification, preferences). Aucun cookie publicitaire ou tracker tiers.{' '}
         <a href="/legal" style={{ color:'var(--or)', textDecoration:'underline' }}>En savoir plus</a>
       </div>
-      <button onClick={accept} style={{ background:'var(--or)', color:'#fff', border:'none', borderRadius:8, padding:'10px 24px', fontSize:13, fontWeight:600, cursor:'pointer', whiteSpace:'nowrap' }}>
+      <button type="button" onClick={accept} style={{ background:'var(--or)', color:'#fff', border:'none', borderRadius:8, padding:'10px 24px', fontSize:13, fontWeight:600, cursor:'pointer', whiteSpace:'nowrap' }}>
         Compris
       </button>
     </div>

@@ -31,7 +31,7 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
       {/* Status filter tabs */}
       <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:14 }}>
         {[['tous', 'Toutes', allMissions.length], ['pending', 'En attente', allMissions.filter(a => a.status === 'pending').length], ['accepted', 'Acceptees', allMissions.filter(a => a.status === 'accepted').length], ['rejected', 'Refusees', allMissions.filter(a => a.status === 'rejected').length], ['completed', 'Terminees', allMissions.filter(a => a.missions?.status === 'completed').length]].map(([v, l, c]) => (
-          <button key={v} onClick={() => setSuiviFilter(v)} style={{ padding:'5px 12px', borderRadius:99, border: suiviFilter === v ? '1.5px solid var(--or)' : '1px solid var(--g2)', background: suiviFilter === v ? 'var(--or-l)' : 'var(--wh)', color: suiviFilter === v ? 'var(--or-d)' : 'var(--g6)', fontSize:12, cursor:'pointer', fontWeight: suiviFilter === v ? 500 : 400 }}>
+          <button type="button" key={v} onClick={() => setSuiviFilter(v)} style={{ padding:'5px 12px', borderRadius:99, border: suiviFilter === v ? '1.5px solid var(--or)' : '1px solid var(--g2)', background: suiviFilter === v ? 'var(--or-l)' : 'var(--wh)', color: suiviFilter === v ? 'var(--or-d)' : 'var(--g6)', fontSize:12, cursor:'pointer', fontWeight: suiviFilter === v ? 500 : 400 }}>
             {l} {c > 0 && <span style={{ marginLeft:3, opacity:0.6 }}>({c})</span>}
           </button>
         ))}
@@ -42,7 +42,7 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
           <div style={{ fontSize:36, marginBottom:12 }}>📋</div>
           <div style={{ fontSize:14, fontWeight:500, marginBottom:6 }}>Aucune candidature envoyee</div>
           <div style={{ fontSize:13, marginBottom:16 }}>Postulez a des missions pour les retrouver ici</div>
-          <button className="btn-primary" onClick={() => onNavigate('missions')}>Voir les missions →</button>
+          <button type="button" className="btn-primary" onClick={() => onNavigate('missions')}>Voir les missions →</button>
         </div>
       ) : (
         filtered.map(app => {
@@ -109,7 +109,7 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
 
               {app.status === 'pending' && (
                 <div style={{ marginTop:10 }}>
-                  <button className="btn-secondary" style={{ padding:'6px 12px', fontSize:11, color:'var(--rd)', borderColor:'var(--rd)' }}
+                  <button type="button" className="btn-secondary" style={{ padding:'6px 12px', fontSize:11, color:'var(--rd)', borderColor:'var(--rd)' }}
                     onClick={() => onWithdraw(app.id)}>
                     Retirer ma candidature
                   </button>
@@ -121,12 +121,12 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
                   {signedContracts.includes(m?.id) ? (
                     <div style={{ flex:1, padding:'8px 12px', background:'var(--gr-l)', borderRadius:8, fontSize:12, color:'var(--gr-d)' }}>✓ Contrat signe</div>
                   ) : (
-                    <button className="btn-dark" style={{ padding:'8px 14px', fontSize:12 }}
+                    <button type="button" className="btn-dark" style={{ padding:'8px 14px', fontSize:12 }}
                       onClick={() => onSignContract(m)}>
                       <PenLine size={16} style={{ verticalAlign:'middle', marginRight:4 }} /> Signer le contrat
                     </button>
                   )}
-                  <button className="btn-primary" style={{ padding:'8px 14px', fontSize:12, display:'flex', alignItems:'center', gap:4 }}
+                  <button type="button" className="btn-primary" style={{ padding:'8px 14px', fontSize:12, display:'flex', alignItems:'center', gap:4 }}
                     onClick={() => onOpenChat(m?.companies?.id || m?.company_id, m?.companies?.name || 'Entreprise', m?.id)}>
                     <MessageCircle size={16} /> Contacter
                   </button>
@@ -135,13 +135,13 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
 
               {missionDone && (
                 <div style={{ marginTop:10, display:'flex', gap:8, flexWrap:'wrap' }}>
-                  <button className="btn-secondary" style={{ padding:'8px 14px', fontSize:12, display:'flex', alignItems:'center', gap:4 }}
+                  <button type="button" className="btn-secondary" style={{ padding:'8px 14px', fontSize:12, display:'flex', alignItems:'center', gap:4 }}
                     onClick={() => onSignContract(m)}
                     title="Voir le contrat signé">
                     <PenLine size={14} /> Voir le contrat
                   </button>
                   {!alreadyRated && (
-                    <button className="btn-primary" style={{ flex:1, minWidth:180, justifyContent:'center', padding:'8px 14px', fontSize:12, display:'flex', alignItems:'center', gap:6 }}
+                    <button type="button" className="btn-primary" style={{ flex:1, minWidth:180, justifyContent:'center', padding:'8px 14px', fontSize:12, display:'flex', alignItems:'center', gap:6 }}
                       onClick={() => onRate(m)}>
                       <StarIcon size={12} fill="currentColor" /> Évaluer cette mission
                     </button>

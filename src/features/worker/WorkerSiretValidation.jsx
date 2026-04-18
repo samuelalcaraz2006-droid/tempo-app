@@ -53,7 +53,7 @@ export default function WorkerSiretValidation({ worker, showToast }) {
           onChange={e => setSiret(e.target.value.replace(/[^\d\s]/g, ''))}
           maxLength={17}
         />
-        <button className="btn-primary" style={{ padding:'8px 16px', fontSize:12 }} onClick={handleValidate} disabled={loading || siret.replace(/\s/g, '').length !== 14}>
+        <button type="button" className="btn-primary" style={{ padding:'8px 16px', fontSize:12 }} onClick={handleValidate} disabled={loading || siret.replace(/\s/g, '').length !== 14}>
           {loading ? 'Verification...' : 'Verifier'}
         </button>
       </div>

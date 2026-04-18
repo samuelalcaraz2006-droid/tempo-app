@@ -37,10 +37,10 @@ export default function DisputeModal({ contractId, missionId, userId, onClose, s
           style={{ width:'100%', minHeight:80, padding:'8px 12px', borderRadius:8, border:'1px solid var(--g2)', fontSize:13, resize:'vertical', boxSizing:'border-box', fontFamily:'inherit' }}
         />
         <div style={{ display:'flex', gap:10, marginTop:16 }}>
-          <button className="btn-secondary" style={{ flex:1, justifyContent:'center' }} onClick={onClose} disabled={loading}>
+          <button type="button" className="btn-secondary" style={{ flex:1, justifyContent:'center' }} onClick={onClose} disabled={loading}>
             Annuler
           </button>
-          <button
+          <button type="button"
             style={{ flex:2, background:'var(--rd)', color:'white', border:'none', borderRadius:8, padding:'10px 0', fontWeight:600, cursor: reason.trim() && !loading ? 'pointer' : 'not-allowed', opacity: reason.trim() && !loading ? 1 : 0.5 }}
             onClick={handleSubmit}
             disabled={!reason.trim() || loading}

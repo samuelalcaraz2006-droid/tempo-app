@@ -70,7 +70,7 @@ export default function CompanyContracts({ invoices, onExportInvoices }) {
       )}
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-        <button className="btn-secondary" onClick={onExportInvoices} style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+        <button type="button" className="btn-secondary" onClick={onExportInvoices} style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
           <Download size={16} /> Exporter les factures (CSV)
         </button>
       </div>

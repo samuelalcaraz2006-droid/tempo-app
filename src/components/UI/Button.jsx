@@ -38,7 +38,7 @@ export default function Button({
   const cls = VARIANT_CLASS[variant] || 'btn-primary'
 
   return (
-    <button
+    <button type="button"
       className={`${cls} ${className}`}
       disabled={disabled || loading}
       style={{

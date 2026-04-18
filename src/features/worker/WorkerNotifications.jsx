@@ -13,12 +13,12 @@ export default function WorkerNotifications({ notifs, setNotifs, userId, unreadC
     <div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
         <div style={{ fontSize:18, fontWeight:600 }}>Notifications</div>
-        <button onClick={onBack} style={{ fontSize:13, color:'var(--g4)', background:'none', border:'none', cursor:'pointer' }}>‹ Retour</button>
+        <button type="button" onClick={onBack} style={{ fontSize:13, color:'var(--g4)', background:'none', border:'none', cursor:'pointer' }}>‹ Retour</button>
       </div>
 
       <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:12, flexWrap:'wrap' }}>
         {unreadCount > 0 && (
-          <button onClick={async () => { await markNotifsRead(userId); setNotifs(prev => prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() }))) }}
+          <button type="button" onClick={async () => { await markNotifsRead(userId); setNotifs(prev => prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() }))) }}
             style={{ padding:'5px 12px', borderRadius:8, border:'1px solid var(--g2)', background:'var(--wh)', color:'var(--g6)', fontSize:12, cursor:'pointer' }}>
             ✓ Tout marquer comme lu ({unreadCount})
           </button>

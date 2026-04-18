@@ -299,7 +299,7 @@ export default function Auth({ onNavigate }) {
         background: T.color.wh,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button
+          <button type="button"
             onClick={() => onNavigate(null)}
             style={{
               background: 'none', border: 'none', color: T.color.g5,
@@ -310,7 +310,7 @@ export default function Auth({ onNavigate }) {
           {mode !== 'reset' && (
             <div style={{ fontSize: 12.5, color: T.color.g5 }}>
               {mode === 'login' ? 'Pas encore de compte ? ' : 'Déjà inscrit ? '}
-              <button
+              <button type="button"
                 onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setRole(null); setStep(1); setError(''); setSuccess('') }}
                 style={{
                   background: 'none', border: 'none', color: T.color.brand,
@@ -362,7 +362,7 @@ export default function Auth({ onNavigate }) {
               background: T.color.g1, borderRadius: 999,
             }}>
               {[['login', 'Connexion'], ['register', 'Inscription']].map(([m, l]) => (
-                <button
+                <button type="button"
                   key={m}
                   onClick={() => { setMode(m); setRole(null); setStep(1); setError(''); setSuccess('') }}
                   style={{
@@ -416,7 +416,7 @@ export default function Auth({ onNavigate }) {
                 { id: 'travailleur', t: 'Je suis travailleur', d: 'Je cherche des missions en tant qu\'auto‑entrepreneur.', icon: '◉' },
                 { id: 'entreprise', t: 'Je suis une entreprise', d: 'Je publie des missions et cherche des profils vérifiés.', icon: '▤' },
               ].map(r => (
-                <button key={r.id} onClick={() => setRole(r.id)}
+                <button type="button" key={r.id} onClick={() => setRole(r.id)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 18, padding: '20px 22px',
                     background: '#fff', border: `1.5px solid ${T.color.g2}`,

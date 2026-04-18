@@ -52,7 +52,7 @@ export default function CompanyCandidates({
 }) {
   return (
     <div>
-      <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--g4)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16 }}>
+      <button type="button" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--g4)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16 }}>
         ‹ Retour au tableau de bord
       </button>
       <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>Candidatures reçues</div>
@@ -107,14 +107,14 @@ export default function CompanyCandidates({
                       👁 Voir le profil
                     </button>
                   )}
-                  <button style={{ flex: 1, padding: '8px', border: '1.5px solid var(--g2)', borderRadius: 8, background: 'var(--wh)', fontSize: 13, color: 'var(--g6)', cursor: 'pointer', fontWeight: 500, transition: 'all .15s' }}
+                  <button type="button" style={{ flex: 1, padding: '8px', border: '1.5px solid var(--g2)', borderRadius: 8, background: 'var(--wh)', fontSize: 13, color: 'var(--g6)', cursor: 'pointer', fontWeight: 500, transition: 'all .15s' }}
                     disabled={!!isLoading}
                     onClick={() => onReject(c.id)}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--rd)'; e.currentTarget.style.color = 'var(--rd)' }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--g2)'; e.currentTarget.style.color = 'var(--g6)' }}>
                     {isLoading === 'rejecting' ? '...' : '✗ Refuser'}
                   </button>
-                  <button style={{ flex: 2, padding: '8px', border: 'none', borderRadius: 8, background: 'var(--gr)', color: '#fff', fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'opacity .15s' }}
+                  <button type="button" style={{ flex: 2, padding: '8px', border: 'none', borderRadius: 8, background: 'var(--gr)', color: '#fff', fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'opacity .15s' }}
                     disabled={!!isLoading}
                     onClick={() => onAccept(c)}
                     onMouseEnter={e => e.currentTarget.style.opacity = '.9'}

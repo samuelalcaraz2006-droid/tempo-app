@@ -100,10 +100,10 @@ export default function SignatureCanvas({ onSave, label = 'Signature' }) {
         </div>
       )}
       <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-        <button onClick={clear} aria-label="Effacer la signature" style={{ padding: '6px 14px', fontSize: 12, border: '1px solid var(--g2)', borderRadius: 8, background: 'var(--wh)', cursor: 'pointer', color: 'var(--g4)' }}>
+        <button type="button" onClick={clear} aria-label="Effacer la signature" style={{ padding: '6px 14px', fontSize: 12, border: '1px solid var(--g2)', borderRadius: 8, background: 'var(--wh)', cursor: 'pointer', color: 'var(--g4)' }}>
           Effacer
         </button>
-        <button
+        <button type="button"
           onClick={save}
           disabled={!hasDrawn}
           aria-disabled={!hasDrawn}

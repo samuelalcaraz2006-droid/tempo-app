@@ -263,7 +263,7 @@ export default function Legal({ onBack }) {
         }} />
         <div style={{ position: 'relative', maxWidth: 1100, margin: '0 auto' }}>
           {onBack && (
-            <button onClick={onBack}
+            <button type="button" onClick={onBack}
               style={{
                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
                 cursor: 'pointer', fontSize: 12, color: 'rgba(255,255,255,0.75)',
@@ -294,7 +294,7 @@ export default function Legal({ onBack }) {
           flexWrap: 'wrap', maxWidth: '100%',
         }}>
           {TABS.map(([k, l]) => (
-            <button key={k} onClick={() => setTab(k)}
+            <button type="button" key={k} onClick={() => setTab(k)}
               style={{
                 padding: '8px 16px', border: 'none',
                 background: tab === k ? '#fff' : 'transparent',

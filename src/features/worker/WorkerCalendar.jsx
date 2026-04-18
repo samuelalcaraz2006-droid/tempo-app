@@ -23,7 +23,7 @@ export default function WorkerCalendar({ blockedDays, setBlockedDays, onBack }) 
     <div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
         <div style={{ fontSize:18, fontWeight:600 }}>Calendrier de disponibilite</div>
-        <button onClick={onBack} style={{ fontSize:13, color:'var(--g4)', background:'none', border:'none', cursor:'pointer' }}>‹ Retour</button>
+        <button type="button" onClick={onBack} style={{ fontSize:13, color:'var(--g4)', background:'none', border:'none', cursor:'pointer' }}>‹ Retour</button>
       </div>
       <div style={{ fontSize:13, color:'var(--g4)', marginBottom:16 }}>Cliquez sur un jour pour le bloquer/debloquer.</div>
       <div className="card" style={{ padding:16 }}>
@@ -37,7 +37,7 @@ export default function WorkerCalendar({ blockedDays, setBlockedDays, onBack }) 
             const isPast = d < today.getDate()
             const isToday = d === today.getDate()
             return (
-              <button key={d} onClick={() => !isPast && toggleDay(dateStr)}
+              <button type="button" key={d} onClick={() => !isPast && toggleDay(dateStr)}
                 style={{ padding:8, borderRadius:8, border: isToday ? '2px solid var(--or)' : '1px solid var(--g2)', background: isBlocked ? 'var(--rd)' : isPast ? 'var(--g1)' : 'var(--wh)', color: isBlocked ? '#fff' : isPast ? 'var(--g3)' : 'var(--bk)', fontSize:13, fontWeight: isToday ? 600 : 400, cursor: isPast ? 'default' : 'pointer', textAlign:'center' }}>
                 {d}
               </button>

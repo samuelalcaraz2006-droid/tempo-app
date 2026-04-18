@@ -34,7 +34,7 @@ export default function FeedbackWidget() {
   return (
     <>
       {/* Floating button */}
-      <button
+      <button type="button"
         onClick={() => setOpen(!open)}
         aria-label="Donner un feedback"
         style={{ position:'fixed', bottom:20, right:20, zIndex:1500, width:48, height:48, borderRadius:'50%', background:'var(--brand, #2563EB)', color:'#fff', border:'none', cursor:'pointer', boxShadow:'0 4px 16px rgba(0,0,0,.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, transition:'transform .15s' }}
@@ -60,7 +60,7 @@ export default function FeedbackWidget() {
               {/* Star rating */}
               <div style={{ display:'flex', gap:4, marginBottom:12 }}>
                 {[1, 2, 3, 4, 5].map(n => (
-                  <button key={n} onClick={() => setRating(n)} aria-label={`${n} etoile${n > 1 ? 's' : ''}`}
+                  <button type="button" key={n} onClick={() => setRating(n)} aria-label={`${n} etoile${n > 1 ? 's' : ''}`}
                     style={{ background:'none', border:'none', cursor:'pointer', fontSize:24, color: n <= rating ? 'var(--am)' : 'var(--g3, #ddd)', transition:'color .1s', padding:0 }}>
                     {n <= rating ? '★' : '☆'}
                   </button>
@@ -73,7 +73,7 @@ export default function FeedbackWidget() {
                 placeholder="Qu'est-ce qui pourrait etre ameliore ?"
                 style={{ width:'100%', minHeight:80, padding:'8px 12px', borderRadius:8, border:'1px solid var(--g2, #e5e5e5)', fontSize:13, resize:'vertical', boxSizing:'border-box', fontFamily:'inherit' }}
               />
-              <button
+              <button type="button"
                 onClick={handleSubmit}
                 disabled={!comment.trim() || sending}
                 style={{ width:'100%', marginTop:10, padding:'10px', background:'var(--brand, #2563EB)', color:'#fff', border:'none', borderRadius:8, fontSize:13, fontWeight:600, cursor: comment.trim() && !sending ? 'pointer' : 'not-allowed', opacity: comment.trim() && !sending ? 1 : 0.5 }}

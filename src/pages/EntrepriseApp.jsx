@@ -203,7 +203,7 @@ export default function EntrepriseApp({ onLogoClick }) {
               onChange={(e) => actions.setCancelReason(e.target.value)}
             />
             <div style={{ display: 'flex', gap: 10 }}>
-              <button
+              <button type="button"
                 className="btn-secondary"
                 style={{ flex: 1 }}
                 onClick={() => {
@@ -213,7 +213,7 @@ export default function EntrepriseApp({ onLogoClick }) {
               >
                 Retour
               </button>
-              <button
+              <button type="button"
                 style={{
                   flex: 1,
                   padding: '10px',
