@@ -12,6 +12,7 @@ import CompanyPublishMission from '../features/company/CompanyPublishMission'
 import CompanyStats from '../features/company/CompanyStats'
 import ChatView from '../features/shared/ChatView'
 import PublicWorkerProfile from '../features/shared/PublicWorkerProfile'
+import NotificationsView from '../features/shared/NotificationsView'
 import { useCompanyActions } from '../hooks/company/useCompanyActions'
 import { useCompanyData } from '../hooks/company/useCompanyData'
 import { useToast } from '../hooks/useToast'
@@ -48,6 +49,8 @@ export default function EntrepriseApp({ onLogoClick }) {
   const [profileForm, setProfileForm] = useState({})
   const [chatTarget, setChatTarget] = useState(null)
   const [viewedWorker, setViewedWorker] = useState(null) // { workerId, applicationId?, matchScore? }
+
+  const unreadNotifsCount = (data.notifs || []).filter(n => !n.read_at).length
   const setF = (k, v) => setForm((f) => ({ ...f, [k]: v }))
 
   const data = useCompanyData(user?.id)
@@ -141,7 +144,8 @@ export default function EntrepriseApp({ onLogoClick }) {
     )
 
   return (
-    <DashboardLayout role="company" tabs={tabs} activeTab={screen} onTabChange={setScreen} onLogoClick={onLogoClick}>
+    <DashboardLayout role="company" tabs={tabs} activeTab={screen} onTabChange={setScreen} onLogoClick={onLogoClick}
+      unreadCount={unreadNotifsCount} onNotifClick={() => setScreen('notifs')}>
       <Toast toast={toast} onDismiss={dismissToast} />
 
       {/* Contract modal */}
@@ -329,6 +333,34 @@ export default function EntrepriseApp({ onLogoClick }) {
               displayName={displayName}
               initials={initials}
               onLogout={logout}
+            />
+          )}
+
+          {screen === 'notifs' && (
+            <NotificationsView
+              notifs={data.notifs}
+              setNotifs={data.setNotifs}
+              userId={user?.id}
+              unreadCount={unreadNotifsCount}
+              role="company"
+              onBack={() => setScreen('dashboard')}
+              onNavigate={async (target, payload) => {
+                if (target === 'candidatures' && payload?.missionId) {
+                  await handleLoadCandidates(payload.missionId)
+                  return
+                }
+                if (target === 'chat' && payload?.partnerId) {
+                  openChatNav(payload.partnerId, '', payload.missionId || null)
+                  return
+                }
+                if (target === 'disputes') {
+                  setScreen('dashboard')
+                  return
+                }
+                if (['dashboard', 'publier', 'candidatures', 'messages-e', 'stats', 'contrats', 'profil-e'].includes(target)) {
+                  setScreen(target)
+                }
+              }}
             />
           )}
 
