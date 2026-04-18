@@ -6,6 +6,7 @@ import AdminKycPanel from '../features/admin/AdminKycPanel'
 import AdminStats from '../features/admin/AdminStats'
 import { T } from '../design/tokens'
 import { TempoLogoA, Pill, LiveDot, GridBg, Eyebrow } from '../design/primitives'
+import { captureError } from '../lib/sentry'
 
 const countQuery = (table, filter) => {
   let q = supabase.from(table).select('id', { count: 'exact', head: true })
@@ -73,7 +74,7 @@ export default function AdminApp({ onLogoClick }) {
         .eq('id', kycConfirm.id)
 
       if (updateError) {
-        console.error('[KYC] update error:', updateError.message)
+        captureError(updateError.message, { source: 'KYC' })
         return
       }
 
@@ -92,8 +93,8 @@ export default function AdminApp({ onLogoClick }) {
         supabase.rpc('notify_kyc_decision', { p_worker_id: kycConfirm.id, p_approved: true }),
       ])
 
-      if (auditRes.status === 'rejected') console.error('[KYC] audit log failed:', auditRes.reason)
-      if (notifRes.status === 'rejected') console.error('[KYC] notification failed:', notifRes.reason)
+      if (auditRes.status === 'rejected') captureError(auditRes.reason, { source: 'KYC' })
+      if (notifRes.status === 'rejected') captureError(notifRes.reason, { source: 'KYC' })
 
       setUsers(prev => prev.map(p =>
         p.id === kycConfirm.id
@@ -101,7 +102,7 @@ export default function AdminApp({ onLogoClick }) {
           : p
       ))
     } catch (err) {
-      console.error('[KYC] handleKycConfirm error:', err)
+      captureError(err, { source: 'KYC' })
     } finally {
       setKycLoading(false)
       setKycConfirm(null)

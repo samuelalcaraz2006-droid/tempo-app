@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { applyToMission, withdrawApplication, saveContract, createRating, supabase, setWorkerAvailability } from '../../lib/supabase'
+import { captureError } from '../../lib/sentry'
 
 export function useWorkerActions(userId, { showToast, setApplications, addSignedContract, refreshRoleData } = {}) {
   const [applying, setApplying] = useState({})
@@ -87,7 +88,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
       .eq('id', userId)
     setSavingProfile(false)
     if (error) {
-      console.error('[WorkerActions] saveProfile error:', error)
+      captureError(error, { source: 'WorkerActions' })
       showToast?.(`Erreur lors de la sauvegarde : ${error.message || 'erreur inconnue'}`, 'error')
     } else {
       showToast?.('Profil mis a jour !')

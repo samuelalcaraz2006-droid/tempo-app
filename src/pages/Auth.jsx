@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/useAuth'
 import { supabase } from '../lib/supabase'
 import { T } from '../design/tokens'
 import { TempoLogoA, Avatar, Pill, LiveDot, GridBg } from '../design/primitives'
+import { captureError } from '../lib/sentry'
 
 const SECTORS = ['Logistique', 'BTP', 'Industrie', 'Hôtellerie', 'Propreté']
 
@@ -136,7 +137,7 @@ export default function Auth({ onNavigate }) {
     })
     setLoading(false)
     if (error) {
-      console.error('[Auth] reset error:', error.message)
+      captureError(error.message, { source: 'Auth' })
       setError('Impossible d\'envoyer l\'email. Vérifiez l\'adresse ou réessayez.')
     } else {
       setSuccess('Email envoyé ! Vérifiez votre boîte mail pour réinitialiser votre mot de passe.')
@@ -163,7 +164,7 @@ export default function Auth({ onNavigate }) {
     })
     setLoading(false)
     if (error) {
-      console.error('[Auth] register error:', error.message)
+      captureError(error.message, { source: 'Auth' })
       setError('Impossible de créer le compte. Vérifiez vos informations ou réessayez.')
     } else {
       setSuccess('Compte créé ! Vérifiez votre email pour confirmer votre inscription.')

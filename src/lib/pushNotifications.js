@@ -1,4 +1,5 @@
 // ── Notifications push navigateur ──────────────────
+import { logWarn } from './sentry'
 
 export const isPushSupported = () =>
   'Notification' in window && 'serviceWorker' in navigator
@@ -34,7 +35,7 @@ export const sendLocalNotification = (title, options = {}) => {
     if (!('serviceWorker' in navigator)) return
     navigator.serviceWorker.ready.then(
       (reg) => reg.showNotification(safeTitle, notifOptions),
-      (err) => console.warn('[Push] Service worker indisponible:', err)
+      (err) => logWarn('[Push] Service worker indisponible:', { ctx: err })
     )
   }
 }

@@ -1,9 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
+import { captureError, logWarn } from './sentry'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
 if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  // Intentionnel : erreur de config au module-load, avant même que Sentry
+  // soit initialisé. Si on arrive ici en prod c'est que le build Vercel
+  // a raté les env vars → signal visible dans la console du navigateur.
+  // biome-ignore lint/suspicious/noConsole: config-time error
   console.error(
     'TEMPO: Variables VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY manquantes. Ajoutez-les dans .env ou dans Vercel Dashboard > Settings > Environment Variables',
   )
@@ -259,7 +264,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 export const subscribeToNotifications = (userId, callback) => {
   if (!userId || !UUID_RE.test(userId)) {
-    console.error('[subscribeToNotifications] userId invalide:', userId)
+    captureError(userId, { source: 'subscribeToNotifications' })
     return null
   }
   return supabase
@@ -305,7 +310,7 @@ export const getConversations = async (userId) => {
     .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
     .order('created_at', { ascending: false })
   if (error) {
-    console.warn('[getConversations] select error:', error.message)
+    logWarn('[getConversations] select error:', { ctx: error.message })
     return { data: [], error }
   }
   if (!msgs || msgs.length === 0) return { data: [], error: null }
