@@ -221,8 +221,8 @@ export default function Landing({ onNavigate }) {
               </div>
             </motion.div>
 
-            <motion.h1 variants={fadeUp} style={{ fontSize: 'clamp(36px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.1, color: '#fff', marginBottom: 20 }}>
-              Remplacer l'interim par une execution <span className="gradient-text-dark">temps reel</span>
+            <motion.h1 variants={fadeUp} style={{ fontSize: 'clamp(36px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.05, color: '#fff', marginBottom: 20, letterSpacing: '-0.03em' }}>
+              Remplacer l'interim par une execution <span className="font-serif-italic" style={{ color: 'var(--brand-xl)' }}>temps reel</span>
             </motion.h1>
 
             <motion.p variants={fadeUp} style={{ fontSize: 18, color: 'rgba(255,255,255,0.68)', lineHeight: 1.7, marginBottom: 36, maxWidth: 560 }}>
@@ -257,8 +257,8 @@ export default function Landing({ onNavigate }) {
       <section style={{ padding: '96px 24px', background: 'var(--wh2)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger} style={{ textAlign: 'center', marginBottom: 56 }}>
-            <motion.p variants={fadeUp} style={{ fontSize: 13, fontWeight: 700, color: 'var(--bl)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 12 }}>Secteurs actifs</motion.p>
-            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)' }}>Les metiers qui doivent tourner sans rupture</motion.h2>
+            <motion.p variants={fadeUp} className="a-eyebrow" style={{ marginBottom: 12, fontSize: 11 }}>Secteurs actifs</motion.p>
+            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em' }}>Les métiers qui doivent <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>tourner sans rupture</span></motion.h2>
           </motion.div>
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 16 }}>
             {sectors.map((s, i) => {const { Icon, label, desc } = s; return (
@@ -275,8 +275,8 @@ export default function Landing({ onNavigate }) {
       <section id="process" style={{ padding: '96px 24px', background: 'var(--wh)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger} style={{ textAlign: 'center', marginBottom: 48 }}>
-            <motion.p variants={fadeUp} style={{ fontSize: 13, fontWeight: 700, color: 'var(--bl)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 12 }}>Flux operationnel</motion.p>
-            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)' }}>Comment TEMPO execute la mission</motion.h2>
+            <motion.p variants={fadeUp} className="a-eyebrow" style={{ marginBottom: 12, fontSize: 11 }}>Flux opérationnel</motion.p>
+            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em' }}>Comment TEMPO <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>exécute</span> la mission</motion.h2>
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={fadeUp} style={{ display: 'flex', justifyContent: 'center', marginBottom: 48 }}>
@@ -309,9 +309,9 @@ export default function Landing({ onNavigate }) {
       <section id="entreprises" style={{ padding: '96px 24px', background: 'linear-gradient(180deg, #fff 0%, #EFF6FF 100%)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger} style={{ textAlign: 'center', marginBottom: 56 }}>
-            <motion.p variants={fadeUp} style={{ fontSize: 13, fontWeight: 700, color: 'var(--bl)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 12 }}>Pourquoi pas une agence</motion.p>
-            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)', lineHeight: 1.2 }}>
-              Plus rapide qu'une agence, plus fiable qu'un simple jobboard
+            <motion.p variants={fadeUp} className="a-eyebrow" style={{ marginBottom: 12, fontSize: 11 }}>Pourquoi pas une agence</motion.p>
+            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)', lineHeight: 1.1, letterSpacing: '-0.025em' }}>
+              Plus rapide qu'une agence, <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>plus fiable</span> qu'un simple jobboard
             </motion.h2>
           </motion.div>
 
@@ -331,8 +331,8 @@ export default function Landing({ onNavigate }) {
       <section id="travailleurs" style={{ padding: '96px 24px', background: 'var(--navy)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger} style={{ textAlign: 'center', marginBottom: 64 }}>
-            <motion.p variants={fadeUp} style={{ fontSize: 13, fontWeight: 700, color: 'var(--bl-xl)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 12 }}>Moteur TEMPO</motion.p>
-            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>Un matching qui tient la charge terrain</motion.h2>
+            <motion.p variants={fadeUp} className="a-eyebrow" style={{ marginBottom: 12, fontSize: 11, color: 'var(--brand-xl)' }}>Moteur TEMPO</motion.p>
+            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: '#fff', lineHeight: 1.1, letterSpacing: '-0.025em' }}>Un matching qui tient la <span className="font-serif-italic" style={{ color: 'var(--brand-xl)' }}>charge terrain</span></motion.h2>
           </motion.div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 48, alignItems: 'center' }}>
@@ -361,8 +361,8 @@ export default function Landing({ onNavigate }) {
       <section id="tarifs" style={{ padding: '96px 24px', background: 'var(--g1)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger} style={{ textAlign: 'center', marginBottom: 56 }}>
-            <motion.p variants={fadeUp} style={{ fontSize: 13, fontWeight: 700, color: 'var(--bl)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 12 }}>Ils utilisent TEMPO</motion.p>
-            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)' }}>Temoignages terrain</motion.h2>
+            <motion.p variants={fadeUp} className="a-eyebrow" style={{ marginBottom: 12, fontSize: 11 }}>Ils utilisent TEMPO</motion.p>
+            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em' }}><span className="font-serif-italic" style={{ color: 'var(--brand)' }}>Témoignages</span> terrain</motion.h2>
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
@@ -383,8 +383,8 @@ export default function Landing({ onNavigate }) {
       <section style={{ padding: '96px 24px', background: 'var(--wh2)' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger} style={{ textAlign: 'center', marginBottom: 48 }}>
-            <motion.p variants={fadeUp} style={{ fontSize: 13, fontWeight: 700, color: 'var(--bl)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 12 }}>FAQ</motion.p>
-            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)' }}>Questions frequentes</motion.h2>
+            <motion.p variants={fadeUp} className="a-eyebrow" style={{ marginBottom: 12, fontSize: 11 }}>FAQ</motion.p>
+            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em' }}>Questions <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>fréquentes</span></motion.h2>
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger}>
@@ -410,7 +410,7 @@ export default function Landing({ onNavigate }) {
       <section style={{ padding: '96px 24px', background: 'linear-gradient(135deg, #0D1117 0%, #1E3A8A 50%, #1D4ED8 100%)' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger}>
-            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: '#fff', lineHeight: 1.2, marginBottom: 16 }}>Pret a remplacer vos cycles interim ?</motion.h2>
+            <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: '#fff', lineHeight: 1.05, marginBottom: 16, letterSpacing: '-0.03em' }}>Prêt à <span className="font-serif-italic" style={{ color: 'var(--brand-xl)' }}>remplacer</span> vos cycles intérim ?</motion.h2>
             <motion.p variants={fadeUp} style={{ fontSize: 17, color: 'rgba(255,255,255,0.85)', marginBottom: 40, lineHeight: 1.7 }}>Passez en mode execution on-demand avec TEMPO.</motion.p>
             <motion.div variants={fadeUp} style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button className="btn-dark" onClick={() => onNavigate('auth')} style={{ padding: '13px 24px' }}>Demarrer entreprise</button>

@@ -348,12 +348,12 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   )
 
   const tabs = [
-    ['accueil', t('nav_home')],
-    ['missions', t('nav_missions')],
-    ['messages', t('nav_messages')],
-    ['suivi', t('nav_tracking')],
-    ['gains', t('nav_earnings')],
-    ['profil', t('nav_profile')],
+    ['accueil', t('nav_home'), '◎'],
+    ['missions', t('nav_missions'), '▤'],
+    ['messages', t('nav_messages'), '✉'],
+    ['suivi', t('nav_tracking'), '↗'],
+    ['gains', t('nav_earnings'), '€'],
+    ['profil', t('nav_profile'), '◉'],
   ]
 
   return (
@@ -555,22 +555,37 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
         />
       )}
 
-      <div className="app-main-container" style={{ maxWidth: 680, margin: '0 auto', padding: '20px 16px' }}>
-        {screen === 'accueil' && (
-          <WorkerDashboard
-            worker={worker}
-            displayName={displayName}
-            missions={data.missions}
-            urgentMissions={urgentMissions}
-            applications={data.applications}
-            onNavigate={navigate}
-            onApply={actions.handleApply}
-            applying={actions.applying}
-            savedMissions={savedMissions}
-            onToggleSave={toggleSave}
-            t={t}
-          />
-        )}
+      {screen === 'accueil' && (
+        <WorkerDashboard
+          worker={worker}
+          displayName={displayName}
+          missions={data.missions}
+          urgentMissions={urgentMissions}
+          applications={data.applications}
+          onNavigate={navigate}
+          onApply={actions.handleApply}
+          applying={actions.applying}
+          savedMissions={savedMissions}
+          onToggleSave={toggleSave}
+          t={t}
+        />
+      )}
+
+      {/* Mission detail a son propre hero full-width */}
+      {screen === 'mission-detail' && (
+        <WorkerMissionDetail
+          mission={selectedMission}
+          hasApplied={hasApplied(selectedMission?.id)}
+          applying={actions.applying[selectedMission?.id]}
+          onApply={actions.handleApply}
+          onBack={() => setScreen('missions')}
+          isSaved={savedMissions.includes(selectedMission?.id)}
+          onToggleSave={toggleSave}
+          onViewCompany={openCompanyProfile}
+        />
+      )}
+
+      <div className="app-main-container" style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px', display: (screen === 'accueil' || screen === 'mission-detail') ? 'none' : 'block' }}>
 
         {screen === 'missions' && (
           <WorkerMissionsList
@@ -622,19 +637,6 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
                 ))
             )}
           </div>
-        )}
-
-        {screen === 'mission-detail' && (
-          <WorkerMissionDetail
-            mission={selectedMission}
-            hasApplied={hasApplied(selectedMission?.id)}
-            applying={actions.applying[selectedMission?.id]}
-            onApply={actions.handleApply}
-            onBack={() => setScreen('missions')}
-            isSaved={savedMissions.includes(selectedMission?.id)}
-            onToggleSave={toggleSave}
-            onViewCompany={openCompanyProfile}
-          />
         )}
 
         {screen === 'suivi' && (

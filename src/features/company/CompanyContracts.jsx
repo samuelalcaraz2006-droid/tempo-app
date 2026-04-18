@@ -15,9 +15,12 @@ export default function CompanyContracts({ invoices, onExportInvoices }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <div className="section-title">Contrats & factures</div>
-        <div className="section-sub">Gestion juridique 100% automatisée par TEMPO</div>
+      <div style={{ marginBottom: 24 }}>
+        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>Contrats & factures</div>
+        <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+          Administratif <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>automatisé</span>.
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--g5)', marginTop: 8 }}>Gestion juridique 100 % automatisée par TEMPO.</div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 12, marginBottom: 20 }}>

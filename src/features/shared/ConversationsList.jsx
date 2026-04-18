@@ -61,12 +61,17 @@ export default function ConversationsList({
 
   return (
     <div>
-      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{title}</div>
-      <div style={{ fontSize: 13, color: 'var(--g4)', marginBottom: 16 }}>
-        {subtitle ||
-          (conversations.length > 0
-            ? `${conversations.length} conversation${conversations.length > 1 ? 's' : ''}`
-            : 'Vos conversations apparaitront ici')}
+      <div style={{ marginBottom: 20 }}>
+        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>{title}</div>
+        <div style={{ fontSize: 30, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+          Vos <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>conversations</span>.
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--g5)', marginTop: 6 }}>
+          {subtitle ||
+            (conversations.length > 0
+              ? `${conversations.length} conversation${conversations.length > 1 ? 's' : ''}`
+              : 'Vos conversations apparaîtront ici')}
+        </div>
       </div>
 
       {conversations.length > 0 && (

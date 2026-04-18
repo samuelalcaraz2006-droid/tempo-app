@@ -8,8 +8,13 @@ const MissionsMap = lazy(() => import('../../components/MissionsMap'))
 export default function WorkerMissionsList({ filters, missions, hasApplied, applying, onApply, savedMissions, onToggleSave, onNavigate, mapView, setMapView }) {
   return (
     <div>
-      <div style={{ fontSize:18, fontWeight:600, marginBottom:4 }}>Missions disponibles</div>
-      <div style={{ fontSize:13, color:'var(--g4)', marginBottom:12 }}>{filters.filteredMissions.length} mission{filters.filteredMissions.length !== 1 ? 's' : ''} trouvee{filters.filteredMissions.length !== 1 ? 's' : ''}</div>
+      <div style={{ marginBottom: 20 }}>
+        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>Missions disponibles</div>
+        <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+          <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>{filters.filteredMissions.length}</span> mission{filters.filteredMissions.length !== 1 ? 's' : ''} près de chez vous.
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--g5)', marginTop: 6 }}>Triez, filtrez, postulez en 1 clic.</div>
+      </div>
 
       {/* Search */}
       <div style={{ position:'relative', marginBottom:12 }}>

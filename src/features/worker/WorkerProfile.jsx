@@ -13,17 +13,23 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
 
   return (
     <div>
-      <div className="card" style={{ padding:20, marginBottom:12 }}>
+      <div style={{ marginBottom: 20 }}>
+        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>Profil & disponibilités</div>
+        <div style={{ fontSize: 30, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+          {displayName ? <>Votre <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>profil</span>, {displayName.split(' ')[0]}.</> : <>Votre <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>profil</span>.</>}
+        </div>
+      </div>
+      <div className="a-card" style={{ padding: 24, marginBottom: 14 }}>
         <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
-          <div style={{ width:52, height:52, borderRadius:'50%', background:'#111', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:600 }}>{initials}</div>
+          <div style={{ width:56, height:56, borderRadius:'50%', background:'linear-gradient(135deg, #60A5FA, #2563EB)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:700 }}>{initials}</div>
           <div>
-            <div style={{ fontSize:17, fontWeight:600 }}>{displayName}</div>
-            <div style={{ fontSize:13, color:'var(--g4)' }}>{profile?.email}</div>
-            {worker?.rating_avg > 0 && <div style={{ marginTop:4 }}><Star n={worker.rating_avg} /><span style={{ fontSize:12, color:'var(--g4)', marginLeft:4 }}>{parseFloat(worker.rating_avg).toFixed(1)} · {worker.rating_count} avis</span></div>}
+            <div style={{ fontSize:17, fontWeight:700, color: 'var(--bk)' }}>{displayName}</div>
+            <div style={{ fontSize:13, color:'var(--g5)' }}>{profile?.email}</div>
+            {worker?.rating_avg > 0 && <div style={{ marginTop:4 }}><Star n={worker.rating_avg} /><span style={{ fontSize:12, color:'var(--g5)', marginLeft:4 }}>{parseFloat(worker.rating_avg).toFixed(1)} · {worker.rating_count} avis</span></div>}
           </div>
         </div>
 
-        <div style={{ fontSize:14, fontWeight:600, marginBottom:10 }}>Informations personnelles</div>
+        <div className="a-eyebrow" style={{ marginBottom: 12, fontSize: 10.5 }}>Informations personnelles</div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
           <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Prenom</label>
             <input className="input" value={profileForm.first_name || ''} onChange={e => setProfileForm(f => ({ ...f, first_name: e.target.value }))} /></div>

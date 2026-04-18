@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/useAuth'
+import { T } from '../design/tokens'
+import { TempoLogoA } from '../design/primitives'
 
 export default function ResetPassword({ onDone }) {
   const { logout } = useAuth()
@@ -39,26 +41,24 @@ export default function ResetPassword({ onDone }) {
       <div style={{ width: '100%', maxWidth: 420 }}>
 
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 32 }}>
-          <div style={{ width: 32, height: 32, background: 'var(--or)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="13" height="13" viewBox="0 0 13 13"><path d="M2 1.5L11 6.5L2 11.5Z" fill="white"/></svg>
-          </div>
-          <span style={{ fontWeight: 600, letterSpacing: '2.5px', fontSize: 16, color: 'var(--bk)' }}>TEMPO</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
+          <TempoLogoA size={26} dark={false} />
         </div>
 
-        <div className="card" style={{ padding: 28 }}>
+        <div className="a-card" style={{ padding: 32 }}>
           {success ? (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--gr-l)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 24 }}>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: T.color.greenL, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 24, color: T.color.greenD }}>
                 ✓
               </div>
-              <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Mot de passe mis à jour !</div>
-              <div style={{ fontSize: 13, color: 'var(--g4)' }}>Vous allez être redirigé vers la connexion...</div>
+              <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, color: T.color.ink, letterSpacing: '-0.02em' }}>Mot de passe <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brand }}>mis à jour</span> !</div>
+              <div style={{ fontSize: 13, color: T.color.g5 }}>Vous allez être redirigé vers la connexion...</div>
             </div>
           ) : (
             <>
-              <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Nouveau mot de passe</div>
-              <div style={{ fontSize: 13, color: 'var(--g4)', marginBottom: 24 }}>Choisissez un mot de passe sécurisé pour votre compte TEMPO</div>
+              <div style={{ fontFamily: T.font.mono, fontSize: 11, color: T.color.g5, letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600, marginBottom: 8 }}>Récupération</div>
+              <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 6, letterSpacing: '-0.02em', color: T.color.ink }}>Nouveau <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brand }}>mot de passe</span></div>
+              <div style={{ fontSize: 14, color: T.color.g5, marginBottom: 24 }}>Choisissez un mot de passe sécurisé pour votre compte TEMPO.</div>
 
               {error && (
                 <div style={{ background: 'var(--rd-l)', border: '1px solid var(--rd-l)', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: 'var(--rd)', marginBottom: 16 }}>
@@ -68,11 +68,11 @@ export default function ResetPassword({ onDone }) {
 
               <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: 12 }}>
-                  <label htmlFor="new-password" className="label">Nouveau mot de passe</label>
+                  <label htmlFor="new-password" className="a-label">Nouveau mot de passe</label>
                   <div style={{ position: 'relative' }}>
                     <input
                       id="new-password"
-                      className="input"
+                      className="a-input"
                       type={showPass ? 'text' : 'password'}
                       placeholder="8 caractères minimum"
                       value={password}
@@ -106,10 +106,10 @@ export default function ResetPassword({ onDone }) {
                 </div>
 
                 <div style={{ marginBottom: 20 }}>
-                  <label htmlFor="confirm-password" className="label">Confirmer le mot de passe</label>
+                  <label htmlFor="confirm-password" className="a-label">Confirmer le mot de passe</label>
                   <input
                     id="confirm-password"
-                    className="input"
+                    className="a-input"
                     type={showPass ? 'text' : 'password'}
                     placeholder="Répétez le mot de passe"
                     value={confirm}
@@ -124,8 +124,8 @@ export default function ResetPassword({ onDone }) {
                   )}
                 </div>
 
-                <button type="submit" className="btn-primary"
-                  style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
+                <button type="submit" className="a-btn-primary"
+                  style={{ width: '100%', padding: '14px' }}
                   disabled={loading || password !== confirm || password.length < 8}>
                   {loading ? 'Mise à jour...' : 'Définir le nouveau mot de passe →'}
                 </button>

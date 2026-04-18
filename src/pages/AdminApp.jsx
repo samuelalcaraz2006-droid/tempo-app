@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/useAuth'
 import AdminUsersList from '../features/admin/AdminUsersList'
 import AdminKycPanel from '../features/admin/AdminKycPanel'
 import AdminStats from '../features/admin/AdminStats'
+import { T } from '../design/tokens'
+import { TempoLogoA, Pill, LiveDot, GridBg, Eyebrow } from '../design/primitives'
 
 const countQuery = (table, filter) => {
   let q = supabase.from(table).select('id', { count: 'exact', head: true })
@@ -144,27 +146,53 @@ export default function AdminApp({ onLogoClick }) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--wh)', padding: 24 }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-          <div
-            onClick={onLogoClick}
-            style={{ width: 28, height: 28, background: 'var(--brand)', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: onLogoClick ? 'pointer' : 'default' }}
-          >
-            <svg width="11" height="11" viewBox="0 0 11 11"><path d="M1.5 1L9.5 5.5L1.5 10Z" fill="white"/></svg>
-          </div>
-          <span onClick={onLogoClick} style={{ fontWeight: 600, letterSpacing: '2px', fontSize: 14, cursor: onLogoClick ? 'pointer' : 'default' }}>TEMPO</span>
-          <span style={{ fontSize: 12, color: 'var(--g4)', borderLeft: '1px solid var(--g2)', paddingLeft: 8, marginLeft: 4 }}>Panel Admin</span>
+    <div style={{ minHeight: '100vh', background: T.color.wh, fontFamily: T.font.body }}>
+      {/* Hero Navy Style A */}
+      <div style={{
+        position: 'relative', background: T.color.navy, color: '#fff',
+        padding: '24px 40px 30px', overflow: 'hidden',
+      }}>
+        <GridBg opacity={0.22} />
+        <div style={{
+          position: 'absolute', top: '-50%', right: '-5%', width: 400, height: 400,
+          borderRadius: '50%', pointerEvents: 'none',
+          background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 65%)',
+        }} />
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16, cursor: onLogoClick ? 'pointer' : 'default' }} onClick={onLogoClick}>
+          <TempoLogoA size={22} />
+          <Pill variant="white" size="xs" icon={<LiveDot color={T.color.brandXL} size={6} />}>Panel Admin</Pill>
         </div>
+        <div style={{ position: 'relative' }}>
+          <Eyebrow color="rgba(255,255,255,0.5)" style={{ marginBottom: 8, fontSize: 11 }}>
+            TEMPO · Administration
+          </Eyebrow>
+          <h1 style={{
+            margin: 0, fontSize: 32, fontWeight: 800, lineHeight: 1.02,
+            color: '#fff', letterSpacing: '-0.025em', fontFamily: T.font.body,
+          }}>
+            <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brandXL }}>God Mode</span> · Utilisateurs, KYC & stats.
+          </h1>
+        </div>
+      </div>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--g2)', marginBottom: 20 }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '24px 40px' }}>
+        {/* Tabs Style A pill */}
+        <div style={{
+          display: 'inline-flex', gap: 4, padding: 4,
+          background: T.color.g1, borderRadius: 999, marginBottom: 24,
+        }}>
           {[['users', 'Utilisateurs'], ['kyc', 'KYC'], ['stats', 'Statistiques']].map(([k, l]) => (
             <button
               key={k}
               onClick={() => setTab(k)}
-              style={{ padding: '10px 16px', border: 'none', background: 'transparent', fontSize: 13, fontWeight: tab === k ? 500 : 400, color: tab === k ? 'var(--bk)' : 'var(--g4)', borderBottom: tab === k ? '2px solid var(--brand)' : '2px solid transparent', cursor: 'pointer' }}
+              style={{
+                padding: '9px 18px', border: 'none',
+                background: tab === k ? '#fff' : 'transparent',
+                color: tab === k ? T.color.ink : T.color.g5,
+                fontSize: 13, fontWeight: 600, borderRadius: 999, cursor: 'pointer',
+                boxShadow: tab === k ? '0 1px 3px rgba(15,23,42,.08)' : 'none',
+                transition: 'all .15s',
+              }}
             >
               {l}
             </button>

@@ -20,8 +20,13 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
 
   return (
     <div>
-      <div style={{ fontSize:18, fontWeight:600, marginBottom:4 }}>{t('my_missions')}</div>
-      <div style={{ fontSize:13, color:'var(--g4)', marginBottom:12 }}>{allMissions.length} candidature{allMissions.length !== 1 ? 's' : ''} au total</div>
+      <div style={{ marginBottom: 20 }}>
+        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>{t('my_missions')}</div>
+        <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+          <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>{allMissions.length}</span> candidature{allMissions.length !== 1 ? 's' : ''} suivies.
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--g5)', marginTop: 6 }}>Votre historique et vos missions en cours.</div>
+      </div>
 
       {/* Status filter tabs */}
       <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:14 }}>

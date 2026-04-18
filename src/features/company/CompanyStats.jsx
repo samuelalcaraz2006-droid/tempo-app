@@ -24,9 +24,12 @@ export default function CompanyStats({
 
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <div className="section-title">Statistiques</div>
-        <div className="section-sub">Vue d'ensemble de votre activité</div>
+      <div style={{ marginBottom: 24 }}>
+        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>Statistiques</div>
+        <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+          Vue <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>d'ensemble</span>.
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--g5)', marginTop: 8 }}>Toute votre activité en chiffres.</div>
       </div>
 
       <div className="grid-4-mobile-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 12, marginBottom: 24 }}>
