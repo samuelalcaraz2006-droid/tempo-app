@@ -9,7 +9,7 @@ const APP_STATUS = {
   active:   { label:'En cours', cls:'badge-orange' },
 }
 
-export default function WorkerApplications({ allMissions, signedContracts, ratedMissions, onWithdraw, onSignContract, onOpenChat, onRate, onNavigate, t }) {
+export default function WorkerApplications({ allMissions, signedContracts, ratedMissions, onWithdraw, onSignContract, onOpenChat, onRate, onNavigate, onViewCompany, t }) {
   const [suiviFilter, setSuiviFilter] = React.useState('tous')
 
   const filtered = allMissions.filter(app => {
@@ -58,7 +58,22 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:10 }}>
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ fontSize:14, fontWeight:600, marginBottom:2 }}>{m?.title || '—'}</div>
-                  <div style={{ fontSize:12, color:'var(--g4)' }}>{m?.companies?.name || '—'} · {m?.city || '—'}</div>
+                  <div style={{ fontSize:12, color:'var(--g4)' }}>
+                    {onViewCompany && m?.companies?.name && (m?.company_id || m?.companies?.id) ? (
+                      <button
+                        type="button"
+                        onClick={() => onViewCompany(m.company_id || m.companies.id, m.companies)}
+                        style={{
+                          background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                          color: 'var(--brand)', fontWeight: 600, fontSize: 'inherit', fontFamily: 'inherit',
+                          textDecoration: 'underline', textUnderlineOffset: 2, textDecorationColor: 'rgba(37,99,235,.3)',
+                        }}
+                      >{m.companies.name}</button>
+                    ) : (
+                      <span>{m?.companies?.name || '—'}</span>
+                    )}
+                    {' · '}{m?.city || '—'}
+                  </div>
                 </div>
                 <span className={`badge ${missionDone ? 'badge-blue' : st.cls}`} style={{ fontSize:11, flexShrink:0 }}>{missionDone ? 'Terminee' : st.label}</span>
               </div>

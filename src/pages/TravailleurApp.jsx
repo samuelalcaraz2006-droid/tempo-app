@@ -166,6 +166,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const [selectedMission, setSelectedMission] = useState(null)
   const [chatTarget, setChatTarget] = useState(null)
   const [viewCompany, setViewCompany] = useState(null)
+  const [viewCompanyId, setViewCompanyId] = useState(null)
   const [companyMissions, setCompanyMissions] = useState([])
   const [disponible, setDisponible] = useState(false)
   const [profileForm, setProfileForm] = useState({})
@@ -280,13 +281,24 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   }
 
   const openCompanyProfile = async (companyId, companyData) => {
-    setViewCompany(companyData)
+    // Résout l'id quel que soit le shape passé (string UUID, object company, object mission.companies)
+    const resolvedId =
+      typeof companyId === 'string' ? companyId
+      : companyId?.id || companyId?.company_id
+      || companyData?.id || companyData?.company_id
+      || null
+    if (!resolvedId) {
+      console.warn('[openCompanyProfile] pas de companyId', { companyId, companyData })
+      return
+    }
+    setViewCompanyId(resolvedId)
+    setViewCompany(companyData || { id: resolvedId })
     setCompanyMissions([])
     setScreen('company-profile')
     const { data: m } = await supabase
       .from('missions')
       .select('id, title, hourly_rate, city, start_date, total_hours, sector, status')
-      .eq('company_id', companyId)
+      .eq('company_id', resolvedId)
       .eq('status', 'open')
       .order('created_at', { ascending: false })
       .limit(10)
@@ -570,6 +582,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
           applying={actions.applying}
           savedMissions={savedMissions}
           onToggleSave={toggleSave}
+          onViewCompany={openCompanyProfile}
           t={t}
         />
       )}
@@ -600,6 +613,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
             savedMissions={savedMissions}
             onToggleSave={toggleSave}
             onNavigate={navigate}
+            onViewCompany={openCompanyProfile}
             mapView={mapView}
             setMapView={setMapView}
           />
@@ -636,6 +650,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
                     onApply={() => actions.handleApply(m, hasApplied(m.id))}
                     onToggleSave={toggleSave}
                     onSelect={() => navigate('mission-detail', m)}
+                    onViewCompany={openCompanyProfile}
                   />
                 ))
             )}
@@ -659,6 +674,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
             onOpenChat={openChatNav}
             onRate={(m) => actions.setRatingModal({ missionId: m.id, rateeId: m.companies?.id, companyName: m.companies?.name || "l'entreprise" })}
             onNavigate={navigate}
+            onViewCompany={openCompanyProfile}
             t={t}
           />
         )}
@@ -715,7 +731,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
 
         {screen === 'company-profile' && (
           <PublicCompanyProfile
-            companyId={viewCompany?.id || viewCompany?.company_id || viewCompany}
+            companyId={viewCompanyId || viewCompany?.id || viewCompany?.company_id}
             onBack={() => setScreen('missions')}
             onSelectMission={(m) => {
               setSelectedMission(m)
