@@ -26,11 +26,19 @@ class ErrorBoundary extends React.Component {
         <div style={{ width: 48, height: 48, background: 'var(--rd)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 6v4m0 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
         </div>
-        <div style={{ textAlign: 'center', maxWidth: 400 }}>
+        <div style={{ textAlign: 'center', maxWidth: 560 }}>
           <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--bk)', marginBottom: 8 }}>Une erreur est survenue</div>
-          <div style={{ fontSize: 13, color: 'var(--g6)', marginBottom: 20, lineHeight: 1.6 }}>
+          <div style={{ fontSize: 13, color: 'var(--g6)', marginBottom: 12, lineHeight: 1.6 }}>
             {this.state.error?.message || 'Erreur inattendue. Rechargez la page.'}
           </div>
+          {this.state.error?.stack && (
+            <details style={{ marginBottom: 20, textAlign: 'left' }}>
+              <summary style={{ fontSize: 11, color: 'var(--g6)', cursor: 'pointer' }}>Détails techniques</summary>
+              <pre style={{ fontSize: 10, color: 'var(--g6)', background: 'var(--g1)', padding: 10, borderRadius: 6, overflow: 'auto', maxHeight: 200, marginTop: 8, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                {String(this.state.error.stack).slice(0, 1500)}
+              </pre>
+            </details>
+          )}
           <button
             onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload() }}
             style={{ padding: '10px 24px', background: 'var(--brand)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
