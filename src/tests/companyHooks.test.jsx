@@ -19,6 +19,8 @@ vi.mock('../lib/supabase', () => ({
   cancelMission: vi.fn(),
   saveContract: vi.fn(),
   createInvoice: vi.fn(),
+  getContract: vi.fn(),
+  supabase: { from: vi.fn(), auth: { getSession: vi.fn() } },
 }))
 
 vi.mock('../lib/pushNotifications', () => ({
@@ -38,6 +40,7 @@ import {
   cancelMission,
   saveContract,
   createInvoice,
+  getContract,
 } from '../lib/supabase'
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
@@ -222,12 +225,17 @@ describe('useCompanyActions', () => {
 
   it('handleCompleteMission calls completeMission and creates invoice', async () => {
     completeMission.mockResolvedValue({ error: null })
+    getContract.mockResolvedValue({
+      data: { id: 'contract-1', status: 'active', hourly_rate: 16, total_hours: 8, commission_rate: 8 },
+      error: null,
+    })
     createInvoice.mockResolvedValue({ data: { id: 'inv2' }, error: null })
     const { result } = makeHook()
     await act(async () => {
       await result.current.handleCompleteMission('m1', 'w1', 'Jean', missions)
     })
     expect(completeMission).toHaveBeenCalledWith('m1')
+    expect(getContract).toHaveBeenCalledWith('m1')
     expect(createInvoice).toHaveBeenCalled()
     expect(setMissions).toHaveBeenCalled()
     expect(showToast).toHaveBeenCalledWith(expect.stringContaining('facture'))

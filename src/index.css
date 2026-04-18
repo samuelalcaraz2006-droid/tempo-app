@@ -765,6 +765,7 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
 @media (max-width: 768px) {
   .sidebar-a { display: none !important; }
   .worker-dash-grid,
+  .company-dash-grid,
   .entreprise-dash-grid {
     grid-template-columns: 1fr !important;
   }

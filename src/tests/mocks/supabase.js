@@ -129,6 +129,10 @@ export function setupSupabaseMock(options = {}) {
     applyToMission: vi.fn().mockResolvedValue({ data: { id: 'app-1' }, error: null }),
     withdrawApplication: vi.fn().mockResolvedValue({ error: null }),
     saveContract: vi.fn().mockResolvedValue({ error: null }),
+    getContract: vi.fn().mockResolvedValue({
+      data: { id: 'contract-1', status: 'active', hourly_rate: 16, total_hours: 8, commission_rate: 8 },
+      error: null,
+    }),
     createRating: vi.fn().mockResolvedValue({ error: null }),
     createMission: vi.fn().mockResolvedValue({ data: { id: 'mission-1' }, error: null }),
     updateApplicationStatus: vi.fn().mockResolvedValue({ error: null }),
