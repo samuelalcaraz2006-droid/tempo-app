@@ -51,12 +51,14 @@ export default defineConfig({
     },
   },
   build: {
-    // Minifier esbuild — mais on désactive le mangling d'identifiants pour
-    // éviter le bug "Cannot access 'R' before initialization" : le
-    // minifier réutilisait les lettres courtes (R, _, b…) en les hissant
-    // dans des scopes où elles n'étaient pas encore initialisées (TDZ).
-    // Coût : +5-10% sur la taille gzip. Bénéfice : stacks lisibles en prod
-    // + plus de collisions de scope. On whitespace/syntax-minifie toujours.
+    // Minification esbuild complète réactivée.
+    // Historique : `minifyIdentifiers: false` avait été posé (PR #28) pour
+    // débugger une TDZ "Cannot access 'R' before initialization". Le vrai
+    // bug a été trouvé (PR #30 : `data` lu avant `const data = useCompanyData`
+    // dans EntrepriseApp.jsx) et un scan statique confirme 0 pattern TDZ
+    // restant. On récupère ~20 % de gzip.
+    // On garde `keepNames: true` pour que les noms de fonctions/classes
+    // restent lisibles dans les stacks (aide Sentry).
     minify: 'esbuild',
     rollupOptions: {
       output: {
@@ -69,6 +71,5 @@ export default defineConfig({
   },
   esbuild: {
     keepNames: true,
-    minifyIdentifiers: false,
   },
 })
