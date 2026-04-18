@@ -77,12 +77,12 @@ export default function EntrepriseApp({ onLogoClick }) {
   }, [company?.id])
 
   const tabs = [
-    ['dashboard', t('nav_dashboard')],
-    ['publier', t('nav_publish')],
-    ['messages-e', t('nav_messages')],
-    ['stats', t('nav_stats')],
-    ['contrats', t('nav_contracts')],
-    ['profil-e', t('nav_profile')],
+    ['dashboard', t('nav_dashboard'), '◎'],
+    ['publier', t('nav_publish'), '✦'],
+    ['messages-e', t('nav_messages'), '✉'],
+    ['stats', t('nav_stats'), '▦'],
+    ['contrats', t('nav_contracts'), '€'],
+    ['profil-e', t('nav_profile'), '◉'],
   ]
 
   const openChatNav = (pid, pn, mid) => {
@@ -223,93 +223,97 @@ export default function EntrepriseApp({ onLogoClick }) {
         </div>
       )}
 
-      <div className="app-main-container" style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 20px', width: '100%' }}>
-        {screen === 'dashboard' && (
-          <CompanyDashboard
-            displayName={displayName}
-            missions={data.missions}
-            invoices={data.invoices}
-            company={company}
-            actionLoading={actions.actionLoading}
-            signedContracts={actions.signedContracts}
-            onNavigate={setScreen}
-            onDuplicate={handleDuplicate}
-            onComplete={(missionId, workerId, workerName) => actions.handleCompleteMission(missionId, workerId, workerName, data.missions)}
-            onOpenContract={actions.setContractModal}
-            onOpenChat={openChatNav}
-            onRepublish={handleRepublish}
-            onCancelModal={actions.setCancelModal}
-            onExportMissions={() => actions.exportMissionsCSV(data.missions)}
-            onLoadCandidates={handleLoadCandidates}
-          />
-        )}
+      {screen === 'dashboard' && (
+        <CompanyDashboard
+          displayName={displayName}
+          missions={data.missions}
+          invoices={data.invoices}
+          company={company}
+          actionLoading={actions.actionLoading}
+          signedContracts={actions.signedContracts}
+          onNavigate={setScreen}
+          onDuplicate={handleDuplicate}
+          onComplete={(missionId, workerId, workerName) => actions.handleCompleteMission(missionId, workerId, workerName, data.missions)}
+          onOpenContract={actions.setContractModal}
+          onOpenChat={openChatNav}
+          onRepublish={handleRepublish}
+          onCancelModal={actions.setCancelModal}
+          onExportMissions={() => actions.exportMissionsCSV(data.missions)}
+          onLoadCandidates={handleLoadCandidates}
+        />
+      )}
 
-        {screen === 'publier' && (
-          <CompanyPublishMission
-            form={form}
-            setF={setF}
-            publishing={actions.publishing}
-            published={actions.published}
-            templates={actions.templates}
-            showTemplates={actions.showTemplates}
-            setShowTemplates={actions.setShowTemplates}
-            onPublish={() => actions.handlePublish(form)}
-            onSaveTemplate={(name) => actions.saveAsTemplate(name, form)}
-            onLoadTemplate={handleLoadTemplate}
-            onDeleteTemplate={actions.deleteTemplate}
-            onNewMission={handleNewMission}
-            onNavigateDashboard={() => setScreen('dashboard')}
-          />
-        )}
+      {screen !== 'dashboard' && (
+        <div className="app-main-container entreprise-inner" style={{
+          maxWidth: 1400, margin: '0 auto', padding: '32px 40px', width: '100%',
+        }}>
+          {screen === 'publier' && (
+            <CompanyPublishMission
+              form={form}
+              setF={setF}
+              publishing={actions.publishing}
+              published={actions.published}
+              templates={actions.templates}
+              showTemplates={actions.showTemplates}
+              setShowTemplates={actions.setShowTemplates}
+              onPublish={() => actions.handlePublish(form)}
+              onSaveTemplate={(name) => actions.saveAsTemplate(name, form)}
+              onLoadTemplate={handleLoadTemplate}
+              onDeleteTemplate={actions.deleteTemplate}
+              onNewMission={handleNewMission}
+              onNavigateDashboard={() => setScreen('dashboard')}
+            />
+          )}
 
-        {screen === 'candidatures' && (
-          <CompanyCandidates
-            candidates={actions.candidates}
-            actionLoading={actions.actionLoading}
-            onAccept={actions.handleAccept}
-            onReject={actions.handleReject}
-            onBack={() => setScreen('dashboard')}
-          />
-        )}
+          {screen === 'candidatures' && (
+            <CompanyCandidates
+              candidates={actions.candidates}
+              actionLoading={actions.actionLoading}
+              onAccept={actions.handleAccept}
+              onReject={actions.handleReject}
+              onBack={() => setScreen('dashboard')}
+            />
+          )}
 
-        {screen === 'stats' && (
-          <CompanyStats
-            missions={data.missions}
-            invoices={data.invoices}
-            company={company}
-            onExportMissions={() => actions.exportMissionsCSV(data.missions)}
-            onExportInvoices={() => actions.exportInvoicesCSV(data.invoices)}
-          />
-        )}
+          {screen === 'stats' && (
+            <CompanyStats
+              missions={data.missions}
+              invoices={data.invoices}
+              company={company}
+              onExportMissions={() => actions.exportMissionsCSV(data.missions)}
+              onExportInvoices={() => actions.exportInvoicesCSV(data.invoices)}
+            />
+          )}
 
-        {screen === 'contrats' && <CompanyContracts invoices={data.invoices} onExportInvoices={() => actions.exportInvoicesCSV(data.invoices)} />}
+          {screen === 'contrats' && <CompanyContracts invoices={data.invoices} onExportInvoices={() => actions.exportInvoicesCSV(data.invoices)} />}
 
-        {screen === 'profil-e' && (
-          <CompanyProfile
-            company={company}
-            profile={profile}
-            profileForm={profileForm}
-            setProfileForm={setProfileForm}
-            onSave={actions.handleSaveCompanyProfile}
-            saving={actions.savingProfile}
-            displayName={displayName}
-            initials={initials}
-            onLogout={logout}
-          />
-        )}
+          {screen === 'profil-e' && (
+            <CompanyProfile
+              company={company}
+              profile={profile}
+              profileForm={profileForm}
+              setProfileForm={setProfileForm}
+              onSave={actions.handleSaveCompanyProfile}
+              saving={actions.savingProfile}
+              displayName={displayName}
+              initials={initials}
+              onLogout={logout}
+            />
+          )}
 
-        {screen === 'messages-e' && !chatTarget && <CompanyMessages userId={user?.id} onOpenChat={openChatNav} />}
+          {screen === 'messages-e' && !chatTarget && <CompanyMessages userId={user?.id} onOpenChat={openChatNav} />}
 
-        {screen === 'chat' && chatTarget && (
-          <ChatView
-            userId={user?.id}
-            partnerId={chatTarget.partnerId}
-            partnerName={chatTarget.partnerName}
-            contextMissionId={chatTarget.missionId}
-            onBack={closeChat}
-          />
-        )}
-      </div>
+          {screen === 'chat' && chatTarget && (
+            <ChatView
+              userId={user?.id}
+              partnerId={chatTarget.partnerId}
+              partnerName={chatTarget.partnerName}
+              contextMissionId={chatTarget.missionId}
+              onBack={closeChat}
+            />
+          )}
+        </div>
+      )}
     </DashboardLayout>
   )
 }
