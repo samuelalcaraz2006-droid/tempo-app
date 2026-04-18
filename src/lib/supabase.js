@@ -513,19 +513,29 @@ export const getSignedContractsByCompany = async (companyId) => {
 }
 
 // ── Helpers facturation ───────────────────────────────────────
-export const createInvoice = async ({ workerPayout, amountTtc, workerId, companyId, contractId, missionId, totalHours }) => {
-  const amountHt = amountTtc ? Math.round((amountTtc / 1.2) * 100) / 100 : 0
-  const commission = amountTtc ? Math.round((amountTtc - workerPayout) * 100) / 100 : 0
+// Note : `amountHt` explicite depuis v2026.04 (avant on re-déduisait
+// de `amountTtc / 1.2`, ce qui corrompait le montant pour les factures
+// B2B auto-liquidation TVA = 0). `contract_id` est NOT NULL (trigger DB).
+export const createInvoice = async ({
+  workerPayout, amountTtc, amountHt, workerId, companyId,
+  contractId, missionId, totalHours,
+}) => {
+  const ht = amountHt != null
+    ? Math.round(amountHt * 100) / 100
+    : (amountTtc ? Math.round((amountTtc / 1.2) * 100) / 100 : 0)
+  const commission = ht
+    ? Math.round((ht - (workerPayout || 0)) * 100) / 100
+    : 0
   const { data, error } = await supabase
     .from('invoices')
     .insert({
       worker_id: workerId,
       company_id: companyId,
-      contract_id: contractId || null,
+      contract_id: contractId, // NOT NULL — doit être fourni
       mission_id: missionId || null,
       worker_payout: workerPayout,
-      amount_ht: amountHt,
-      amount_ttc: amountTtc,
+      amount_ht: ht,
+      amount_ttc: amountTtc ?? ht,
       commission: commission,
       total_hours: totalHours || null,
       status: 'draft',

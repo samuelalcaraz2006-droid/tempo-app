@@ -9,6 +9,7 @@ import {
   cancelMission,
   saveContract,
   createInvoice,
+  getContract,
   supabase,
 } from '../../lib/supabase'
 import { getRecurrenceCounts } from '../../lib/recurrenceCheck'
@@ -174,18 +175,49 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     setMissions(prev => prev.map(m => m.id === missionId ? { ...m, status: 'completed' } : m))
     const mission = (missionsRef || missions).find(m => m.id === missionId)
     if (mission && workerId) {
-      const amountTtc = Math.round((mission.hourly_rate || 0) * (mission.total_hours || 0) * 100) / 100
-      const workerPayout = Math.round(amountTtc * 0.78 * 100) / 100
-      const { data: inv, error: invErr } = await createInvoice({ workerPayout, amountTtc, workerId, companyId: userId, missionId, totalHours: mission.total_hours })
+      // Récupère le contrat signé pour cette mission — contract_id est
+      // NOT NULL sur invoices depuis la migration 016.
+      const { data: contract, error: ctrErr } = await getContract(missionId)
+      if (ctrErr || !contract) {
+        showToast("Mission terminée mais contrat introuvable — la facture ne peut pas être générée sans contrat signé.", 'error')
+        setActionLoading(s => ({ ...s, [missionId]: null }))
+        return
+      }
+      if (contract.status !== 'active' && contract.status !== 'completed') {
+        showToast("Mission terminée mais le contrat n'est pas signé par les 2 parties — générez la facture une fois les signatures complètes.", 'error')
+        setActionLoading(s => ({ ...s, [missionId]: null }))
+        return
+      }
+
+      // Montants : on fait confiance au taux du contrat si dispo, sinon
+      // on retombe sur le taux de la mission. amount_ht = rate * hours.
+      const hourlyRate = parseFloat(contract.hourly_rate || mission.hourly_rate) || 0
+      const totalHours = parseFloat(contract.total_hours || mission.total_hours) || 0
+      const amountHt = Math.round(hourlyRate * totalHours * 100) / 100
+      const commissionRate = parseFloat(contract.commission_rate) || 8
+      const commission = Math.round(amountHt * (commissionRate / 100) * 100) / 100
+      const workerPayout = Math.round((amountHt - commission) * 100) / 100
+
+      const { data: inv, error: invErr } = await createInvoice({
+        workerPayout,
+        amountTtc: amountHt, // TVA = 0 en auto-liquidation pro-pro (simplification)
+        amountHt,
+        workerId,
+        companyId: userId,
+        contractId: contract.id,
+        missionId,
+        totalHours,
+      })
       if (invErr) {
-        showToast('Mission terminee mais erreur lors de la generation de la facture', 'error')
+        console.error('[createInvoice] error:', invErr)
+        showToast('Mission terminée mais erreur lors de la génération de la facture', 'error')
         setActionLoading(s => ({ ...s, [missionId]: null }))
         return
       }
       if (inv) setInvoices(prev => [inv, ...prev])
     }
     setActionLoading(s => ({ ...s, [missionId]: null }))
-    showToast('Mission terminee — facture generee !')
+    showToast('Mission terminée — facture générée !')
     setRatingModal({ missionId, rateeId: workerId, rateeName: workerName })
   }, [userId, showToast, setMissions, setInvoices, missions])
 

@@ -130,9 +130,11 @@ export function Eyebrow({ children, style, color }) {
 // Le <em> est automatiquement stylé.
 export function HeadlineA({ children, size = 'lg', color, style }) {
   const sizes = {
-    xl: { fs: 64, lh: 0.98, tr: '-0.035em' },
-    lg: { fs: 36, lh: 1.02, tr: '-0.025em' },
-    md: { fs: 24, lh: 1.15, tr: '-0.02em' },
+    xxl: { fs: 72, lh: 0.96, tr: '-0.04em' },
+    xl:  { fs: 60, lh: 0.98, tr: '-0.035em' },
+    lg:  { fs: 52, lh: 1.0,  tr: '-0.03em' },
+    md:  { fs: 32, lh: 1.08, tr: '-0.025em' },
+    sm:  { fs: 24, lh: 1.15, tr: '-0.02em' },
   }
   const s = sizes[size] || sizes.lg
   return (
@@ -161,16 +163,16 @@ export function KpiCard({ label, value, sub, accentColor }) {
   return (
     <div style={{
       background: '#fff', border: `1px solid ${T.color.g2}`,
-      borderRadius: T.radius.lg, padding: 22, boxShadow: T.shadow.soft,
+      borderRadius: T.radius.lg, padding: '24px 24px 22px', boxShadow: T.shadow.soft,
       position: 'relative', overflow: 'hidden',
     }}>
-      <Eyebrow>{label}</Eyebrow>
+      <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>{label}</Eyebrow>
       <div style={{
-        marginTop: 14, fontSize: 34, fontWeight: 800,
-        color: accentColor || T.color.ink, letterSpacing: '-0.02em',
-        fontFamily: T.font.body, lineHeight: 1,
+        marginTop: 18, fontSize: 44, fontWeight: 800,
+        color: accentColor || T.color.ink, letterSpacing: '-0.03em',
+        fontFamily: T.font.body, lineHeight: 0.95,
       }}>{value}</div>
-      {sub && <div style={{ marginTop: 6, fontSize: 11.5, color: T.color.g5 }}>{sub}</div>}
+      {sub && <div style={{ marginTop: 10, fontSize: 12, color: T.color.g5 }}>{sub}</div>}
     </div>
   )
 }
