@@ -68,4 +68,17 @@ export function addBreadcrumb(message, category = 'app', level = 'info') {
   Sentry.addBreadcrumb({ message, category, level })
 }
 
+// Breadcrumb de navigation interne — à appeler à chaque changement de
+// `screen` dans TravailleurApp / EntrepriseApp / AdminApp. Crucial pour
+// lire la stack d'une erreur Sentry : on voit la trajectoire de l'user.
+export function trackScreen(role, screen, extra = {}) {
+  if (!SENTRY_DSN) return
+  Sentry.addBreadcrumb({
+    message: `${role}:${screen}`,
+    category: 'navigation',
+    level: 'info',
+    data: extra,
+  })
+}
+
 export { Sentry }

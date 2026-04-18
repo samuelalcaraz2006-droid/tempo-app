@@ -22,7 +22,7 @@ import { useWorkerActions } from '../hooks/worker/useWorkerActions'
 import { useWorkerData } from '../hooks/worker/useWorkerData'
 import DashboardLayout from '../layouts/DashboardLayout'
 import { submitKycDocuments, supabase, uploadKycDocument } from '../lib/supabase'
-import { logWarn } from '../lib/sentry'
+import { logWarn, trackScreen } from '../lib/sentry'
 
 const ContractModal = React.lazy(() => import('../components/ContractModal'))
 
@@ -216,6 +216,10 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const initials = worker?.first_name?.[0] || profile?.email?.[0]?.toUpperCase() || '?'
   const unreadCount = data.notifs.filter((n) => !n.read_at).length
   const urgentMissions = data.missions.filter((m) => m.urgency === 'immediate' || m.urgency === 'urgent')
+
+  // Breadcrumb Sentry à chaque changement d'écran — aide au debug
+  // des crashes en prod (on voit le chemin exact de l'user avant la stack).
+  useEffect(() => { trackScreen('worker', screen) }, [screen])
 
   useEffect(() => {
     if (!worker) return
