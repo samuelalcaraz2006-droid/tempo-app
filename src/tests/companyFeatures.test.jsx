@@ -170,7 +170,9 @@ describe('CompanyPublishMission', () => {
 
   it('renders the publish form when not published', () => {
     render(<CompanyPublishMission {...defaultProps} />)
-    expect(screen.getByText('Publier une mission')).toBeInTheDocument()
+    // Le H1 est maintenant éditorial : "Publiez une prestation B2B."
+    expect(screen.getByText(/Publiez une/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/prestation/i).length).toBeGreaterThan(0)
     expect(screen.getByPlaceholderText(/palettes sur site logistique/i)).toBeInTheDocument()
   })
 
