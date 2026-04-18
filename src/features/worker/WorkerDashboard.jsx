@@ -15,9 +15,21 @@ export default function WorkerDashboard({
 
   // KPIs dérivés
   const completedCount = worker?.missions_completed || 0
-  const ratingAvg = worker?.rating_avg ? parseFloat(worker.rating_avg).toFixed(1) + '/5' : '—'
+  const ratingAvg = worker?.rating_avg ? parseFloat(worker.rating_avg).toFixed(1).replace('.', ',') + '/5' : '—'
   const ratingCount = worker?.rating_count || 0
   const disponibles = missions.length
+
+  // Revenus du mois (calcul naïf : somme des invoices paid ce mois)
+  const thisMonth = new Date().getMonth()
+  const monthRevenue = (worker?.month_revenue_eur != null)
+    ? `${Math.round(worker.month_revenue_eur)} €`
+    : '—'
+  const monthHours = (worker?.month_hours != null)
+    ? `${Math.round(worker.month_hours)} h`
+    : '—'
+  const returnRate = (worker?.return_rate_pct != null)
+    ? `${Math.round(worker.return_rate_pct)} %`
+    : '—'
 
   const title = disponibles > 0
     ? <><span>{firstName ? `Bonjour ${firstName}, ` : ''}</span><em>{disponibles} mission{disponibles > 1 ? 's' : ''}</em> vous attendent.</>
@@ -49,28 +61,28 @@ export default function WorkerDashboard({
           display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 16,
         }}>
           <KpiCard
+            label="REVENUS DU MOIS"
+            value={monthRevenue}
+            sub={worker?.month_revenue_delta != null ? `${worker.month_revenue_delta > 0 ? '+' : ''}${worker.month_revenue_delta} % vs mois dernier` : 'Cumul des factures payées'}
+            accentColor={T.color.brand}
+          />
+          <KpiCard
             label="MISSIONS RÉALISÉES"
             value={completedCount}
-            sub={completedCount > 0 ? 'Depuis votre inscription' : '—'}
-            accentColor={T.color.brand}
+            sub={completedCount > 0 ? 'Depuis votre inscription' : 'À commencer'}
+            accentColor={T.color.ink}
           />
           <KpiCard
             label="NOTE MOYENNE"
             value={ratingAvg}
-            sub={ratingCount > 0 ? `${ratingCount} avis` : 'Aucun avis'}
+            sub={ratingCount > 0 ? `${ratingCount} avis récents` : 'Aucun avis'}
             accentColor={T.color.amber}
           />
           <KpiCard
-            label="MISSIONS DISPONIBLES"
-            value={disponibles}
-            sub={`Rayon ${worker?.radius_km || 10} km`}
+            label="TAUX DE RETOUR"
+            value={returnRate}
+            sub="Clients fidèles"
             accentColor={T.color.green}
-          />
-          <KpiCard
-            label="CANDIDATURES ACTIVES"
-            value={applications.filter(a => a.status === 'pending').length}
-            sub={`${applications.length} au total`}
-            accentColor={T.color.ink}
           />
         </div>
 

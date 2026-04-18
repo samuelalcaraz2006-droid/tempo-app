@@ -76,17 +76,28 @@ export default function WorkerMissionDetail({
                 </button>
               </div>
               <h1 style={{
-                margin: 0, fontSize: 44, fontWeight: 800, lineHeight: 0.98,
-                color: '#fff', letterSpacing: '-0.035em', fontFamily: T.font.body,
-                maxWidth: 720,
-              }}>{mission.title}</h1>
-              {mission.objet_prestation && (
+                margin: 0, fontSize: 60, fontWeight: 800, lineHeight: 0.96,
+                color: '#fff', letterSpacing: '-0.04em', fontFamily: T.font.body,
+                maxWidth: 780,
+              }}>
+                {mission.title}
+                {mission.tagline && (
+                  <>
+                    <br />
+                    <span style={{
+                      fontFamily: T.font.serif, fontStyle: 'italic',
+                      fontWeight: 400, color: T.color.brandXL,
+                    }}>{mission.tagline}</span>
+                  </>
+                )}
+              </h1>
+              {mission.objet_prestation && !mission.tagline && (
                 <p style={{
-                  marginTop: 16, fontSize: 17, color: 'rgba(255,255,255,0.75)',
-                  lineHeight: 1.55, fontStyle: 'italic', fontFamily: T.font.serif,
+                  marginTop: 18, fontSize: 20, color: 'rgba(255,255,255,0.75)',
+                  lineHeight: 1.4, fontStyle: 'italic', fontFamily: T.font.serif,
                   fontWeight: 400, maxWidth: 680,
                 }}>
-                  « {mission.objet_prestation.length > 180 ? mission.objet_prestation.slice(0, 180) + '…' : mission.objet_prestation} »
+                  « {mission.objet_prestation.length > 150 ? mission.objet_prestation.slice(0, 150) + '…' : mission.objet_prestation} »
                 </p>
               )}
               <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -117,28 +128,27 @@ export default function WorkerMissionDetail({
 
             {/* Matching card */}
             <div style={{
-              padding: '22px 26px', borderRadius: 18,
+              padding: '26px 28px', borderRadius: 20,
               background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
               backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
-              minWidth: 260,
+              minWidth: 280,
             }}>
-              <Eyebrow color="rgba(255,255,255,0.55)">Votre matching</Eyebrow>
+              <Eyebrow color="rgba(255,255,255,0.55)" style={{ fontSize: 10.5, letterSpacing: 1.6 }}>Votre matching</Eyebrow>
               <div style={{
-                marginTop: 6, fontSize: 52, fontWeight: 800, color: '#fff',
-                fontFamily: T.font.mono, letterSpacing: '-0.03em', lineHeight: 1,
+                marginTop: 10, fontSize: 80, fontWeight: 800, color: '#fff',
+                fontFamily: T.font.body, letterSpacing: '-0.05em', lineHeight: 0.9,
               }}>
                 {matchScore != null ? matchScore : '—'}
-                <span style={{ color: T.color.brandXL }}>{matchScore != null ? '%' : ''}</span>
+                <span style={{ color: T.color.brandXL, fontWeight: 700 }}>{matchScore != null ? '%' : ''}</span>
               </div>
               <div style={{
-                marginTop: 8, fontSize: 11.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5,
+                marginTop: 12, fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.55,
               }}>
-                {mission.city ? `Poste à ${mission.city}` : 'Compatibilité estimée'}
-                {mission.required_certs?.length > 0 && <><br />{mission.required_certs.slice(0, 2).join(' · ')}</>}
+                {mission.required_certs?.length > 0 ? mission.required_certs.slice(0, 2).join(' · ') : (mission.city ? `Poste à ${mission.city}` : 'Compatibilité estimée')}
               </div>
               <button
                 className="a-btn-primary"
-                style={{ width: '100%', marginTop: 14, padding: '12px 0' }}
+                style={{ width: '100%', marginTop: 16, padding: '14px 0', fontSize: 13.5 }}
                 disabled={hasApplied || applying}
                 onClick={() => onApply(mission, hasApplied)}
               >
@@ -164,19 +174,19 @@ export default function WorkerMissionDetail({
             {[
               ['Taux horaire', `${mission.hourly_rate} €`, 'brut HT'],
               ['Durée', mission.total_hours ? `${mission.total_hours} h` : 'À définir', mission.start_date ? formatDate(mission.start_date) : ''],
-              ['Forfait', forfaitBrut, ''],
-              ['Net estimé', netEstime, 'après charges ~22%'],
+              ['Horaires', mission.shift_label || '—', '30 min pause déj.'],
+              ['Total brut', forfaitBrut !== '—' ? forfaitBrut : netEstime, 'Versé sous 48 h'],
             ].map(([l, v, s], i) => (
               <div key={i} style={{
-                padding: '20px 22px',
+                padding: '22px 24px',
                 borderRight: i < 3 ? `1px solid ${T.color.g2}` : 'none',
               }}>
-                <Eyebrow>{l}</Eyebrow>
+                <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>{l}</Eyebrow>
                 <div style={{
-                  marginTop: 8, fontSize: 22, fontWeight: 800, color: T.color.ink,
-                  letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1,
+                  marginTop: 10, fontSize: 28, fontWeight: 800, color: T.color.ink,
+                  letterSpacing: '-0.03em', fontFamily: T.font.body, lineHeight: 1,
                 }}>{v}</div>
-                {s && <div style={{ fontSize: 11, color: T.color.g5, marginTop: 4 }}>{s}</div>}
+                {s && <div style={{ fontSize: 11, color: T.color.g5, marginTop: 6 }}>{s}</div>}
               </div>
             ))}
           </div>
