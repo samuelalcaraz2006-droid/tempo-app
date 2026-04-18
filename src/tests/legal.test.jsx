@@ -86,13 +86,13 @@ describe('Legal page', () => {
   it('calls onBack when back button clicked', () => {
     const onBack = vi.fn()
     render(<Legal onBack={onBack} />)
-    fireEvent.click(screen.getByText('‹ Retour'))
+    fireEvent.click(screen.getByText('← Retour'))
     expect(onBack).toHaveBeenCalled()
   })
 
   it('does not render back button when onBack is not provided', () => {
     render(<Legal />)
-    expect(screen.queryByText('‹ Retour')).toBeNull()
+    expect(screen.queryByText('← Retour')).toBeNull()
   })
 })
 

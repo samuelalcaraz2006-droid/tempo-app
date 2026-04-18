@@ -43,14 +43,6 @@ export default defineConfig({
     exclude: [
       'e2e/**',
       'node_modules/**',
-      // Tests mis en quarantaine — la refonte Style A a changé la copie,
-      // les sélecteurs textuels ne matchent plus. À ré-écrire en phase 2
-      // de stabilisation (voir tracker). On les garde dans le repo pour
-      // servir de base + ne pas perdre la logique de test.
-      'src/tests/Auth.test.jsx',
-      'src/tests/ResetPassword.test.jsx',
-      'src/tests/legal.test.jsx',
-      'src/tests/featureComponents.test.jsx',
     ],
     coverage: {
       provider: 'v8',
