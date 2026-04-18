@@ -115,8 +115,6 @@ export default function EntrepriseApp({ onLogoClick }) {
     setScreen('worker-profile')
   }
 
-  const handleDuplicate = (m) => actions.duplicateMission(m, setForm, setScreen)
-  const handleRepublish = (m) => actions.handleRepublishRecurring(m, setForm, setScreen)
   const handleLoadTemplate = (tpl) => actions.loadTemplate(tpl, setForm)
 
   const handleNewMission = () => {
@@ -263,18 +261,10 @@ export default function EntrepriseApp({ onLogoClick }) {
           missions={data.missions}
           invoices={data.invoices}
           company={company}
-          actionLoading={actions.actionLoading}
-          signedContracts={actions.signedContracts}
           onNavigate={setScreen}
-          onDuplicate={handleDuplicate}
-          onComplete={(missionId, workerId, workerName) => actions.handleCompleteMission(missionId, workerId, workerName, data.missions)}
-          onOpenContract={actions.setContractModal}
-          onOpenChat={openChatNav}
-          onRepublish={handleRepublish}
-          onCancelModal={actions.setCancelModal}
-          onExportMissions={() => actions.exportMissionsCSV(data.missions)}
           onLoadCandidates={handleLoadCandidates}
           onViewWorkerProfile={openWorkerProfile}
+          onExportMissions={() => actions.exportMissionsCSV(data.missions)}
         />
       )}
 

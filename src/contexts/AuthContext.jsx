@@ -146,7 +146,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     // Nettoyer les donnees utilisateur du localStorage
     const tempoKeys = Object.keys(localStorage).filter(k => k.startsWith('tempo_'))
-    tempoKeys.forEach(k => localStorage.removeItem(k))
+    tempoKeys.forEach(k => { localStorage.removeItem(k) })
     setViewAs(null)
     try {
       await supabase.auth.signOut()

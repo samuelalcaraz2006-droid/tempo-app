@@ -46,7 +46,7 @@ function SkillsInput({ value, onChange, sector }) {
     const pasted = e.clipboardData.getData('text')
     if (pasted.includes(',') || pasted.includes('\n')) {
       e.preventDefault()
-      pasted.split(/[,\n]/).forEach((s) => addSkill(s))
+      pasted.split(/[,\n]/).forEach((s) => { addSkill(s) })
       setDraft('')
     }
   }

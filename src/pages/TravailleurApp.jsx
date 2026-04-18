@@ -155,7 +155,10 @@ function KycUploadSection({ worker, userId, onUpdate, showToast }) {
 }
 
 // ── Main ──
-export default function TravailleurApp({ onNavigate, onLogoClick }) {
+// onNavigate est passé par App.jsx pour une navigation parent mais pas
+// encore consommé ici (le router interne utilise `setScreen`). Préfixe `_`
+// pour satisfaire biome tout en conservant le prop côté caller.
+export default function TravailleurApp({ onNavigate: _onNavigate, onLogoClick }) {
   const { user, profile, roleData, refreshRoleData, logout } = useAuth()
   const { t } = useI18n()
   const { toast, showToast, dismissToast } = useToast()
@@ -584,7 +587,6 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
           savedMissions={savedMissions}
           onToggleSave={toggleSave}
           onViewCompany={openCompanyProfile}
-          t={t}
         />
       )}
 
@@ -607,7 +609,6 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
         {screen === 'missions' && (
           <WorkerMissionsList
             filters={filters}
-            missions={data.missions}
             hasApplied={hasApplied}
             applying={actions.applying}
             onApply={actions.handleApply}
