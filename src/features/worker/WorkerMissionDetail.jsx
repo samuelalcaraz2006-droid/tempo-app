@@ -1,61 +1,149 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Heart } from 'lucide-react'
 import { formatDate } from '../../lib/formatters'
 import { T } from '../../design/tokens'
-import { Pill, LiveDot, GridBg, Eyebrow, AvatarStack } from '../../design/primitives'
+import { Pill, LiveDot, GridBg, Eyebrow, AvatarStack, Avatar } from '../../design/primitives'
+import { equipmentFor } from '../../lib/equipmentGuidelines'
+
+// ─────────────────────────────────────────────────────────────
+// Helpers dérivés
+// ─────────────────────────────────────────────────────────────
+
+const relativeFromNow = (iso) => {
+  if (!iso) return null
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return null
+  const mins = Math.round((Date.now() - d.getTime()) / 60000)
+  if (mins < 1) return 'à l\'instant'
+  if (mins < 60) return `il y a ${mins} min`
+  if (mins < 1440) return `il y a ${Math.round(mins / 60)} h`
+  return `il y a ${Math.round(mins / 1440)} j`
+}
+
+const DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
+
+// Tagline serif italique automatique :
+// Priorité à l'heure du shift (« du matin », « de l'après-midi », « du soir »)
+// Fallback sur urgency ou message générique.
+const deriveTagline = (mission) => {
+  if (mission.tagline) return mission.tagline
+  if (mission.start_date) {
+    const d = new Date(mission.start_date)
+    const hour = d.getUTCHours()
+    if (hour < 12) return 'pour shift du matin.'
+    if (hour < 18) return "pour shift de l'après-midi."
+    return 'pour shift du soir.'
+  }
+  if (mission.urgency === 'urgent' || mission.urgency === 'immediate') {
+    return 'pour renfort urgent.'
+  }
+  return 'à saisir maintenant.'
+}
+
+// H2 éditorial de la section 01 : « Renfort équipe [rôle] pour le pic [jour]. »
+const deriveSectionHeadline = (mission) => {
+  const rawRole = mission.title?.split(/\s+/).slice(0, 2).join(' ').toLowerCase() || 'prestation'
+  const day = mission.start_date
+    ? DAYS[new Date(mission.start_date).getDay()]
+    : null
+  const accent = day
+    ? `pour le pic ${day}.`
+    : mission.urgency === 'urgent'
+    ? 'en urgence.'
+    : 'sur mesure.'
+  return { prefix: `Renfort équipe ${rawRole}`, accent }
+}
+
+// Horaires affichés : « 8h → 16h »
+const deriveHoraires = (mission) => {
+  if (!mission.start_date || !mission.total_hours) return '—'
+  const d = new Date(mission.start_date)
+  const h1 = d.getUTCHours()
+  const h2 = (h1 + parseInt(mission.total_hours, 10)) % 24
+  return `${h1}h → ${h2}h`
+}
+
+// ─────────────────────────────────────────────────────────────
 
 export default function WorkerMissionDetail({
   mission, hasApplied, applying, onApply, onBack,
   isSaved, onToggleSave, onViewCompany,
 }) {
+  const [apps, setApps] = useState([])
+  const [reviews, setReviews] = useState([])
+
+  useEffect(() => {
+    let cancelled = false
+    if (!mission?.id) { setApps([]); return }
+    import('../../lib/supabase').then(({ getMissionApplicationsCount }) =>
+      getMissionApplicationsCount(mission.id).then(({ data }) => {
+        if (!cancelled) setApps(data || [])
+      }),
+    ).catch(() => { if (!cancelled) setApps([]) })
+    return () => { cancelled = true }
+  }, [mission?.id])
+
+  useEffect(() => {
+    let cancelled = false
+    if (!mission?.company_id && !mission?.companies?.id) { setReviews([]); return }
+    const companyId = mission.company_id || mission.companies?.id
+    import('../../lib/supabase').then(({ getCompanyReviews }) =>
+      getCompanyReviews(companyId, 2).then(({ data }) => {
+        if (!cancelled) setReviews(data || [])
+      }),
+    ).catch(() => { if (!cancelled) setReviews([]) })
+    return () => { cancelled = true }
+  }, [mission?.company_id, mission?.companies?.id])
+
   if (!mission) return null
 
   const companyName = mission.companies?.name || 'Entreprise'
   const companyInitial = companyName.slice(0, 1).toUpperCase()
-  const netEstime = mission.total_hours ? `~${Math.round(mission.hourly_rate * mission.total_hours * 0.78)} €` : '—'
-  const forfaitBrut = mission.total_hours ? `${mission.hourly_rate * mission.total_hours} €` : `${mission.hourly_rate} €/h`
-
-  // Match score — si fourni par l'app, sinon 95 par défaut (affiché en mono)
-  const matchScore = mission.match_score != null ? Math.round(mission.match_score) : null
-
-  // Tagline serif italic : dérivée automatiquement si non fournie.
-  // Pattern maquette : « Cariste CACES 3 pour shift du matin. »
-  const DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
-  const computedTagline = mission.tagline || (() => {
-    if (mission.start_date) {
-      const d = new Date(mission.start_date)
-      const hour = d.getUTCHours()
-      const moment = hour < 12 ? 'du matin' : hour < 18 ? 'de l\'après-midi' : 'du soir'
-      const dayName = DAYS[d.getDay()] || ''
-      return `pour ${dayName ? `le shift ${dayName}` : `shift ${moment}`}.`
-    }
-    if (mission.urgency === 'urgent' || mission.urgency === 'immediate') return 'pour renfort urgent.'
-    return 'à saisir maintenant.'
-  })()
-
-  // Publication relative
-  const publishedAgo = (() => {
-    if (!mission.created_at && !mission.published_at) return null
-    const dt = new Date(mission.published_at || mission.created_at)
-    const mins = Math.round((Date.now() - dt.getTime()) / 60000)
-    if (mins < 1) return 'à l\'instant'
-    if (mins < 60) return `il y a ${mins} min`
-    if (mins < 1440) return `il y a ${Math.round(mins / 60)} h`
-    return `il y a ${Math.round(mins / 1440)} j`
-  })()
-
-  // Horaires dérivés depuis start_date + total_hours (ex. "8h → 16h")
-  const horairesLabel = (() => {
-    if (!mission.start_date || !mission.total_hours) return '—'
-    const d = new Date(mission.start_date)
-    const h1 = d.getUTCHours()
-    const h2 = (h1 + parseInt(mission.total_hours, 10)) % 24
-    return `${h1}h → ${h2}h`
-  })()
-
   const totalBrut = mission.total_hours
     ? `${Math.round(mission.hourly_rate * mission.total_hours)} €`
-    : '—'
+    : `${mission.hourly_rate} €/h`
+
+  const matchScore = mission.match_score != null ? Math.round(mission.match_score) : null
+  const computedTagline = deriveTagline(mission)
+  const sectionHeadline = deriveSectionHeadline(mission)
+  const horairesLabel = deriveHoraires(mission)
+  const publishedAgo = relativeFromNow(mission.published_at || mission.created_at)
+
+  const equipment = Array.isArray(mission.equipment_provided) && mission.equipment_provided.length
+    ? mission.equipment_provided
+    : equipmentFor(mission.sector)
+
+  // Candidats
+  const applicationsCount = apps.length
+  const applicationsAccepted = apps.filter(a => a.status === 'accepted' || a.status === 'retained').length
+  const applicationsPending = apps.filter(a => a.status === 'pending').length
+  const applicantNames = apps.slice(0, 4)
+    .map(a => [a.workers?.first_name, a.workers?.last_name].filter(Boolean).join(' '))
+    .filter(Boolean)
+
+  // Pourquoi ce match — critères dérivés mission
+  const matchCriteria = [
+    [
+      mission.required_certs?.[0] || 'Profil qualifié',
+      mission.required_certs?.[0] ? 'Valide et à jour' : 'Expérience sectorielle',
+      matchScore != null ? `${matchScore} %` : '100 %',
+    ],
+    [
+      'Distance',
+      mission.city ? `Poste à ${mission.city}` : 'Compatible',
+      '98 %',
+    ],
+    [
+      'Expérience',
+      mission.required_skills?.[0] || `${mission.sector || 'Secteur'} — profil adapté`,
+      '96 %',
+    ],
+    [
+      'Disponibilité',
+      mission.start_date ? `Libre ${formatDate(mission.start_date)}` : 'Compatible',
+      '100 %',
+    ],
+  ]
 
   return (
     <>
@@ -80,7 +168,7 @@ export default function WorkerMissionDetail({
             fontSize: 12, color: 'rgba(255,255,255,0.55)',
             fontFamily: T.font.mono, letterSpacing: 0.8,
           }}>
-            <button onClick={onBack} style={{
+            <button type="button" onClick={onBack} style={{
               background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)',
               cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit',
             }}>Missions</button>
@@ -98,7 +186,8 @@ export default function WorkerMissionDetail({
             alignItems: 'end',
           }}>
             <div style={{ minWidth: 0 }}>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
+              {/* 3 pills */}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 18, flexWrap: 'wrap' }}>
                 <Pill variant="white" icon={<LiveDot color={T.color.brandXL} size={6} />}>
                   {publishedAgo ? `Publiée · ${publishedAgo}` : 'Publiée'}
                 </Pill>
@@ -106,6 +195,7 @@ export default function WorkerMissionDetail({
                 {mission.urgency === 'immediate' && <Pill variant="white">⚡ Immédiat</Pill>}
                 {mission.companies?.verified !== false && <Pill variant="white">Vérifié</Pill>}
                 <button
+                  type="button"
                   onClick={() => onToggleSave(mission.id)}
                   aria-label={isSaved ? 'Retirer des favoris' : 'Sauvegarder'}
                   style={{
@@ -120,10 +210,12 @@ export default function WorkerMissionDetail({
                   {isSaved ? 'Sauvé' : 'Sauver'}
                 </button>
               </div>
+
+              {/* H1 massif 2 lignes */}
               <h1 style={{
-                margin: 0, fontSize: 40, fontWeight: 800, lineHeight: 1.05,
-                color: '#fff', letterSpacing: '-0.025em', fontFamily: T.font.body,
-                maxWidth: 720,
+                margin: 0, fontSize: 60, fontWeight: 800, lineHeight: 0.96,
+                color: '#fff', letterSpacing: '-0.04em', fontFamily: T.font.body,
+                maxWidth: 780,
               }}>
                 {mission.title}
                 <br />
@@ -132,43 +224,52 @@ export default function WorkerMissionDetail({
                   fontWeight: 400, color: T.color.brandXL,
                 }}>{computedTagline}</span>
               </h1>
-              <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div
+
+              {/* Ligne entreprise */}
+              <div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 14 }}>
+                <button
+                  type="button"
                   onClick={() => onViewCompany && onViewCompany(mission.company_id, mission.companies)}
                   style={{
                     width: 40, height: 40, borderRadius: 12,
                     background: '#fff', display: 'grid', placeItems: 'center',
                     color: T.color.ink, fontSize: 16, fontWeight: 800,
                     cursor: onViewCompany ? 'pointer' : 'default', flexShrink: 0,
+                    border: 'none',
                   }}
-                >{companyInitial}</div>
+                >{companyInitial}</button>
                 <div>
-                  <div
+                  <button
+                    type="button"
                     onClick={() => onViewCompany && onViewCompany(mission.company_id, mission.companies)}
                     style={{
                       fontSize: 14, fontWeight: 700, color: '#fff',
                       cursor: onViewCompany ? 'pointer' : 'default',
+                      background: 'none', border: 'none', padding: 0,
                     }}
-                  >{companyName}</div>
+                  >{companyName}</button>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>
                     {mission.companies?.rating_avg ? `★ ${parseFloat(mission.companies.rating_avg).toFixed(1)}` : '★ —'}
-                    {' · '}{mission.city}
+                    {mission.companies?.missions_posted ? ` · ${mission.companies.missions_posted} missions publiées` : ''}
+                    {' · Client fidèle'}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Matching card */}
+            {/* Matching card glass */}
             <div style={{
               padding: '26px 28px', borderRadius: 20,
               background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
               backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
               minWidth: 280,
             }}>
-              <Eyebrow color="rgba(255,255,255,0.55)" style={{ fontSize: 10, letterSpacing: 1.4 }}>Votre matching</Eyebrow>
+              <Eyebrow color="rgba(255,255,255,0.55)" style={{ fontSize: 10.5, letterSpacing: 1.6 }}>
+                Votre matching
+              </Eyebrow>
               <div style={{
-                marginTop: 8, fontSize: 48, fontWeight: 800, color: '#fff',
-                fontFamily: T.font.body, letterSpacing: '-0.035em', lineHeight: 1,
+                marginTop: 10, fontSize: 64, fontWeight: 800, color: '#fff',
+                fontFamily: T.font.body, letterSpacing: '-0.04em', lineHeight: 0.95,
               }}>
                 {matchScore != null ? matchScore : '—'}
                 <span style={{ color: T.color.brandXL, fontWeight: 700 }}>{matchScore != null ? '%' : ''}</span>
@@ -176,9 +277,11 @@ export default function WorkerMissionDetail({
               <div style={{
                 marginTop: 12, fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.55,
               }}>
-                {mission.required_certs?.length > 0 ? mission.required_certs.slice(0, 2).join(' · ') : (mission.city ? `Poste à ${mission.city}` : 'Compatibilité estimée')}
+                {mission.required_certs?.[0] ? `${mission.required_certs[0]} à jour` : 'Profil qualifié'}
+                {mission.city ? ` · ${mission.city}` : ''}
               </div>
               <button
+                type="button"
                 className="a-btn-primary"
                 style={{ width: '100%', marginTop: 16, padding: '14px 0', fontSize: 13.5 }}
                 disabled={hasApplied || applying}
@@ -193,23 +296,23 @@ export default function WorkerMissionDetail({
 
       {/* ═══ CONTENT ═══ */}
       <div style={{
-        padding: '32px 40px', display: 'grid',
+        padding: '32px 48px', display: 'grid',
         gridTemplateColumns: '1.5fr 1fr', gap: 32,
         maxWidth: 1400, margin: '0 auto', width: '100%',
-      }}>
-        {/* Left — key facts + description + skills */}
+      }} className="mission-detail-grid">
+        {/* ─── Gauche : key facts + description + skills/equipment ─── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
           {/* Key facts strip */}
           <div className="a-card" style={{
             display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', overflow: 'hidden', padding: 0,
           }}>
             {[
-              ['Taux horaire', `${mission.hourly_rate} €`, 'brut HT'],
+              ['Taux horaire', `${mission.hourly_rate} €`, 'brut · majoré dimanche'],
               ['Durée', mission.total_hours ? `${mission.total_hours} h` : 'À définir', mission.start_date ? formatDate(mission.start_date) : ''],
-              ['Horaires', mission.shift_label || '—', '30 min pause déj.'],
-              ['Total brut', forfaitBrut !== '—' ? forfaitBrut : netEstime, 'Versé sous 48 h'],
+              ['Horaires', horairesLabel, '30 min pause déj.'],
+              ['Total brut', totalBrut, 'Versé sous 48 h'],
             ].map(([l, v, s], i) => (
-              <div key={i} style={{
+              <div key={l} style={{
                 padding: '22px 24px',
                 borderRight: i < 3 ? `1px solid ${T.color.g2}` : 'none',
               }}>
@@ -223,155 +326,105 @@ export default function WorkerMissionDetail({
             ))}
           </div>
 
-          {/* Description */}
+          {/* Section 01 · La mission */}
           <section>
-            <Eyebrow>01 · La mission</Eyebrow>
+            <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>01 · La mission</Eyebrow>
             <h2 style={{
-              marginTop: 8, fontSize: 24, fontWeight: 700, color: T.color.ink,
-              letterSpacing: '-0.02em', fontFamily: T.font.body,
+              marginTop: 8, fontSize: 26, fontWeight: 700, color: T.color.ink,
+              letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1.15,
             }}>
-              {mission.sector ? <>Détails <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brand }}>{mission.sector}</span></> : 'Détails de la mission'}
+              {sectionHeadline.prefix}{' '}
+              <span style={{
+                fontFamily: T.font.serif, fontStyle: 'italic',
+                fontWeight: 400, color: T.color.brand,
+              }}>{sectionHeadline.accent}</span>
             </h2>
             {mission.description && (
               <p style={{
-                marginTop: 12, fontSize: 15, lineHeight: 1.65, color: T.color.g8,
+                marginTop: 14, fontSize: 15, lineHeight: 1.65, color: T.color.g8,
               }}>{mission.description}</p>
             )}
 
-            {(mission.required_skills?.length > 0 || mission.required_certs?.length > 0) && (
+            {/* 2 cards : Compétences + Équipement */}
+            <div style={{
+              marginTop: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14,
+            }}>
               <div style={{
-                marginTop: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14,
+                padding: '18px 20px', background: '#fff',
+                border: `1px solid ${T.color.g2}`, borderRadius: 12,
               }}>
-                {mission.required_skills?.length > 0 && (
-                  <div style={{
-                    padding: '18px 20px', background: '#fff',
-                    border: `1px solid ${T.color.g2}`, borderRadius: 12,
+                <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
+                  Compétences requises
+                </div>
+                {(mission.required_skills?.length ? mission.required_skills : ['Expérience secteur', 'Ponctualité', 'Autonomie']).map((it) => (
+                  <div key={it} style={{
+                    fontSize: 13, color: T.color.g8,
+                    padding: '5px 0', display: 'flex', gap: 8,
                   }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
-                      Compétences requises
-                    </div>
-                    {mission.required_skills.map((it, k) => (
-                      <div key={k} style={{
-                        fontSize: 13, color: T.color.g8,
-                        padding: '5px 0', display: 'flex', gap: 8,
-                      }}>
-                        <span style={{ color: T.color.brand, fontWeight: 700 }}>→</span>{it}
-                      </div>
-                    ))}
+                    <span style={{ color: T.color.brand, fontWeight: 700 }}>→</span>{it}
                   </div>
-                )}
-                {mission.required_certs?.length > 0 && (
-                  <div style={{
-                    padding: '18px 20px', background: '#fff',
-                    border: `1px solid ${T.color.g2}`, borderRadius: 12,
-                  }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
-                      Certifications requises
-                    </div>
-                    {mission.required_certs.map((it, k) => (
-                      <div key={k} style={{
-                        fontSize: 13, color: T.color.g8,
-                        padding: '5px 0', display: 'flex', gap: 8,
-                      }}>
-                        <span style={{ color: T.color.brand, fontWeight: 700 }}>✓</span>{it}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                ))}
               </div>
-            )}
+              <div style={{
+                padding: '18px 20px', background: '#fff',
+                border: `1px solid ${T.color.g2}`, borderRadius: 12,
+              }}>
+                <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
+                  Équipement fourni
+                </div>
+                {equipment.map((it) => (
+                  <div key={it} style={{
+                    fontSize: 13, color: T.color.g8,
+                    padding: '5px 0', display: 'flex', gap: 8,
+                  }}>
+                    <span style={{ color: T.color.brand, fontWeight: 700 }}>→</span>{it}
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
-
-          {/* Location */}
-          {mission.city && (
-            <section>
-              <Eyebrow>02 · Le lieu</Eyebrow>
-              <div className="a-card" style={{ overflow: 'hidden', padding: 0 }}>
-                <div style={{
-                  position: 'relative', height: 160,
-                  background: `linear-gradient(135deg, ${T.color.brandL} 0%, #DBEAFE 100%)`,
-                  backgroundImage: `
-                    linear-gradient(rgba(37,99,235,0.08) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(37,99,235,0.08) 1px, transparent 1px)
-                  `,
-                  backgroundSize: '32px 32px',
-                }}>
-                  <div style={{ position: 'absolute', top: '40%', left: '45%' }}>
-                    <div style={{
-                      width: 34, height: 34, borderRadius: '50%', background: T.color.brand,
-                      display: 'grid', placeItems: 'center', color: '#fff', fontSize: 14,
-                      boxShadow: '0 6px 18px rgba(37,99,235,.5)',
-                    }}>▼</div>
-                  </div>
-                </div>
-                <div style={{
-                  padding: '18px 22px', display: 'grid',
-                  gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'center',
-                }}>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: T.color.ink }}>
-                      {companyName} · {mission.city}
-                    </div>
-                    {mission.address && (
-                      <div style={{ fontSize: 12, color: T.color.g5, marginTop: 3 }}>{mission.address}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
         </div>
 
-        {/* Right column — matching details, legal */}
+        {/* ─── Droite : autres candidats + pourquoi ce match + avis ─── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* Autres candidats */}
           <div className="a-card" style={{ padding: 22 }}>
             <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>Autres candidats</Eyebrow>
-            <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
-              <AvatarStack names={['Sophie B.', 'Alex P.', 'Karim M.', 'Lucie F.']} size={36} />
-              <div style={{ fontSize: 13, color: T.color.g8, lineHeight: 1.55 }}>
-                <div>
-                  <span style={{ fontWeight: 700, color: T.color.ink }}>{mission.applications_count ?? 4} candidats</span> ont déjà postulé.
-                </div>
-                <div style={{ color: T.color.g5, marginTop: 2 }}>
-                  {mission.applications_accepted ?? 2} retenus · {mission.applications_pending ?? 2} en attente
+            {applicationsCount === 0 ? (
+              <div style={{ marginTop: 14, fontSize: 13, color: T.color.g8, lineHeight: 1.55 }}>
+                <div style={{ fontWeight: 700, color: T.color.ink }}>Soyez le premier à postuler.</div>
+                <div style={{ color: T.color.g5, marginTop: 2 }}>Les candidatures apparaîtront ici en direct.</div>
+              </div>
+            ) : (
+              <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
+                {applicantNames.length > 0 && (
+                  <AvatarStack names={applicantNames} size={36} />
+                )}
+                <div style={{ fontSize: 13, color: T.color.g8, lineHeight: 1.55 }}>
+                  <div>
+                    <span style={{ fontWeight: 700, color: T.color.ink }}>{applicationsCount} candidat{applicationsCount > 1 ? 's' : ''}</span> ont déjà postulé.
+                  </div>
+                  <div style={{ color: T.color.g5, marginTop: 2 }}>
+                    {applicationsAccepted} retenu{applicationsAccepted > 1 ? 's' : ''} · {applicationsPending} en attente
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* Pourquoi ce match — critères avec données mission */}
+          {/* Pourquoi ce match — navy card */}
           <div style={{
             background: T.color.navy, borderRadius: 18, padding: 26,
             color: '#fff', position: 'relative', overflow: 'hidden',
           }}>
             <GridBg opacity={0.25} />
             <div style={{ position: 'relative' }}>
-              <Eyebrow color="rgba(255,255,255,0.55)" style={{ fontSize: 10.5, letterSpacing: 1.6 }}>Pourquoi ce match ?</Eyebrow>
+              <Eyebrow color="rgba(255,255,255,0.55)" style={{ fontSize: 10.5, letterSpacing: 1.6 }}>
+                Pourquoi ce match ?
+              </Eyebrow>
               <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {[
-                  [
-                    mission.required_certs?.[0] || 'Certifications',
-                    mission.required_certs?.[0] ? 'Valide et à jour' : 'Profil qualifié',
-                    '100 %',
-                  ],
-                  [
-                    'Distance',
-                    mission.city ? `Poste à ${mission.city}` : '—',
-                    '98 %',
-                  ],
-                  [
-                    'Expérience',
-                    mission.required_skills?.[0] || `${mission.sector || 'secteur'} — profil adapté`,
-                    '96 %',
-                  ],
-                  [
-                    'Disponibilité',
-                    mission.start_date ? `Libre ${formatDate(mission.start_date)}` : 'Compatible',
-                    '100 %',
-                  ],
-                ].map(([l, s, v], i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {matchCriteria.map(([l, s, v]) => (
+                  <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13.5, fontWeight: 700, color: '#fff' }}>{l}</div>
                       <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', marginTop: 3 }}>{s}</div>
@@ -386,51 +439,52 @@ export default function WorkerMissionDetail({
             </div>
           </div>
 
-          {/* Avis récents · entreprise */}
-          {Array.isArray(mission.companies?.recent_reviews) && mission.companies.recent_reviews.length > 0 && (
-            <div className="a-card" style={{ padding: 22 }}>
-              <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>
-                Avis récents · {companyName}
-              </Eyebrow>
-              <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {mission.companies.recent_reviews.slice(0, 2).map((r, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 12 }}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: '50%',
-                      background: `linear-gradient(135deg, #60A5FA, #2563EB)`,
-                      color: '#fff', fontSize: 12, fontWeight: 700,
-                      display: 'grid', placeItems: 'center', flexShrink: 0,
-                    }}>{(r.author || '?').slice(0, 2).toUpperCase()}</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink }}>{r.author || '—'}</div>
-                        <div style={{ fontSize: 11, color: T.color.amber, letterSpacing: 1 }}>{'★'.repeat(r.stars || 5)}</div>
-                      </div>
-                      <div style={{ fontSize: 12, color: T.color.g8, marginTop: 4, lineHeight: 1.5 }}>{r.text}</div>
-                    </div>
-                  </div>
-                ))}
+          {/* Avis récents */}
+          <div className="a-card" style={{ padding: 22 }}>
+            <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>
+              Avis récents · {companyName}
+            </Eyebrow>
+            {reviews.length === 0 ? (
+              <div style={{ marginTop: 14, fontSize: 12.5, color: T.color.g5 }}>
+                Aucun avis pour l'instant.
               </div>
-            </div>
-          )}
-
-          {/* Apply CTA sticky */}
-          <div className="a-card" style={{
-            padding: 20, position: 'sticky', bottom: 20,
-            display: 'flex', gap: 10,
-          }}>
-            <button className="a-btn-outline" style={{ flex: 0 }} onClick={onBack}>← Retour</button>
-            <button
-              className="a-btn-primary"
-              style={{ flex: 1 }}
-              disabled={hasApplied || applying}
-              onClick={() => onApply(mission, hasApplied)}
-            >
-              {applying ? 'Envoi...' : hasApplied ? '✓ Candidature envoyée' : 'Postuler →'}
-            </button>
+            ) : (
+              <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {reviews.map((r, i) => {
+                  const raterName = [r.rater?.first_name, r.rater?.last_name].filter(Boolean).join(' ') || 'Anonyme'
+                  const firstName = r.rater?.first_name || 'Anonyme'
+                  const lastInit = r.rater?.last_name ? `${r.rater.last_name[0]}.` : ''
+                  return (
+                    <div key={r.id || i} style={{ display: 'flex', gap: 12 }}>
+                      <Avatar name={raterName} size={32} seed={i + 2} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink }}>
+                            {firstName} {lastInit}
+                          </div>
+                          <div style={{ fontSize: 11, color: T.color.amber, letterSpacing: 1 }}>
+                            {'★'.repeat(Math.round(r.score || 5))}
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 12, color: T.color.g8, marginTop: 4, lineHeight: 1.5 }}>
+                          {r.comment || 'Mission validée.'}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Responsive */}
+      <style>{`
+        @media (max-width: 900px) {
+          .mission-detail-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </>
   )
 }
