@@ -54,9 +54,12 @@ export default function CompanyCandidates({
       <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--g4)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16 }}>
         ‹ Retour au tableau de bord
       </button>
-      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>Candidatures reçues</div>
-      <div style={{ fontSize: 13, color: 'var(--g4)', marginBottom: 16 }}>
-        {candidates.length} candidat{candidates.length !== 1 ? 's' : ''}
+      <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>Candidatures reçues</div>
+      <div style={{ fontSize: 30, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05, marginBottom: 8 }}>
+        <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>{candidates.length}</span> candidat{candidates.length !== 1 ? 's' : ''} en attente.
+      </div>
+      <div style={{ fontSize: 14, color: 'var(--g5)', marginBottom: 24 }}>
+        Retenez les profils les mieux notés pour cette mission.
       </div>
 
       {candidates.length === 0 ? (

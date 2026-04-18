@@ -26,7 +26,12 @@ export default function WorkerEarnings({ worker, invoices, allMissions, t }) {
 
   return (
     <div>
-      <div style={{ fontSize:18, fontWeight:600, marginBottom:16 }}>{t('my_earnings')}</div>
+      <div style={{ marginBottom: 24 }}>
+        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>{t('my_earnings')}</div>
+        <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+          Vos <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>revenus</span> TEMPO.
+        </div>
+      </div>
 
       {/* KPIs */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>

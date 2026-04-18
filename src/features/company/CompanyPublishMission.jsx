@@ -315,9 +315,12 @@ export default function CompanyPublishMission({
 
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <div className="section-title">Publier une mission</div>
-        <div className="section-sub">Décrivez une prestation ponctuelle et autonome — TEMPO génère le contrat de prestation B2B.</div>
+      <div style={{ marginBottom: 24 }}>
+        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>Nouvelle mission</div>
+        <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+          Publiez une <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>prestation</span> B2B.
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--g5)', marginTop: 8, maxWidth: 680, lineHeight: 1.55 }}>Décrivez une prestation ponctuelle et autonome — TEMPO génère le contrat de prestation B2B et sécurise la facturation.</div>
       </div>
 
       <div className="publish-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24 }}>

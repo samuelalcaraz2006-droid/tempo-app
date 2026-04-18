@@ -30,8 +30,10 @@ const BADGE_GOD = {
   color: 'var(--brand-xl)',
 }
 
-const TITLE_H1 = { fontSize: 26, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.4px' }
-const SUBTITLE = { fontSize: 14, color: 'rgba(255,255,255,.45)', margin: '6px 0 28px' }
+const TITLE_H1 = { fontSize: 32, fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.025em', lineHeight: 1.05, fontFamily: "'Inter', sans-serif" }
+const TITLE_ACCENT = { fontFamily: "'Source Serif 4', Georgia, serif", fontStyle: 'italic', fontWeight: 400, color: 'var(--brand-xl)' }
+const SUBTITLE = { fontSize: 14, color: 'rgba(255,255,255,.55)', margin: '8px 0 28px', lineHeight: 1.5 }
+const EYEBROW_DARK = { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'rgba(255,255,255,.5)', letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600, marginBottom: 10 }
 
 const TILE_BASE = {
   display: 'flex', alignItems: 'center', gap: 16,

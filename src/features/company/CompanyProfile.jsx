@@ -22,10 +22,16 @@ export default function CompanyProfile({
 }) {
   return (
     <div>
+      <div style={{ marginBottom: 20 }}>
+        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>Profil entreprise</div>
+        <div style={{ fontSize: 30, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+          Votre <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>espace</span> {displayName || 'TEMPO'}.
+        </div>
+      </div>
       {/* En-tête */}
-      <div className="card" style={{ padding: 20, marginBottom: 12 }}>
+      <div className="a-card" style={{ padding: 24, marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-          <div style={{ width: 52, height: 52, borderRadius: 12, background: 'var(--navy)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 600 }}>
+          <div style={{ width: 56, height: 56, borderRadius: 14, background: 'linear-gradient(135deg, #1E40AF, #0D1117)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700 }}>
             {initials}
           </div>
           <div>
