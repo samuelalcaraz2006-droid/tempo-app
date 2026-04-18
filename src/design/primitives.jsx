@@ -130,10 +130,11 @@ export function Eyebrow({ children, style, color }) {
 // Le <em> est automatiquement stylé.
 export function HeadlineA({ children, size = 'lg', color, style }) {
   const sizes = {
-    xl: { fs: 64, lh: 0.98, tr: '-0.035em' },
-    lg: { fs: 48, lh: 1.02, tr: '-0.03em' },
-    md: { fs: 32, lh: 1.08, tr: '-0.025em' },
-    sm: { fs: 24, lh: 1.15, tr: '-0.02em' },
+    xxl: { fs: 72, lh: 0.96, tr: '-0.04em' },
+    xl:  { fs: 60, lh: 0.98, tr: '-0.035em' },
+    lg:  { fs: 52, lh: 1.0,  tr: '-0.03em' },
+    md:  { fs: 32, lh: 1.08, tr: '-0.025em' },
+    sm:  { fs: 24, lh: 1.15, tr: '-0.02em' },
   }
   const s = sizes[size] || sizes.lg
   return (

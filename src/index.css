@@ -764,6 +764,10 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
 /* Cache la sidebar sur mobile (le layout mobile conserve la bottom nav existante) */
 @media (max-width: 768px) {
   .sidebar-a { display: none !important; }
+  .worker-dash-grid,
+  .entreprise-dash-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════
