@@ -118,17 +118,24 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
                 </div>
               )}
 
-              {missionDone && !alreadyRated && (
-                <div style={{ marginTop:10 }}>
-                  <button className="btn-primary" style={{ width:'100%', justifyContent:'center', padding:'9px', fontSize:13, display:'flex', alignItems:'center', gap:6 }}
-                    onClick={() => onRate(m)}>
-                    <StarIcon size={12} fill="currentColor" /> Evaluer cette mission
+              {missionDone && (
+                <div style={{ marginTop:10, display:'flex', gap:8, flexWrap:'wrap' }}>
+                  <button className="btn-secondary" style={{ padding:'8px 14px', fontSize:12, display:'flex', alignItems:'center', gap:4 }}
+                    onClick={() => onSignContract(m)}
+                    title="Voir le contrat signé">
+                    <PenLine size={14} /> Voir le contrat
                   </button>
-                </div>
-              )}
-              {missionDone && alreadyRated && (
-                <div style={{ marginTop:10, padding:'8px 12px', background:'var(--g1)', borderRadius:8, fontSize:12, color:'var(--g4)', textAlign:'center' }}>
-                  ✓ Mission evaluee — merci !
+                  {!alreadyRated && (
+                    <button className="btn-primary" style={{ flex:1, minWidth:180, justifyContent:'center', padding:'8px 14px', fontSize:12, display:'flex', alignItems:'center', gap:6 }}
+                      onClick={() => onRate(m)}>
+                      <StarIcon size={12} fill="currentColor" /> Évaluer cette mission
+                    </button>
+                  )}
+                  {alreadyRated && (
+                    <div style={{ flex:1, padding:'8px 12px', background:'var(--gr-l)', borderRadius:8, fontSize:12, color:'var(--gr-d)', textAlign:'center' }}>
+                      ✓ Mission évaluée — merci !
+                    </div>
+                  )}
                 </div>
               )}
             </div>

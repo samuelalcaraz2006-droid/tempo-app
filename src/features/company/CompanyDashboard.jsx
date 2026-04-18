@@ -258,10 +258,22 @@ function MissionRow({
           )}
 
           {m.status === 'completed' && (
-            <button className="a-btn-outline" style={{ padding: '6px 12px', fontSize: 12, gap: 4 }}
-              onClick={() => onRepublish(m)} title="Republier comme mission récurrente">
-              <RefreshCw size={14} /> Récurrente
-            </button>
+            <>
+              <button className="a-btn-outline" style={{ padding: '6px 12px', fontSize: 12, gap: 4 }}
+                onClick={() => onOpenContract({
+                  missionId: m.id, mission: m,
+                  workerName: workerFullName,
+                  workerId: m.workers?.id || m.assigned_worker_id,
+                  readOnly: true,
+                })}
+                title="Voir le contrat signé">
+                <PenLine size={14} /> Voir le contrat
+              </button>
+              <button className="a-btn-outline" style={{ padding: '6px 12px', fontSize: 12, gap: 4 }}
+                onClick={() => onRepublish(m)} title="Republier comme mission récurrente">
+                <RefreshCw size={14} /> Récurrente
+              </button>
+            </>
           )}
 
           {(m.status === 'open' || m.status === 'matched') && (
