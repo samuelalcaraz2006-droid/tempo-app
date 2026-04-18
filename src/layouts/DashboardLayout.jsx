@@ -27,7 +27,7 @@ export default function DashboardLayout({
   role, tabs, activeTab, onTabChange, onLogoClick, children,
   headerExtra, unreadCount = 0, onNotifClick,
 }) {
-  const { user, profile, roleData, logout } = useAuth()
+  const { profile, roleData, logout } = useAuth()
   const { locale, switchLocale } = useI18n()
   const { darkMode, toggleDarkMode } = useDarkMode()
   const [drawerOpen, setDrawerOpen] = useState(false)

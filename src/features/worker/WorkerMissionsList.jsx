@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react'
-import { Search, X, Menu, Map, Heart } from 'lucide-react'
+import { Search, X, Menu, Map as MapIcon, Heart } from 'lucide-react'
 import MissionCard from '../shared/MissionCard'
 import EmptyState from '../../components/UI/EmptyState'
 
 const MissionsMap = lazy(() => import('../../components/MissionsMap'))
 
-export default function WorkerMissionsList({ filters, missions, hasApplied, applying, onApply, savedMissions, onToggleSave, onNavigate, onViewCompany, mapView, setMapView }) {
+export default function WorkerMissionsList({ filters, hasApplied, applying, onApply, savedMissions, onToggleSave, onNavigate, onViewCompany, mapView, setMapView }) {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
@@ -32,7 +32,7 @@ export default function WorkerMissionsList({ filters, missions, hasApplied, appl
           ⚙ Filtres {filters.activeFilterCount > 0 && <span style={{ background:'var(--or)', color:'#fff', borderRadius:'50%', width:16, height:16, display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:600 }}>{filters.activeFilterCount}</span>}
         </button>
         <button type="button" onClick={() => setMapView(!mapView)} style={{ padding:'6px 12px', borderRadius:8, border: mapView ? '1.5px solid var(--or)' : '1px solid var(--g2)', background: mapView ? 'var(--or-l)' : 'var(--wh)', color: mapView ? 'var(--or-d)' : 'var(--g6)', fontSize:12, cursor:'pointer' }}>
-          {mapView ? <><Menu size={20} style={{ verticalAlign:'middle' }} /> Liste</> : <><Map size={16} style={{ verticalAlign:'middle' }} /> Carte</>}
+          {mapView ? <><Menu size={20} style={{ verticalAlign:'middle' }} /> Liste</> : <><MapIcon size={16} style={{ verticalAlign:'middle' }} /> Carte</>}
         </button>
         {savedMissions.length > 0 && <button type="button" onClick={() => onNavigate('favoris')} style={{ padding:'6px 12px', borderRadius:8, border:'1px solid var(--g2)', background:'var(--wh)', color:'var(--g6)', fontSize:12, cursor:'pointer' }}><Heart size={16} style={{ verticalAlign:'middle', marginRight:4 }} /> Favoris ({savedMissions.length})</button>}
       </div>

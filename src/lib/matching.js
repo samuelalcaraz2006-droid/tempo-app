@@ -151,7 +151,7 @@ export const rankWorkers = (mission, workers, pastMissionsMap = {}) => {
 
 // ── Explication lisible du score ──────────────────────────────
 export const explainScore = (scoreResult) => {
-  const { breakdown, weights } = scoreResult
+  const { breakdown } = scoreResult
   const lines = []
 
   if (breakdown.skills >= 80) lines.push('Compétences parfaitement adaptées')

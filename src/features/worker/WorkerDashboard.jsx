@@ -10,7 +10,7 @@ import { formatDate } from '../../lib/formatters'
 export default function WorkerDashboard({
   worker, displayName, missions, allMissions = [], invoices = [],
   urgentMissions, applications,
-  onNavigate, onApply, applying, savedMissions, onToggleSave, onViewCompany, t,
+  onNavigate, onApply, applying, savedMissions, onToggleSave, onViewCompany,
 }) {
   const hasApplied = (id) => applications.some(a => a.mission_id === id)
   const firstName = (displayName || '').split(' ')[0] || ''

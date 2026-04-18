@@ -242,8 +242,8 @@ export function detectRedFlags(text) {
   for (const rule of RED_FLAG_RULES) {
     // Nouvelle RegExp à chaque appel pour réinitialiser lastIndex
     const re = new RegExp(rule.pattern.source, rule.pattern.flags)
-    let m
-    while ((m = re.exec(text)) !== null) {
+    let m = re.exec(text)
+    while (m !== null) {
       flags.push({
         index: m.index,
         length: m[0].length,
@@ -252,6 +252,7 @@ export function detectRedFlags(text) {
         suggestion: rule.suggestion,
       })
       if (m.index === re.lastIndex) re.lastIndex++
+      m = re.exec(text)
     }
   }
   // Dédupliquer les overlaps (garder le plus long match sur chaque zone)
