@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { T } from '../design/tokens'
+import { TempoLogoA, GridBg } from '../design/primitives'
 
 const TABS = [
   ['cgu', 'CGU'],
@@ -247,31 +249,73 @@ export default function Legal({ onBack }) {
   const Content = CONTENT[tab]
 
   return (
-    <div style={{ minHeight:'100vh', background:'var(--wh)', padding:'24px 20px' }}>
-      <div style={{ maxWidth:800, margin:'0 auto' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
-          {onBack && <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontSize:14, color:'var(--g4)' }}>‹ Retour</button>}
-          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-            <div style={{ width:24, height:24, background:'var(--or)', borderRadius:6, display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 1L8.5 5L1.5 9Z" fill="white"/></svg>
-            </div>
-            <span style={{ fontWeight:600, letterSpacing:'1.5px', fontSize:13 }}>TEMPO</span>
+    <div style={{ minHeight: '100vh', background: T.color.wh, fontFamily: T.font.body }}>
+      {/* Hero navy Style A */}
+      <div style={{
+        position: 'relative', background: T.color.navy, color: '#fff',
+        padding: '32px 40px 40px', overflow: 'hidden',
+      }}>
+        <GridBg opacity={0.22} />
+        <div style={{
+          position: 'absolute', top: '-50%', right: '-5%', width: 400, height: 400,
+          borderRadius: '50%', pointerEvents: 'none',
+          background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 65%)',
+        }} />
+        <div style={{ position: 'relative', maxWidth: 1100, margin: '0 auto' }}>
+          {onBack && (
+            <button onClick={onBack}
+              style={{
+                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
+                cursor: 'pointer', fontSize: 12, color: 'rgba(255,255,255,0.75)',
+                padding: '5px 12px', borderRadius: 999, marginBottom: 20, fontWeight: 500,
+              }}>← Retour</button>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+            <TempoLogoA size={22} />
+            <span style={{
+              fontFamily: T.font.mono, fontSize: 11, color: 'rgba(255,255,255,0.55)',
+              letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600,
+            }}>Informations légales</span>
           </div>
-          <span style={{ fontSize:14, fontWeight:600, color:'var(--g6)' }}>Informations legales</span>
+          <h1 style={{
+            margin: 0, fontSize: 32, fontWeight: 800, lineHeight: 1.02,
+            color: '#fff', letterSpacing: '-0.025em',
+          }}>
+            Cadre <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brandXL }}>juridique</span> & transparence.
+          </h1>
         </div>
+      </div>
 
-        <div style={{ display:'flex', gap:0, borderBottom:'1px solid var(--g2)', marginBottom:24, overflowX:'auto' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px' }}>
+        {/* Tabs pill Style A */}
+        <div style={{
+          display: 'inline-flex', gap: 4, padding: 4,
+          background: T.color.g1, borderRadius: 999, marginBottom: 28,
+          flexWrap: 'wrap', maxWidth: '100%',
+        }}>
           {TABS.map(([k, l]) => (
-            <button key={k} onClick={() => setTab(k)} style={{ padding:'10px 14px', border:'none', background:'transparent', fontSize:13, fontWeight: tab === k ? 500 : 400, color: tab === k ? 'var(--bk)' : 'var(--g4)', borderBottom: tab === k ? '2px solid var(--or)' : '2px solid transparent', cursor:'pointer', whiteSpace:'nowrap' }}>{l}</button>
+            <button key={k} onClick={() => setTab(k)}
+              style={{
+                padding: '8px 16px', border: 'none',
+                background: tab === k ? '#fff' : 'transparent',
+                color: tab === k ? T.color.ink : T.color.g5,
+                fontSize: 12.5, fontWeight: 600, borderRadius: 999, cursor: 'pointer',
+                boxShadow: tab === k ? '0 1px 3px rgba(15,23,42,.08)' : 'none',
+                whiteSpace: 'nowrap',
+              }}>{l}</button>
           ))}
         </div>
 
-        <div style={{ fontSize:14, lineHeight:1.8, color:'var(--g6)' }}>
+        <div className="a-card" style={{ padding: 32, fontSize: 14, lineHeight: 1.8, color: T.color.g8 }}>
           <Content />
         </div>
 
-        <div style={{ marginTop:40, padding:'20px 0', borderTop:'1px solid var(--g2)', fontSize:12, color:'var(--g4)', textAlign:'center' }}>
-          TEMPO SAS — contact@tempo-app.fr — Tous droits reserves {new Date().getFullYear()}
+        <div style={{
+          marginTop: 32, padding: '20px 0', borderTop: `1px solid ${T.color.g2}`,
+          fontSize: 12, color: T.color.g4, textAlign: 'center',
+          fontFamily: T.font.mono, letterSpacing: 0.5,
+        }}>
+          TEMPO SAS — contact@tempo-app.fr — Tous droits réservés {new Date().getFullYear()}
         </div>
       </div>
     </div>
