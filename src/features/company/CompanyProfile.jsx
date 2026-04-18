@@ -146,6 +146,29 @@ export default function CompanyProfile({
           </div>
         </div>
 
+        {/* Description — visible sur la carte de visite publique */}
+        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, marginTop: 4 }}>Présentation publique</div>
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 5 }}>
+            <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)' }}>À propos de votre entreprise</label>
+            <span style={{ fontSize: 11, color: 'var(--g4)', fontFamily: "'JetBrains Mono', monospace" }}>
+              {(profileForm.description || '').length} / 500
+            </span>
+          </div>
+          <textarea
+            className="input"
+            rows={4}
+            maxLength={500}
+            style={{ resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5 }}
+            placeholder="Décrivez votre entreprise en quelques phrases. Secteur, taille, culture, pourquoi travailler avec vous."
+            value={profileForm.description || ''}
+            onChange={e => setProfileForm(f => ({ ...f, description: e.target.value }))}
+          />
+          <div style={{ fontSize: 11, color: 'var(--g4)', marginTop: 4, lineHeight: 1.5 }}>
+            Affiché sur votre carte de visite publique que consultent les travailleurs avant de postuler.
+          </div>
+        </div>
+
         <button
           className="btn-primary"
           style={{ width: '100%', justifyContent: 'center' }}

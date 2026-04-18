@@ -32,9 +32,22 @@ export function workerBadges(worker, recentMissions = []) {
   // 3. Top [secteur] : rating élevé + historique solide
   const rating = parseFloat(worker?.rating_avg || 0)
   const done = worker?.missions_completed || 0
+  const sectorKey = worker?.sectors?.[0]
   if (rating >= 4.7 && done >= 10) {
-    const sector = worker?.sector ? `Top ${worker.sector}` : 'Top profil'
-    badges.push({ key: 'top', variant: 'amber', label: sector, sub: `★ ${rating.toFixed(1).replace('.', ',')} sur ${done} missions` })
+    const label = sectorKey ? `Top ${sectorKey}` : 'Top profil'
+    badges.push({ key: 'top', variant: 'amber', label, sub: `★ ${rating.toFixed(1).replace('.', ',')} sur ${done} missions` })
+  }
+
+  // 4. Fiable : très peu d'annulations sur historique solide
+  const cancelled = worker?.missions_cancelled || 0
+  const total = done + cancelled
+  if (done >= 10 && (total === 0 || cancelled / total < 0.05)) {
+    badges.push({
+      key: 'reliable',
+      variant: 'brand',
+      label: 'Fiable',
+      sub: cancelled === 0 ? '0 annulation' : `${Math.round((cancelled / total) * 100)} % d'annulation`,
+    })
   }
 
   return badges
@@ -71,7 +84,7 @@ export function workerLoyalCompanies(recentMissions = []) {
 
 // ── Companies ─────────────────────────────────────────────
 
-export function companyBadges(company, invoices = [], rebookingStats = null) {
+export function companyBadges(company, invoices = [], rebookingStats = null, missions = []) {
   const badges = []
 
   // 1. TEMPO Vérifié : SIRET validé
@@ -91,6 +104,16 @@ export function companyBadges(company, invoices = [], rebookingStats = null) {
   // 3. Client fidèle : ≥ 3 workers distincts ayant fait ≥ 2 missions completed
   if (rebookingStats && rebookingStats.loyalWorkers >= 3) {
     badges.push({ key: 'loyal', variant: 'amber', label: 'Client fidèle', sub: `${rebookingStats.loyalWorkers} prestataires rebookés` })
+  }
+
+  // 4. Engagement tenu : ≥ 10 missions, 0 annulation
+  const cancelled = (missions || []).filter(m => m.status === 'cancelled').length
+  const done = (missions || []).filter(m => m.status === 'completed').length
+  const totalMissions = done + cancelled
+  if (done >= 10 && cancelled === 0) {
+    badges.push({ key: 'reliable', variant: 'brand', label: 'Engagement tenu', sub: '0 mission annulée' })
+  } else if (totalMissions >= 10 && (cancelled / totalMissions) < 0.05) {
+    badges.push({ key: 'reliable', variant: 'brand', label: 'Engagement tenu', sub: `${Math.round((cancelled / totalMissions) * 100)} % d'annulation` })
   }
 
   return badges

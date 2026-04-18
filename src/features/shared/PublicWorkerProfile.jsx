@@ -231,6 +231,16 @@ export default function PublicWorkerProfile({
             ))}
           </div>
 
+          {/* Bio — si le worker a écrit une présentation */}
+          {worker.bio && worker.bio.trim().length > 0 && (
+            <section>
+              <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>À propos</Eyebrow>
+              <div className="a-card" style={{ padding: 22, marginTop: 8, fontSize: 14, lineHeight: 1.65, color: T.color.g8, fontStyle: 'italic', fontFamily: T.font.serif, fontWeight: 400 }}>
+                « {worker.bio} »
+              </div>
+            </section>
+          )}
+
           {/* Section 01 · EXPERTISE */}
           <section>
             <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>01 · Expertise</Eyebrow>

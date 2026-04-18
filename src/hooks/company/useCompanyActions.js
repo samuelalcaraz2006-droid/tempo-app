@@ -363,7 +363,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     showToast('Contrat signé avec succès !')
   }, [contractModal, userId, showToast, signedContracts])
 
-  const ALLOWED_COMPANY_FIELDS = ['name', 'siret', 'city', 'address', 'sector', 'contact_name', 'contact_phone']
+  const ALLOWED_COMPANY_FIELDS = ['name', 'siret', 'city', 'address', 'sector', 'contact_name', 'contact_phone', 'description']
 
   const handleSaveCompanyProfile = useCallback(async (profileForm) => {
     setSavingProfile(true)
