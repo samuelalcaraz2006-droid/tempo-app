@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
+import { logWarn } from '../lib/sentry'
 
 export default function SignatureCanvas({ onSave, label = 'Signature' }) {
   const canvasRef = useRef(null)
@@ -57,7 +58,7 @@ export default function SignatureCanvas({ onSave, label = 'Signature' }) {
     const dataUrl = canvasRef.current.toDataURL('image/jpeg', 0.8)
     // ~360×140 JPEG 80% ≈ 15-30 KB — refuser si anomalie
     if (dataUrl.length > 200000) {
-      console.warn('[SignatureCanvas] dataUrl trop volumineux:', dataUrl.length)
+      logWarn('[SignatureCanvas] dataUrl trop volumineux', { length: dataUrl.length })
       return
     }
     onSave(dataUrl)

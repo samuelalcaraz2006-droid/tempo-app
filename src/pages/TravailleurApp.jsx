@@ -22,6 +22,7 @@ import { useWorkerActions } from '../hooks/worker/useWorkerActions'
 import { useWorkerData } from '../hooks/worker/useWorkerData'
 import DashboardLayout from '../layouts/DashboardLayout'
 import { submitKycDocuments, supabase, uploadKycDocument } from '../lib/supabase'
+import { logWarn } from '../lib/sentry'
 
 const ContractModal = React.lazy(() => import('../components/ContractModal'))
 
@@ -286,7 +287,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
       || companyData?.id || companyData?.company_id
       || null
     if (!resolvedId) {
-      console.warn('[openCompanyProfile] pas de companyId', { companyId, companyData })
+      logWarn('[openCompanyProfile] pas de companyId', { ctx: { companyId, companyData } })
       return
     }
     setViewCompanyId(resolvedId)

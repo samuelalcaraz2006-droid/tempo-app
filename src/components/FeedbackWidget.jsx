@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react'
 import { supabase } from '../lib/supabase'
 import { AuthContext } from '../contexts/AuthContext'
+import { captureError } from '../lib/sentry'
 
 export default function FeedbackWidget() {
   const ctx = useContext(AuthContext)
@@ -24,7 +25,7 @@ export default function FeedbackWidget() {
     })
     setSending(false)
     if (error) {
-      console.error('[FeedbackWidget] insert error:', error)
+      captureError(error, { source: 'FeedbackWidget.insert' })
       return
     }
     setSent(true)

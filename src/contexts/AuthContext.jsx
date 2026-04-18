@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { captureError } from '../lib/sentry'
 
 export const AuthContext = createContext(null)
 // eslint-disable-next-line react-refresh/only-export-components
@@ -39,7 +40,7 @@ export const AuthProvider = ({ children }) => {
         setRoleData(data ?? null)
       }
     } catch (err) {
-      console.error('[AuthContext] loadProfile error:', err)
+      captureError(err, { source: 'AuthContext.loadProfile' })
     }
   }, [])
 
@@ -150,7 +151,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await supabase.auth.signOut()
     } catch (err) {
-      console.error('[AuthContext] logout error:', err)
+      captureError(err, { source: 'AuthContext.logout' })
       // Forcer le reset local meme si signOut echoue
       setUser(null)
       setProfile(null)

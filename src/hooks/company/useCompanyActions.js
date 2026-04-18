@@ -13,6 +13,7 @@ import {
   supabase,
 } from '../../lib/supabase'
 import { getRecurrenceCounts } from '../../lib/recurrenceCheck'
+import { captureError } from '../../lib/sentry'
 
 export function useCompanyActions(userId, { showToast, setMissions, setInvoices, missions, refreshRoleData }) {
   const [publishing, setPublishing] = useState(false)
@@ -209,7 +210,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
         totalHours,
       })
       if (invErr) {
-        console.error('[createInvoice] error:', invErr)
+        captureError(invErr, { source: 'createInvoice' })
         showToast('Mission terminée mais erreur lors de la génération de la facture', 'error')
         setActionLoading(s => ({ ...s, [missionId]: null }))
         return

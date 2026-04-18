@@ -171,15 +171,15 @@ describe('pushNotifications', () => {
 
     it('log un warning si serviceWorker.ready rejette (fallback)', async () => {
       NotificationMock.permission = 'granted'
+      // logWarn retombe sur console.warn quand Sentry n'est pas initialisé en dev
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
       serviceWorkerMock.ready = Promise.reject(new Error('sw unavailable'))
       NotificationMock.mockImplementation(() => { throw new Error('not allowed') })
       sendLocalNotification('Titre rejet SW')
       await new Promise(r => setTimeout(r, 10))
-      expect(warnSpy).toHaveBeenCalledWith(
-        '[Push] Service worker indisponible:',
-        expect.any(Error)
-      )
+      expect(warnSpy).toHaveBeenCalled()
+      const calls = warnSpy.mock.calls.map(c => String(c[0]))
+      expect(calls.some(c => c.includes('[Push] Service worker indisponible'))).toBe(true)
     })
 
   })

@@ -47,10 +47,20 @@ export function setUser(user) {
 
 export function captureError(error, context = {}) {
   if (!SENTRY_DSN) {
-    console.error('[Sentry disabled]', error, context)
+    if (import.meta.env.DEV) console.error('[Sentry disabled]', error, context)
     return
   }
   Sentry.captureException(error, { extra: context })
+}
+
+// Logge un warning en prod vers Sentry, en dev vers la console.
+// À utiliser à la place de `console.warn` hors tests.
+export function logWarn(message, context = {}) {
+  if (!SENTRY_DSN) {
+    if (import.meta.env.DEV) console.warn(message, context)
+    return
+  }
+  Sentry.captureMessage(String(message), { level: 'warning', extra: context })
 }
 
 export function addBreadcrumb(message, category = 'app', level = 'info') {

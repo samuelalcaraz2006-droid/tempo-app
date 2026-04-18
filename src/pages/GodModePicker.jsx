@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/useAuth'
+import { captureError } from '../lib/sentry'
 
 // ── Styles partages (dark theme God Mode) ───────────────────
 const SCREEN = {
@@ -293,7 +294,7 @@ const WorkersView = ({ onBack, impersonate }) => {
         .from('workers')
         .select('id, first_name, last_name, city, sectors, is_available, kyc_completed_at, profiles(email)')
         .order('created_at', { ascending: false })
-      if (error) console.error('[GodMode] load workers:', error)
+      if (error) captureError(error, { source: 'GodMode' })
       setRows(data || [])
       setLoading(false)
     })()
@@ -360,7 +361,7 @@ const CompaniesView = ({ onBack, impersonate }) => {
         .from('companies')
         .select('id, name, city, sector, siret, subscription_plan, missions_posted, profiles(email)')
         .order('created_at', { ascending: false })
-      if (error) console.error('[GodMode] load companies:', error)
+      if (error) captureError(error, { source: 'GodMode' })
       setRows(data || [])
       setLoading(false)
     })()
