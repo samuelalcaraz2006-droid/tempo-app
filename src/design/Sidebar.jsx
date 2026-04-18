@@ -29,12 +29,17 @@ export default function SidebarA({
         height: '100vh',
       }}
     >
-      <div
-        style={{ padding: '0 10px 16px', cursor: onBrandClick ? 'pointer' : 'default' }}
+      <button
+        type="button"
         onClick={onBrandClick}
+        disabled={!onBrandClick}
+        style={{
+          padding: '0 10px 16px', cursor: onBrandClick ? 'pointer' : 'default',
+          background: 'none', border: 'none', textAlign: 'left',
+        }}
       >
         <TempoLogoA size={24} />
-      </div>
+      </button>
 
       {roleLabel && (
         <div style={{
@@ -49,9 +54,11 @@ export default function SidebarA({
       {items.map(({ id, label, icon, badge }) => {
         const isActive = active === id
         return (
-          <div
+          <button
+            type="button"
             key={id}
             onClick={() => onNavigate?.(id)}
+            aria-current={isActive ? 'page' : undefined}
             style={{
               display: 'flex', alignItems: 'center', gap: 12,
               padding: '10px 12px', borderRadius: 10,
@@ -60,6 +67,7 @@ export default function SidebarA({
               color: isActive ? '#fff' : 'rgba(255,255,255,0.68)',
               fontSize: 13.5, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
               transition: 'background .15s, color .15s',
+              textAlign: 'left', width: '100%',
             }}
             onMouseEnter={e => {
               if (!isActive) {
@@ -86,7 +94,7 @@ export default function SidebarA({
                 fontFamily: T.font.mono,
               }}>{badge}</span>
             )}
-          </div>
+          </button>
         )
       })}
 

@@ -9,6 +9,9 @@ export default function MissionCard({ mission, applied, saved, applying, onApply
       className={`card-mission${(mission.urgency === 'urgent' || mission.urgency === 'immediate') ? ' is-urgent' : ''}`}
       style={{ marginBottom:10 }}
       onClick={() => onSelect?.(mission)}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect?.(mission) } }}
+      role="button"
+      tabIndex={onSelect ? 0 : -1}
     >
       <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
         <div style={{ flex:1, minWidth:0, marginRight:10 }}>

@@ -159,10 +159,15 @@ export default function AdminApp({ onLogoClick }) {
           borderRadius: '50%', pointerEvents: 'none',
           background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 65%)',
         }} />
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16, cursor: onLogoClick ? 'pointer' : 'default' }} onClick={onLogoClick}>
+        <button
+          type="button"
+          onClick={onLogoClick}
+          disabled={!onLogoClick}
+          style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16, cursor: onLogoClick ? 'pointer' : 'default', background: 'none', border: 'none', padding: 0, color: 'inherit' }}
+        >
           <TempoLogoA size={22} />
           <Pill variant="white" size="xs" icon={<LiveDot color={T.color.brandXL} size={6} />}>Panel Admin</Pill>
-        </div>
+        </button>
         <div style={{ position: 'relative' }}>
           <Eyebrow color="rgba(255,255,255,0.5)" style={{ marginBottom: 8, fontSize: 11 }}>
             TEMPO · Administration
