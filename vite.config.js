@@ -48,6 +48,13 @@ export default defineConfig({
     },
   },
   build: {
+    // Minifier esbuild — mais on désactive le mangling d'identifiants pour
+    // éviter le bug "Cannot access 'R' before initialization" : le
+    // minifier réutilisait les lettres courtes (R, _, b…) en les hissant
+    // dans des scopes où elles n'étaient pas encore initialisées (TDZ).
+    // Coût : +5-10% sur la taille gzip. Bénéfice : stacks lisibles en prod
+    // + plus de collisions de scope. On whitespace/syntax-minifie toujours.
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -56,5 +63,9 @@ export default defineConfig({
         },
       },
     },
+  },
+  esbuild: {
+    keepNames: true,
+    minifyIdentifiers: false,
   },
 })
