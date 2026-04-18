@@ -17,6 +17,7 @@ import { useCompanyActions } from '../hooks/company/useCompanyActions'
 import { useCompanyData } from '../hooks/company/useCompanyData'
 import { useToast } from '../hooks/useToast'
 import DashboardLayout from '../layouts/DashboardLayout'
+import { trackScreen } from '../lib/sentry'
 
 const ContractModal = lazy(() => import('../components/ContractModal'))
 
@@ -62,6 +63,9 @@ export default function EntrepriseApp({ onLogoClick }) {
   })
 
   const unreadNotifsCount = (data.notifs || []).filter(n => !n.read_at).length
+
+  // Breadcrumb Sentry à chaque changement d'écran
+  useEffect(() => { trackScreen('company', screen) }, [screen])
 
   const company = roleData
   const displayName = company?.name || profile?.email || '—'
