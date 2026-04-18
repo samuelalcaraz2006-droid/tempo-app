@@ -10,7 +10,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
   const [signingContract, setSigningContract] = useState(false)
   const [savingProfile, setSavingProfile] = useState(false)
 
-  const ALLOWED_PROFILE_FIELDS = ['first_name', 'last_name', 'city', 'siret', 'radius_km', 'skills', 'certifications']
+  const ALLOWED_PROFILE_FIELDS = ['first_name', 'last_name', 'city', 'siret', 'radius_km', 'skills', 'certifications', 'bio']
 
   const handleApply = useCallback(async (mission, hasApplied) => {
     if (applying[mission.id] || hasApplied) return

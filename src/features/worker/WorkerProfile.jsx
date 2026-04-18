@@ -53,6 +53,28 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
           </div>
         </div>
 
+        {/* À propos (bio) — visible sur la carte de visite publique */}
+        <div style={{ marginBottom:16 }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:5 }}>
+            <label style={{ fontSize:13, fontWeight:500, color:'var(--g6)' }}>À propos</label>
+            <span style={{ fontSize:11, color:'var(--g4)', fontFamily:"'JetBrains Mono', monospace" }}>
+              {(profileForm.bio || worker?.bio || '').length} / 280
+            </span>
+          </div>
+          <textarea
+            className="input"
+            rows={3}
+            maxLength={280}
+            style={{ resize:'vertical', fontFamily:'inherit', lineHeight:1.5 }}
+            placeholder="Présentez-vous en 2-3 phrases. Pas d'email, pas de téléphone — ils restent privés."
+            value={profileForm.bio || worker?.bio || ''}
+            onChange={e => setProfileForm(f => ({ ...f, bio: e.target.value }))}
+          />
+          <div style={{ fontSize:11, color:'var(--g4)', marginTop:4, lineHeight:1.5 }}>
+            Affiché sur votre carte de visite publique. Évitez emails, téléphones et URLs — ils seront masqués automatiquement.
+          </div>
+        </div>
+
         {/* Skills */}
         <div style={{ marginBottom:16 }}>
           <div style={{ fontSize:14, fontWeight:600, marginBottom:8 }}>Competences</div>

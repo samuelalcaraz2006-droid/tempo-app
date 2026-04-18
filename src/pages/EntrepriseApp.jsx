@@ -74,6 +74,7 @@ export default function EntrepriseApp({ onLogoClick }) {
         sector: company.sector || '',
         contact_name: company.contact_name || '',
         contact_phone: company.contact_phone || '',
+        description: company.description || '',
       })
     }
   }, [company?.id])

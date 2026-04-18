@@ -60,7 +60,7 @@ export default function PublicCompanyProfile({
   const companyInitial = companyName.slice(0, 1).toUpperCase()
   const memberSince = formatMemberSince(profile?.created_at || company.created_at)
 
-  const badges = companyBadges(company, invoices, rebookingStats)
+  const badges = companyBadges(company, invoices, rebookingStats, missions)
   const avgPayHours = companyAvgPaymentDelay(invoices)
   const honoredRate = companyHonoredRate(missions)
   const sectorLabel = SECTOR_LABELS?.[company.sector] || company.sector || ''
