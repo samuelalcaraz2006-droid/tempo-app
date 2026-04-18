@@ -48,6 +48,7 @@ export default function CompanyCandidates({
   onAccept,
   onReject,
   onBack,
+  onViewProfile,
 }) {
   return (
     <div>
@@ -100,6 +101,12 @@ export default function CompanyCandidates({
               <RecurrenceBanner count={c.recurrence_count || 0} />
               {isPending && (
                 <div style={{ display: 'flex', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid #F4F4F2' }}>
+                  {onViewProfile && (
+                    <button type="button" style={{ padding: '8px 14px', border: '1.5px solid var(--g2)', borderRadius: 999, background: 'var(--wh)', fontSize: 12, color: 'var(--g6)', cursor: 'pointer', fontWeight: 600 }}
+                      onClick={() => onViewProfile(c)}>
+                      👁 Voir le profil
+                    </button>
+                  )}
                   <button style={{ flex: 1, padding: '8px', border: '1.5px solid var(--g2)', borderRadius: 8, background: 'var(--wh)', fontSize: 13, color: 'var(--g6)', cursor: 'pointer', fontWeight: 500, transition: 'all .15s' }}
                     disabled={!!isLoading}
                     onClick={() => onReject(c.id)}

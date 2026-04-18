@@ -9,6 +9,7 @@ import WorkerAlerts from '../features/worker/WorkerAlerts'
 import WorkerApplications from '../features/worker/WorkerApplications'
 import WorkerCalendar from '../features/worker/WorkerCalendar'
 import WorkerCompanyProfile from '../features/worker/WorkerCompanyProfile'
+import PublicCompanyProfile from '../features/shared/PublicCompanyProfile'
 import WorkerDashboard from '../features/worker/WorkerDashboard'
 import WorkerEarnings from '../features/worker/WorkerEarnings'
 import WorkerMessages from '../features/worker/WorkerMessages'
@@ -713,10 +714,8 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
         )}
 
         {screen === 'company-profile' && (
-          <WorkerCompanyProfile
-            company={viewCompany}
-            companyMissions={companyMissions}
-            missions={data.missions}
+          <PublicCompanyProfile
+            companyId={viewCompany?.id || viewCompany?.company_id || viewCompany}
             onBack={() => setScreen('missions')}
             onSelectMission={(m) => {
               setSelectedMission(m)

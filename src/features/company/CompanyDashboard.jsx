@@ -78,6 +78,7 @@ export default function CompanyDashboard({
   onCancelModal,
   onExportMissions,
   onLoadCandidates,
+  onViewWorkerProfile,
 }) {
   // Mission en cours = première matched/active, la suivante = deuxième
   const activeMissions = useMemo(
@@ -260,6 +261,7 @@ export default function CompanyDashboard({
             loading={candidatesLoading}
             onLoadCandidates={onLoadCandidates}
             onNavigate={onNavigate}
+            onViewWorkerProfile={onViewWorkerProfile}
           />
 
           {/* ─ Droite : MISSION SUIVANTE + ACTIVITÉ 24H ─ */}
@@ -277,7 +279,7 @@ export default function CompanyDashboard({
 // Sous-composants
 // ─────────────────────────────────────────────────────────────
 
-function MissionEnCoursCard({ mission, candidates, loading, onLoadCandidates, onNavigate }) {
+function MissionEnCoursCard({ mission, candidates, loading, onLoadCandidates, onNavigate, onViewWorkerProfile }) {
   if (!mission) {
     return (
       <div className="a-card" style={{
@@ -335,7 +337,7 @@ function MissionEnCoursCard({ mission, candidates, loading, onLoadCandidates, on
             Aucun candidat pour l'instant. TEMPO notifie les profils compatibles en temps réel.
           </div>
         )}
-        {!loading && candidates.map((c, i) => <CandidateRow key={c.id} application={c} highlighted={i === 0} seed={i + 1} />)}
+        {!loading && candidates.map((c, i) => <CandidateRow key={c.id} application={c} highlighted={i === 0} seed={i + 1} onViewWorkerProfile={onViewWorkerProfile} />)}
       </div>
 
       {/* Footer */}
@@ -361,7 +363,7 @@ function MissionEnCoursCard({ mission, candidates, loading, onLoadCandidates, on
   )
 }
 
-function CandidateRow({ application, highlighted, seed }) {
+function CandidateRow({ application, highlighted, seed, onViewWorkerProfile }) {
   const worker = application.workers || {}
   const name = [worker.first_name, worker.last_name].filter(Boolean).join(' ') || 'Candidat'
   const role = [worker.sector || 'Profil', worker.experience_years ? `${worker.experience_years} ans` : null]
@@ -401,6 +403,15 @@ function CandidateRow({ application, highlighted, seed }) {
           <div style={{ fontSize: 14, fontWeight: 800, color: T.color.brand, fontFamily: T.font.mono }}>{matchPct}%</div>
           <div style={{ fontSize: 10, color: T.color.g5, marginTop: 2 }}>match</div>
         </div>
+      )}
+      {onViewWorkerProfile && (
+        <button type="button" style={{
+          padding: '8px 14px', background: '#fff', color: T.color.ink,
+          border: `1px solid ${T.color.g2}`, borderRadius: 999, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+        }}
+        onClick={() => onViewWorkerProfile(worker.id || application.worker_id, { applicationId: application.id, matchScore: application.match_score })}>
+          Profil
+        </button>
       )}
       <button type="button" style={{
         padding: '8px 14px', background: T.color.brand, color: '#fff',

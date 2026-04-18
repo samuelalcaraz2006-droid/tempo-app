@@ -11,6 +11,7 @@ import CompanyProfile from '../features/company/CompanyProfile'
 import CompanyPublishMission from '../features/company/CompanyPublishMission'
 import CompanyStats from '../features/company/CompanyStats'
 import ChatView from '../features/shared/ChatView'
+import PublicWorkerProfile from '../features/shared/PublicWorkerProfile'
 import { useCompanyActions } from '../hooks/company/useCompanyActions'
 import { useCompanyData } from '../hooks/company/useCompanyData'
 import { useToast } from '../hooks/useToast'
@@ -46,6 +47,7 @@ export default function EntrepriseApp({ onLogoClick }) {
   const [form, setForm] = useState(EMPTY_FORM)
   const [profileForm, setProfileForm] = useState({})
   const [chatTarget, setChatTarget] = useState(null)
+  const [viewedWorker, setViewedWorker] = useState(null) // { workerId, applicationId?, matchScore? }
   const setF = (k, v) => setForm((f) => ({ ...f, [k]: v }))
 
   const data = useCompanyData(user?.id)
@@ -97,6 +99,11 @@ export default function EntrepriseApp({ onLogoClick }) {
   const handleLoadCandidates = async (missionId) => {
     await actions.loadCandidates(missionId)
     setScreen('candidatures')
+  }
+
+  const openWorkerProfile = (workerId, { applicationId, matchScore } = {}) => {
+    setViewedWorker({ workerId, applicationId, matchScore })
+    setScreen('worker-profile')
   }
 
   const handleDuplicate = (m) => actions.duplicateMission(m, setForm, setScreen)
@@ -223,6 +230,24 @@ export default function EntrepriseApp({ onLogoClick }) {
         </div>
       )}
 
+      {screen === 'worker-profile' && viewedWorker && (
+        <PublicWorkerProfile
+          workerId={viewedWorker.workerId}
+          viewerRole="company"
+          viewerCompanyId={user?.id}
+          applicationId={viewedWorker.applicationId}
+          matchScore={viewedWorker.matchScore}
+          onBack={() => { setViewedWorker(null); setScreen(actions.candidates?.length ? 'candidatures' : 'dashboard') }}
+          onOpenChat={(workerId, workerName) => openChatNav(workerId, workerName, null)}
+          onRetain={(applicationId) => {
+            const candidate = actions.candidates?.find(c => c.id === applicationId)
+            if (candidate) actions.handleAccept(candidate)
+            setViewedWorker(null)
+            setScreen('candidatures')
+          }}
+        />
+      )}
+
       {screen === 'dashboard' && (
         <CompanyDashboard
           displayName={displayName}
@@ -240,6 +265,7 @@ export default function EntrepriseApp({ onLogoClick }) {
           onCancelModal={actions.setCancelModal}
           onExportMissions={() => actions.exportMissionsCSV(data.missions)}
           onLoadCandidates={handleLoadCandidates}
+          onViewWorkerProfile={openWorkerProfile}
         />
       )}
 
@@ -272,6 +298,10 @@ export default function EntrepriseApp({ onLogoClick }) {
               onAccept={actions.handleAccept}
               onReject={actions.handleReject}
               onBack={() => setScreen('dashboard')}
+              onViewProfile={(c) => openWorkerProfile(
+                c.workers?.id || c.worker_id,
+                { applicationId: c.id, matchScore: c.match_score },
+              )}
             />
           )}
 
