@@ -121,9 +121,9 @@ export default function WorkerMissionDetail({
                 </button>
               </div>
               <h1 style={{
-                margin: 0, fontSize: 64, fontWeight: 800, lineHeight: 0.96,
-                color: '#fff', letterSpacing: '-0.04em', fontFamily: T.font.body,
-                maxWidth: 780,
+                margin: 0, fontSize: 40, fontWeight: 800, lineHeight: 1.05,
+                color: '#fff', letterSpacing: '-0.025em', fontFamily: T.font.body,
+                maxWidth: 720,
               }}>
                 {mission.title}
                 <br />
@@ -165,10 +165,10 @@ export default function WorkerMissionDetail({
               backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
               minWidth: 280,
             }}>
-              <Eyebrow color="rgba(255,255,255,0.55)" style={{ fontSize: 10.5, letterSpacing: 1.6 }}>Votre matching</Eyebrow>
+              <Eyebrow color="rgba(255,255,255,0.55)" style={{ fontSize: 10, letterSpacing: 1.4 }}>Votre matching</Eyebrow>
               <div style={{
-                marginTop: 10, fontSize: 80, fontWeight: 800, color: '#fff',
-                fontFamily: T.font.body, letterSpacing: '-0.05em', lineHeight: 0.9,
+                marginTop: 8, fontSize: 48, fontWeight: 800, color: '#fff',
+                fontFamily: T.font.body, letterSpacing: '-0.035em', lineHeight: 1,
               }}>
                 {matchScore != null ? matchScore : '—'}
                 <span style={{ color: T.color.brandXL, fontWeight: 700 }}>{matchScore != null ? '%' : ''}</span>
