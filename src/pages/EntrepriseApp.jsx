@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import RatingModal from '../components/RatingModal'
 import Toast from '../components/UI/Toast'
 import { useI18n } from '../contexts/I18nContext'
@@ -145,7 +145,7 @@ export default function EntrepriseApp({ onLogoClick }) {
     )
 
   return (
-    <DashboardLayout role="company" tabs={tabs} activeTab={screen} onTabChange={setScreen} onLogoClick={onLogoClick}
+    <DashboardLayout tabs={tabs} activeTab={screen} onTabChange={setScreen} onLogoClick={onLogoClick}
       unreadCount={unreadNotifsCount} onNotifClick={() => setScreen('notifs')}>
       <Toast toast={toast} onDismiss={dismissToast} />
 
@@ -156,7 +156,6 @@ export default function EntrepriseApp({ onLogoClick }) {
             mission={actions.contractModal.mission}
             company={company}
             worker={{ first_name: actions.contractModal.workerName }}
-            role="company"
             onSign={actions.handleSignContract}
             onClose={() => actions.setContractModal(null)}
             signing={actions.signingContract}
@@ -343,7 +342,6 @@ export default function EntrepriseApp({ onLogoClick }) {
               setNotifs={data.setNotifs}
               userId={user?.id}
               unreadCount={unreadNotifsCount}
-              role="company"
               onBack={() => setScreen('dashboard')}
               onNavigate={async (target, payload) => {
                 if (target === 'candidatures' && payload?.missionId) {

@@ -33,7 +33,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
     showToast?.('Candidature retirée')
   }, [showToast])
 
-  const handleSignContract = useCallback(async (signatureData) => {
+  const handleSignContract = useCallback(async (_signatureData) => {
     if (!contractModal) return
     setSigningContract(true)
     const { error } = await saveContract({
@@ -88,7 +88,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
     setSavingProfile(false)
     if (error) {
       console.error('[WorkerActions] saveProfile error:', error)
-      showToast?.('Erreur lors de la sauvegarde : ' + (error.message || 'erreur inconnue'), 'error')
+      showToast?.(`Erreur lors de la sauvegarde : ${error.message || 'erreur inconnue'}`, 'error')
     } else {
       showToast?.('Profil mis a jour !')
       refreshRoleData?.()

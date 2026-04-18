@@ -53,7 +53,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
       return
     }
     const parsedDate = new Date(form.start_date)
-    if (isNaN(parsedDate.getTime())) {
+    if (Number.isNaN(parsedDate.getTime())) {
       showToast('La date de début est invalide', 'error')
       return
     }
@@ -106,7 +106,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     })
     setPublishing(false)
     if (error) {
-      showToast('Erreur lors de la publication : ' + error.message, 'error')
+      showToast(`Erreur lors de la publication : ${error.message}`, 'error')
     } else {
       setPublished(true)
       setMissions(prev => [data, ...prev])
@@ -296,7 +296,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
       headers.join(';'),
       ...data.map(row => headers.map(h => `"${(row[h] ?? '').toString().replace(/"/g, '""')}"`).join(';')),
     ].join('\n')
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
+    const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a'); a.href = url; a.download = filename; a.click()
     URL.revokeObjectURL(url)
@@ -340,7 +340,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
     showToast('Mission annulée')
   }, [cancelModal, cancelReason, showToast, setMissions])
 
-  const handleSignContract = useCallback(async (signatureData) => {
+  const handleSignContract = useCallback(async (_signatureData) => {
     if (!contractModal) return
     setSigningContract(true)
     const { error: contractError } = await saveContract({
@@ -384,7 +384,7 @@ export function useCompanyActions(userId, { showToast, setMissions, setInvoices,
       .select('id')
     setSavingProfile(false)
     if (error) {
-      showToast('Erreur lors de la sauvegarde : ' + (error.message || 'erreur inconnue'), 'error')
+      showToast(`Erreur lors de la sauvegarde : ${error.message || 'erreur inconnue'}`, 'error')
     } else {
       showToast('Profil mis à jour !')
       refreshRoleData?.()

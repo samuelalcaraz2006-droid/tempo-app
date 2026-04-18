@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { signAttestation } from '../../lib/legal'
 
 export default function WorkerAttestation({ worker, userId, showToast, onUpdate }) {

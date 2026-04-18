@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { fadeUp, slideRight, stagger, staggerFast, scaleIn, viewportOnce } from '../lib/animations'
 import AnimatedCounter from '../components/AnimatedCounter'

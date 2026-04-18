@@ -8,17 +8,14 @@ import MissionCard from '../features/shared/MissionCard'
 import WorkerAlerts from '../features/worker/WorkerAlerts'
 import WorkerApplications from '../features/worker/WorkerApplications'
 import WorkerCalendar from '../features/worker/WorkerCalendar'
-import WorkerCompanyProfile from '../features/worker/WorkerCompanyProfile'
 import PublicCompanyProfile from '../features/shared/PublicCompanyProfile'
 import WorkerDashboard from '../features/worker/WorkerDashboard'
 import WorkerEarnings from '../features/worker/WorkerEarnings'
 import WorkerMessages from '../features/worker/WorkerMessages'
 import WorkerMissionDetail from '../features/worker/WorkerMissionDetail'
 import WorkerMissionsList from '../features/worker/WorkerMissionsList'
-import WorkerNotifications from '../features/worker/WorkerNotifications'
 import NotificationsView from '../features/shared/NotificationsView'
 import WorkerProfile from '../features/worker/WorkerProfile'
-import { useDarkMode } from '../hooks/useDarkMode'
 import { useToast } from '../hooks/useToast'
 import { useMissionFilters } from '../hooks/worker/useMissionFilters'
 import { useWorkerActions } from '../hooks/worker/useWorkerActions'
@@ -168,7 +165,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
   const [chatTarget, setChatTarget] = useState(null)
   const [viewCompany, setViewCompany] = useState(null)
   const [viewCompanyId, setViewCompanyId] = useState(null)
-  const [companyMissions, setCompanyMissions] = useState([])
+  const [_companyMissions, setCompanyMissions] = useState([])
   const [disponible, setDisponible] = useState(false)
   const [profileForm, setProfileForm] = useState({})
   const [mapView, setMapView] = useState(false)
@@ -372,7 +369,6 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
 
   return (
     <DashboardLayout
-      role="worker"
       tabs={tabs}
       activeTab={screen}
       onTabChange={setScreen}
@@ -553,7 +549,6 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
             mission={actions.contractModal.mission}
             company={{ name: actions.contractModal.companyName }}
             worker={worker}
-            role="worker"
             onSign={actions.handleSignContract}
             onClose={() => actions.setContractModal(null)}
             signing={actions.signingContract}
@@ -726,7 +721,6 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
             setNotifs={data.setNotifs}
             userId={user?.id}
             unreadCount={unreadCount}
-            role="worker"
             onBack={() => setScreen('accueil')}
             onNavigate={(target, payload) => {
               if (target === 'mission-detail' && payload?.missionId) {

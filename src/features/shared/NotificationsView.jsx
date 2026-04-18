@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { T } from '../../design/tokens'
 import { Pill, Eyebrow, LiveDot } from '../../design/primitives'
 import { markNotifsRead } from '../../lib/supabase'
-import { formatDate } from '../../lib/formatters'
 
 // ═══════════════════════════════════════════════════════════════
 // NotificationsView — liste unifiée pour worker ET entreprise.

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback } from 'react'
 import fr from '../lib/i18n/fr'
 import en from '../lib/i18n/en'
 

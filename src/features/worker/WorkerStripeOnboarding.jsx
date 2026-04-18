@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { createConnectAccount, getStripeAccountStatus } from '../../lib/stripe'
 
 export default function WorkerStripeOnboarding({ worker, showToast }) {
@@ -30,7 +30,7 @@ export default function WorkerStripeOnboarding({ worker, showToast }) {
         showToast('Redirection vers Stripe pour configurer vos paiements')
       }
     } catch (err) {
-      showToast('Erreur lors de la configuration Stripe : ' + err.message, 'error')
+      showToast(`Erreur lors de la configuration Stripe : ${err.message}`, 'error')
     } finally {
       setLoading(false)
     }

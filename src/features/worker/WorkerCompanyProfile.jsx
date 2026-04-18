@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { formatDate } from '../../lib/formatters'
 
 export default function WorkerCompanyProfile({ company, companyMissions, missions, onBack, onSelectMission }) {

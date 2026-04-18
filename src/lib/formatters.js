@@ -3,7 +3,7 @@ export const formatDate = (d) =>
 
 export const formatAmount = (n) => {
   const parsed = parseFloat(n)
-  return (!n && n !== 0) || isNaN(parsed) ? '—' : `${parsed.toFixed(0)} €`
+  return (!n && n !== 0) || Number.isNaN(parsed) ? '—' : `${parsed.toFixed(0)} €`
 }
 
 export const SECTOR_LABELS = {

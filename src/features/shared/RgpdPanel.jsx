@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { requestDataExport, requestAccountDeletion } from '../../lib/legal'
 
 export default function RgpdPanel({ userId, showToast }) {

@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 function KycWorkerCard({ u, onApproveAll, onApproveField, onReject, kycFieldLoading }) {
   const w = u.worker

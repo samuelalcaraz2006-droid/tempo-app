@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useId } from 'react'
+import { useState, useEffect, useId } from 'react'
 import SignatureCanvas from './SignatureCanvas'
 import { getRecoursLabel } from '../lib/missionGuidelines'
 

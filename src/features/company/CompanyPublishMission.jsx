@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ChevronDown, ChevronRight, Info, Sparkles, X } from 'lucide-react'
 import { SECTOR_LABELS } from '../../lib/formatters'
 import {
@@ -341,7 +341,7 @@ export default function CompanyPublishMission({
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 <input className="input" placeholder="Nom du template" value={templateName} onChange={(e) => setTemplateName(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter' && templateName.trim()) { onSaveTemplate(templateName.trim()); setTemplateName(''); setShowTemplateSave(false) } }}
-                  style={{ padding: '6px 10px', fontSize: 12, width: 180 }} autoFocus />
+                  style={{ padding: '6px 10px', fontSize: 12, width: 180 }} />
                 <button type="button" className="btn-primary" style={{ padding: '6px 12px', fontSize: 12 }}
                   onClick={() => { if (templateName.trim()) { onSaveTemplate(templateName.trim()); setTemplateName(''); setShowTemplateSave(false) } }}
                   disabled={!templateName.trim()}>OK</button>

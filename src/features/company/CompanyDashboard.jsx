@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Download, Plus } from 'lucide-react'
-import { formatAmount, formatDate, SECTOR_LABELS } from '../../lib/formatters'
+import { formatAmount, formatDate, } from '../../lib/formatters'
 import TopBarA from '../../design/TopBar'
 import { T } from '../../design/tokens'
 import { Pill, LiveDot, KpiCard, Eyebrow, Avatar, GridBg } from '../../design/primitives'
@@ -11,7 +11,7 @@ import { getMissionApplications } from '../../lib/supabase'
 const relativeFromNow = (iso) => {
   if (!iso) return ''
   const d = new Date(iso)
-  if (isNaN(d.getTime())) return ''
+  if (Number.isNaN(d.getTime())) return ''
   const secs = Math.round((Date.now() - d.getTime()) / 1000)
   if (secs < 60) return `il y a ${secs} s`
   const mins = Math.round(secs / 60)

@@ -1,5 +1,5 @@
 import { Briefcase, Check, CheckCheck, ChevronLeft } from 'lucide-react'
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useChat } from '../../hooks/shared/useChat'
 import { getMissionById } from '../../lib/supabase'
 

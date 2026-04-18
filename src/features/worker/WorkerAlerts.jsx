@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { X } from 'lucide-react'
 import { formatDate, SECTOR_LABELS } from '../../lib/formatters'
 

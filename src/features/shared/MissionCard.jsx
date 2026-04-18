@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { Heart } from 'lucide-react'
 import { formatDate } from '../../lib/formatters'
 
@@ -8,7 +8,7 @@ export default function MissionCard({ mission, applied, saved, applying, onApply
     <div
       className={`card-mission${(mission.urgency === 'urgent' || mission.urgency === 'immediate') ? ' is-urgent' : ''}`}
       style={{ marginBottom:10 }}
-      onClick={() => onSelect && onSelect(mission)}
+      onClick={() => onSelect?.(mission)}
     >
       <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
         <div style={{ flex:1, minWidth:0, marginRight:10 }}>
