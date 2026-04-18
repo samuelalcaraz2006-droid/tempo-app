@@ -518,6 +518,99 @@ export const getCompanyReviews = async (companyId, limit = 2) => {
   }
 }
 
+// Carte de visite publique — worker vu par une entreprise
+// Retourne le worker + ses ratings récents + ses missions passées
+// (completed) pour calculer les badges et le taux de retour.
+// `viewerCompanyId` permet de déterminer le niveau de visibilité
+// (preview si aucune candidature, contextual si ≥ 1 candidature).
+export const getPublicWorkerProfile = async (workerId, viewerCompanyId = null) => {
+  try {
+    const [workerRes, profileRes, ratingsRes, missionsRes, appsCountRes] = await Promise.all([
+      supabase.from('workers').select('*').eq('id', workerId).maybeSingle(),
+      supabase.from('profiles').select('email, created_at').eq('id', workerId).maybeSingle(),
+      supabase
+        .from('ratings')
+        .select('id, score, comment, created_at, rater:rater_id(first_name, last_name)')
+        .eq('rated_id', workerId)
+        .order('created_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('missions')
+        .select('id, status, sector, company_id, companies:company_id(name)')
+        .eq('assigned_worker_id', workerId)
+        .order('created_at', { ascending: false })
+        .limit(50),
+      viewerCompanyId
+        ? supabase
+            .from('applications')
+            .select('id', { count: 'exact', head: true })
+            .eq('worker_id', workerId)
+            .in('mission_id',
+              (await supabase.from('missions').select('id').eq('company_id', viewerCompanyId)).data?.map(m => m.id) || [],
+            )
+        : Promise.resolve({ count: 0 }),
+    ])
+    return {
+      data: {
+        worker: workerRes.data || null,
+        profile: profileRes.data || null,
+        ratings: ratingsRes.data || [],
+        missions: (missionsRes.data || []).map(m => ({ missions: m })),
+        hasApplication: (appsCountRes.count || 0) > 0,
+      },
+      error: workerRes.error || profileRes.error,
+    }
+  } catch (e) {
+    return { data: null, error: e }
+  }
+}
+
+// Carte de visite publique — entreprise vue par un worker
+export const getPublicCompanyProfile = async (companyId) => {
+  try {
+    const [companyRes, profileRes, ratingsRes, missionsRes, invoicesRes] = await Promise.all([
+      supabase.from('companies').select('*').eq('id', companyId).maybeSingle(),
+      supabase.from('profiles').select('email, created_at').eq('id', companyId).maybeSingle(),
+      supabase
+        .from('ratings')
+        .select('id, score, comment, created_at, rater:rater_id(first_name, last_name)')
+        .eq('rated_id', companyId)
+        .order('created_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('missions')
+        .select('id, title, status, sector, assigned_worker_id, created_at')
+        .eq('company_id', companyId)
+        .order('created_at', { ascending: false })
+        .limit(50),
+      supabase
+        .from('invoices')
+        .select('id, status, created_at, paid_at, amount_ttc')
+        .eq('company_id', companyId)
+        .order('created_at', { ascending: false })
+        .limit(50),
+    ])
+    // Calcul rebookings : workers ayant fait ≥ 2 missions completed
+    const completed = (missionsRes.data || []).filter(m => m.status === 'completed' && m.assigned_worker_id)
+    const byWorker = {}
+    completed.forEach(m => { byWorker[m.assigned_worker_id] = (byWorker[m.assigned_worker_id] || 0) + 1 })
+    const loyalWorkers = Object.values(byWorker).filter(n => n >= 2).length
+    return {
+      data: {
+        company: companyRes.data || null,
+        profile: profileRes.data || null,
+        ratings: ratingsRes.data || [],
+        missions: missionsRes.data || [],
+        invoices: invoicesRes.data || [],
+        rebookingStats: { loyalWorkers, totalWorkers: Object.keys(byWorker).length },
+      },
+      error: companyRes.error || profileRes.error,
+    }
+  } catch (e) {
+    return { data: null, error: e }
+  }
+}
+
 // Récupère les candidatures d'une mission (avec nom worker) — pour
 // afficher la count + initiales sur la fiche mission côté worker.
 export const getMissionApplicationsCount = async (missionId, limit = 20) => {
