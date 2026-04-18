@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { CheckCircle, XCircle, X } from 'lucide-react'
 
 export default function Toast({ toast, onDismiss }) {

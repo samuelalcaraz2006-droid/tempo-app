@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { SECTOR_LABELS } from '../../lib/formatters'
 
 const Star = ({ n }) => (

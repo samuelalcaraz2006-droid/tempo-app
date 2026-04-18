@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { Download } from 'lucide-react'
 import { SECTOR_LABELS } from '../../lib/formatters'
 
@@ -37,7 +37,7 @@ export default function CompanyStats({
           [missions.length, 'Missions publiées'],
           [completedMissions.length, 'Missions terminées'],
           [missions.length > 0 ? `${Math.round((completedMissions.length / missions.length) * 100)}%` : '—', 'Taux de complétion'],
-          [company?.rating_avg ? parseFloat(company.rating_avg).toFixed(1) + '/5' : '—', 'Note moyenne'],
+          [company?.rating_avg ? `${parseFloat(company.rating_avg).toFixed(1)}/5` : '—', 'Note moyenne'],
         ].map(([v, l]) => (
           <div key={l} className="metric-card"><div className="metric-label">{l}</div><div className="metric-value">{v}</div></div>
         ))}

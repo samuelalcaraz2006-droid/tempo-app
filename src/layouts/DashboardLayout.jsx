@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Bell, LogOut, Menu, Moon, Sun, X } from 'lucide-react'
 import { useAuth } from '../contexts/useAuth'
 import { useI18n } from '../contexts/I18nContext'
@@ -230,7 +230,7 @@ export default function DashboardLayout({
                   padding: '14px 20px 10px', fontFamily: T.font.mono,
                 }}>{roleLabel}</div>
               )}
-              <nav role="navigation" aria-label="Sections" style={{ flex: 1, overflowY: 'auto', padding: '4px 10px 20px' }}>
+              <nav aria-label="Sections" style={{ flex: 1, overflowY: 'auto', padding: '4px 10px 20px' }}>
                 {sidebarItems.map(({ id, label, icon, badge }) => {
                   const isActive = activeTab === id
                   return (
@@ -266,7 +266,7 @@ export default function DashboardLayout({
         )}
 
         {/* Content */}
-        <main id="main-content" role="main" style={{ flex: 1, minWidth: 0 }}>
+        <main id="main-content" style={{ flex: 1, minWidth: 0 }}>
           {children}
         </main>
       </div>

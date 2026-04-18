@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { DollarSign } from 'lucide-react'
 import { formatDate, formatAmount } from '../../lib/formatters'
 import EmptyState from '../../components/UI/EmptyState'
@@ -102,7 +102,7 @@ export default function WorkerEarnings({ worker, invoices, allMissions, t }) {
               <thead><tr style={{ background:'var(--g1)' }}>
                 {['Reference', 'Date', 'Montant', 'Statut'].map(h => <th key={h} style={{ padding:'10px 12px', textAlign:'left', fontSize:12, fontWeight:500, color:'var(--g4)', borderBottom:'1px solid var(--g2)' }}>{h}</th>)}
               </tr></thead>
-              <tbody>{invoices.map((inv, i) => (
+              <tbody>{invoices.map((inv, _i) => (
                 <tr key={inv.id}>
                   <td style={{ padding:'10px 12px', fontSize:12, fontWeight:500 }}>{inv.invoice_number}</td>
                   <td style={{ padding:'10px 12px', fontSize:12, color:'var(--g4)' }}>{formatDate(inv.created_at)}</td>

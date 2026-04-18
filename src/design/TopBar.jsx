@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { T } from './tokens'
 import { GridBg, HeadlineA, Eyebrow } from './primitives'
 

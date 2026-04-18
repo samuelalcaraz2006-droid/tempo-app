@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 export default function SignatureCanvas({ onSave, label = 'Signature' }) {
   const canvasRef = useRef(null)

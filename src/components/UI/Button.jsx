@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 const Spinner = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin .6s linear infinite' }}>

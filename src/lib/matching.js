@@ -80,7 +80,7 @@ const scoreDistance = (mission, worker) => {
 }
 
 // ── Score historique client (0–100) ───────────────────────────
-const scoreHistory = (mission, worker, pastMissions = []) => {
+const scoreHistory = (mission, _worker, pastMissions = []) => {
   // Vérifier si le worker a déjà travaillé pour cette entreprise
   const sameCompany = pastMissions.filter(m =>
     m.company_id === mission.company_id && m.status === 'completed'

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { T } from '../../design/tokens'
 import { Pill, Eyebrow, Avatar, AvatarStack, GridBg } from '../../design/primitives'
 import { getPublicWorkerProfile } from '../../lib/supabase'
@@ -50,7 +50,7 @@ export default function PublicWorkerProfile({
       </div>
     )
   }
-  if (!data || !data.worker) {
+  if (!data?.worker) {
     return (
       <div style={{ padding: '80px 40px', textAlign: 'center' }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: T.color.ink, marginBottom: 8 }}>
@@ -74,7 +74,7 @@ export default function PublicWorkerProfile({
   )
 
   const displayName = formatName(worker.first_name, worker.last_name, visibility)
-  const initials = ((worker.first_name?.[0] || '') + (worker.last_name?.[0] || '')).toUpperCase() || '··'
+  const _initials = ((worker.first_name?.[0] || '') + (worker.last_name?.[0] || '')).toUpperCase() || '··'
   const badges = workerBadges(worker, missions)
   const returnRate = workerReturnRate(missions)
   const loyalCompanies = workerLoyalCompanies(missions)

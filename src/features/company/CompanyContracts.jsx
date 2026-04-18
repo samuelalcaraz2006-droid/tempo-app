@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { Download } from 'lucide-react'
 import { formatDate, formatAmount } from '../../lib/formatters'
 

@@ -1,4 +1,4 @@
-import React from 'react'
+
 import ConversationsList from '../shared/ConversationsList'
 
 export default function CompanyMessages({ userId, onOpenChat }) {

@@ -148,7 +148,7 @@ export function formatMemberSince(iso) {
 }
 
 // Visibility gating : retourne 'preview' | 'contextual' | 'own'
-export function resolveProfileVisibility(viewerRole, viewerId, targetId, { hasApplication = false, isAdmin = false } = {}) {
+export function resolveProfileVisibility(_viewerRole, viewerId, targetId, { hasApplication = false, isAdmin = false } = {}) {
   if (viewerId && targetId && viewerId === targetId) return 'own'
   if (isAdmin) return 'contextual'
   if (hasApplication) return 'contextual'
@@ -160,7 +160,7 @@ export function formatName(firstName, lastName, visibility) {
   const f = firstName || ''
   const l = lastName || ''
   if (visibility === 'preview') {
-    return `${f} ${l ? l[0] + '.' : ''}`.trim() || '—'
+    return `${f} ${l ? `${l[0]}.` : ''}`.trim() || '—'
   }
   return `${f} ${l}`.trim() || '—'
 }

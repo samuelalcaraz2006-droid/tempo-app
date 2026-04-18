@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { validateSiret } from '../../lib/legal'
 
 export default function WorkerSiretValidation({ worker, showToast }) {
@@ -18,7 +18,7 @@ export default function WorkerSiretValidation({ worker, showToast }) {
       } else {
         showToast(res.error || 'SIRET invalide', 'error')
       }
-    } catch (err) {
+    } catch (_err) {
       showToast('Erreur de verification', 'error')
     } finally {
       setLoading(false)
@@ -62,7 +62,7 @@ export default function WorkerSiretValidation({ worker, showToast }) {
           {result.error}
         </div>
       )}
-      {result && result.valid && (
+      {result?.valid && (
         <div style={{ background:'#ECFDF5', border:'1px solid #6EE7B7', borderRadius:8, padding:'8px 12px', fontSize:12, color:'#065F46' }}>
           ✓ {result.denomination} — Actif depuis {result.date_creation}
         </div>

@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react'
+import { lazy, Suspense } from 'react'
 import { Search, X, Menu, Map, Heart } from 'lucide-react'
 import MissionCard from '../shared/MissionCard'
 import EmptyState from '../../components/UI/EmptyState'

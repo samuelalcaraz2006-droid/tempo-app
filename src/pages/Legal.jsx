@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { T } from '../design/tokens'
 import { TempoLogoA, GridBg } from '../design/primitives'
 

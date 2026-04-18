@@ -156,7 +156,7 @@ export function HeadlineA({ children, size = 'lg', color, style }) {
       })
     }
     // Fragment ou autre composant : descend dans ses children
-    if (node.props && node.props.children) {
+    if (node.props?.children) {
       return React.cloneElement(node, {}, transform(node.props.children))
     }
     return node

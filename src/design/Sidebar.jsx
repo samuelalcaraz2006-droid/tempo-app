@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { T } from './tokens'
 import { TempoLogoA, Avatar } from './primitives'
 
@@ -51,7 +51,7 @@ export default function SidebarA({
         return (
           <div
             key={id}
-            onClick={() => onNavigate && onNavigate(id)}
+            onClick={() => onNavigate?.(id)}
             style={{
               display: 'flex', alignItems: 'center', gap: 12,
               padding: '10px 12px', borderRadius: 10,

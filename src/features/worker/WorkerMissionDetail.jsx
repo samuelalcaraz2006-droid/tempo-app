@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Heart } from 'lucide-react'
 import { formatDate } from '../../lib/formatters'
 import { T } from '../../design/tokens'
@@ -229,7 +229,7 @@ export default function WorkerMissionDetail({
               <div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 14 }}>
                 <button
                   type="button"
-                  onClick={() => onViewCompany && onViewCompany(mission.company_id, mission.companies)}
+                  onClick={() => onViewCompany?.(mission.company_id, mission.companies)}
                   style={{
                     width: 40, height: 40, borderRadius: 12,
                     background: '#fff', display: 'grid', placeItems: 'center',
@@ -241,7 +241,7 @@ export default function WorkerMissionDetail({
                 <div>
                   <button
                     type="button"
-                    onClick={() => onViewCompany && onViewCompany(mission.company_id, mission.companies)}
+                    onClick={() => onViewCompany?.(mission.company_id, mission.companies)}
                     style={{
                       fontSize: 14, fontWeight: 700, color: '#fff',
                       cursor: onViewCompany ? 'pointer' : 'default',

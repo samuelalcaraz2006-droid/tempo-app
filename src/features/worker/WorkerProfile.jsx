@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { X, Bell } from 'lucide-react'
 import WorkerStripeOnboarding from './WorkerStripeOnboarding'
 import WorkerSiretValidation from './WorkerSiretValidation'
@@ -46,7 +46,7 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
         <div style={{ marginBottom:16 }}>
           <label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Rayon d'intervention : <strong>{profileForm.radius_km || 10} km</strong></label>
           <input type="range" min="1" max="100" value={profileForm.radius_km || 10}
-            onChange={e => setProfileForm(f => ({ ...f, radius_km: parseInt(e.target.value) }))}
+            onChange={e => setProfileForm(f => ({ ...f, radius_km: parseInt(e.target.value, 10) }))}
             style={{ width:'100%', accentColor:'var(--or)' }} />
           <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'var(--g4)' }}>
             <span>1 km</span><span>50 km</span><span>100 km</span>

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { T } from '../../design/tokens'
-import { Pill, Eyebrow, Avatar, AvatarStack, GridBg } from '../../design/primitives'
+import { Pill, Eyebrow, Avatar, GridBg } from '../../design/primitives'
 import { getPublicCompanyProfile } from '../../lib/supabase'
 import { formatDate, SECTOR_LABELS } from '../../lib/formatters'
 import {
@@ -43,7 +43,7 @@ export default function PublicCompanyProfile({
       </div>
     )
   }
-  if (!data || !data.company) {
+  if (!data?.company) {
     return (
       <div style={{ padding: '80px 40px', textAlign: 'center' }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: T.color.ink, marginBottom: 8 }}>
@@ -245,7 +245,7 @@ export default function PublicCompanyProfile({
                   <button
                     type="button"
                     key={m.id}
-                    onClick={() => onSelectMission && onSelectMission(m)}
+                    onClick={() => onSelectMission?.(m)}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: 14,
                       padding: '14px 16px', borderRadius: 12,

@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { getRecurrenceLevel, getRecurrenceMessage } from '../../lib/recurrenceCheck'
 
 const RECURRENCE_STYLES = {
