@@ -287,6 +287,17 @@ a { text-decoration: none; color: inherit; }
 .card-mission.is-urgent  { border-left-color: var(--am); }
 .card-mission.is-accepted { border-left-color: var(--gr); }
 
+/* Grille de filtres missions — 2 colonnes desktop, 1 colonne mobile */
+.mission-filters-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+@media (max-width: 480px) {
+  .mission-filters-row { grid-template-columns: 1fr; }
+}
+
 /* Carte feature — top accent au hover (landing) */
 .card-feature {
   background: var(--wh2); border: 1px solid var(--g2);
