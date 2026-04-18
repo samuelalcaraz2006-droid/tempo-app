@@ -60,6 +60,8 @@ function SkillsInput({ value, onChange, sector }) {
       <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>
         Compétences / qualifications attendues
       </label>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: proxy-focus sur input enfant */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: input enfant reçoit le focus clavier natif */}
       <div
         className="input"
         style={{

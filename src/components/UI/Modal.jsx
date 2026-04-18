@@ -57,6 +57,7 @@ export default function Modal({
         animation: 'backdropIn .15s ease-out',
       }}
       onClick={(e) => { if (e.target === e.currentTarget && closable && !loading) onClose() }}
+      onKeyDown={(e) => { if (e.key === 'Escape' && closable && !loading) onClose() }}
     >
       <div
         ref={contentRef}

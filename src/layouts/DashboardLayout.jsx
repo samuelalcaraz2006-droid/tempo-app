@@ -112,17 +112,20 @@ export default function DashboardLayout({
           ><Menu size={20} /></button>
 
           {/* Brand mobile only (sidebar masquée) */}
-          <div
+          <button
+            type="button"
             className="show-mobile"
+            onClick={onLogoClick}
+            disabled={!onLogoClick}
             style={{
               display: 'none', alignItems: 'center', gap: 8,
               cursor: onLogoClick ? 'pointer' : 'default',
               marginRight: 'auto', flexShrink: 0,
+              background: 'none', border: 'none', padding: 0,
             }}
-            onClick={onLogoClick}
           >
             <TempoLogoA size={20} dark={false} />
-          </div>
+          </button>
 
           {headerExtra}
 

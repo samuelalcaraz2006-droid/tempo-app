@@ -28,13 +28,19 @@ export default function WorkerCompanyProfile({ company, companyMissions, mission
       <div style={{ fontSize:15, fontWeight:600, marginBottom:10 }}>Missions ouvertes</div>
       {companyMissions.length === 0 ? (
         <div style={{ textAlign:'center', padding:30, color:'var(--g4)', fontSize:13 }}>Aucune mission ouverte</div>
-      ) : companyMissions.map(m => (
-        <div key={m.id} className="card-mission" style={{ padding:14, marginBottom:8 }}
-          onClick={() => onSelectMission(missions.find(fm => fm.id === m.id) || m)}>
-          <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>{m.title}</div>
-          <div style={{ fontSize:12, color:'var(--g4)' }}>{m.city} · {m.hourly_rate}€/h · {formatDate(m.start_date)}</div>
-        </div>
-      ))}
+      ) : companyMissions.map(m => {
+        const handle = () => onSelectMission(missions.find(fm => fm.id === m.id) || m)
+        return (
+          <div key={m.id} className="card-mission" style={{ padding:14, marginBottom:8 }}
+            onClick={handle}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handle() } }}
+            role="button"
+            tabIndex={0}>
+            <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>{m.title}</div>
+            <div style={{ fontSize:12, color:'var(--g4)' }}>{m.city} · {m.hourly_rate}€/h · {formatDate(m.start_date)}</div>
+          </div>
+        )
+      })}
     </div>
   )
 }
