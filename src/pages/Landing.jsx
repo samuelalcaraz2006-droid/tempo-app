@@ -109,16 +109,16 @@ function Navbar({ onNavigate }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 30 }} className="nav-desktop">
           {navItems.map(([id, label]) => (
-            <button key={id} onClick={() => scrollToId(id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,.75)', fontSize: 14, fontWeight: 600 }}>
+            <button type="button" key={id} onClick={() => scrollToId(id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,.75)', fontSize: 14, fontWeight: 600 }}>
               {label}
             </button>
           ))}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button className="btn-ghost nav-desktop-cta" onClick={() => onNavigate('auth')} style={{ fontSize: 14, padding: '9px 20px' }}>Connexion</button>
-          <button className="btn-primary nav-desktop-cta" onClick={() => onNavigate('auth')} style={{ fontSize: 14, padding: '9px 20px' }}>Demarrer <ArrowRight size={14} /></button>
-          <button aria-label="Menu mobile" onClick={() => setMobileOpen(o => !o)} style={{ background: 'none', border: 'none', color: '#fff', display: 'none', cursor:'pointer', padding:8 }} className="nav-mobile-btn">
+          <button type="button" className="btn-ghost nav-desktop-cta" onClick={() => onNavigate('auth')} style={{ fontSize: 14, padding: '9px 20px' }}>Connexion</button>
+          <button type="button" className="btn-primary nav-desktop-cta" onClick={() => onNavigate('auth')} style={{ fontSize: 14, padding: '9px 20px' }}>Demarrer <ArrowRight size={14} /></button>
+          <button type="button" aria-label="Menu mobile" onClick={() => setMobileOpen(o => !o)} style={{ background: 'none', border: 'none', color: '#fff', display: 'none', cursor:'pointer', padding:8 }} className="nav-mobile-btn">
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
@@ -128,7 +128,7 @@ function Navbar({ onNavigate }) {
         {mobileOpen && (
           <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} style={{ background: 'rgba(13,17,23,.97)', borderTop: '1px solid rgba(255,255,255,.08)', padding: '16px 24px 24px' }}>
             {navItems.map(([id, label]) => (
-              <button key={id} onClick={() => scrollToId(id)} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 0', background: 'none', border: 'none', color: 'rgba(255,255,255,.85)', fontSize: 15, borderBottom: '1px solid rgba(255,255,255,.06)' }}>
+              <button type="button" key={id} onClick={() => scrollToId(id)} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 0', background: 'none', border: 'none', color: 'rgba(255,255,255,.85)', fontSize: 15, borderBottom: '1px solid rgba(255,255,255,.06)' }}>
                 {label}
               </button>
             ))}
@@ -230,8 +230,8 @@ export default function Landing({ onNavigate }) {
             </motion.p>
 
             <motion.div variants={fadeUp} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 48 }}>
-              <button className="btn-primary" onClick={() => onNavigate('auth')} style={{ fontSize: 15, padding: '14px 28px' }}>Je suis une entreprise <ArrowRight size={16} /></button>
-              <button className="btn-ghost" onClick={() => onNavigate('auth')} style={{ fontSize: 15, padding: '14px 28px' }}>Je cherche des missions</button>
+              <button type="button" className="btn-primary" onClick={() => onNavigate('auth')} style={{ fontSize: 15, padding: '14px 28px' }}>Je suis une entreprise <ArrowRight size={16} /></button>
+              <button type="button" className="btn-ghost" onClick={() => onNavigate('auth')} style={{ fontSize: 15, padding: '14px 28px' }}>Je cherche des missions</button>
             </motion.div>
 
             <motion.div variants={staggerFast} style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
@@ -285,7 +285,7 @@ export default function Landing({ onNavigate }) {
                 { id: 'company', label: 'Entreprise', Icon: Building2 },
                 { id: 'worker', label: 'Travailleur', Icon: UserCheck },
               ].map(({ id, label, Icon }) => (
-                <button key={id} onClick={() => setActiveTab(id)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', borderRadius: 50, border: 'none', fontSize: 14, fontWeight: 700, background: activeTab === id ? 'var(--brand)' : 'transparent', color: activeTab === id ? '#fff' : 'var(--g5)', transition: 'background .2s, color .2s' }}>
+                <button type="button" key={id} onClick={() => setActiveTab(id)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', borderRadius: 50, border: 'none', fontSize: 14, fontWeight: 700, background: activeTab === id ? 'var(--brand)' : 'transparent', color: activeTab === id ? '#fff' : 'var(--g5)', transition: 'background .2s, color .2s' }}>
                   <Icon size={15} /> {label}
                 </button>
               ))}
@@ -390,7 +390,7 @@ export default function Landing({ onNavigate }) {
           <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger}>
             {faqs.map((f, i) => (
               <motion.div key={i} variants={fadeUp} style={{ borderBottom: '1px solid var(--g2)', overflow: 'hidden' }}>
-                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 0', background: 'none', border: 'none', textAlign: 'left' }}>
+                <button type="button" onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 0', background: 'none', border: 'none', textAlign: 'left' }}>
                   <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--bk)', paddingRight: 16 }}>{f.q}</span>
                   {openFaq === i ? <ChevronUp size={18} color="var(--bl)" /> : <ChevronDown size={18} color="var(--g4)" />}
                 </button>
@@ -413,8 +413,8 @@ export default function Landing({ onNavigate }) {
             <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: '#fff', lineHeight: 1.05, marginBottom: 16, letterSpacing: '-0.03em' }}>Prêt à <span className="font-serif-italic" style={{ color: 'var(--brand-xl)' }}>remplacer</span> vos cycles intérim ?</motion.h2>
             <motion.p variants={fadeUp} style={{ fontSize: 17, color: 'rgba(255,255,255,0.85)', marginBottom: 40, lineHeight: 1.7 }}>Passez en mode execution on-demand avec TEMPO.</motion.p>
             <motion.div variants={fadeUp} style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button className="btn-dark" onClick={() => onNavigate('auth')} style={{ padding: '13px 24px' }}>Demarrer entreprise</button>
-              <button className="btn-ghost" onClick={() => onNavigate('auth')} style={{ padding: '13px 24px', borderColor: 'rgba(255,255,255,.35)' }}>Demarrer travailleur</button>
+              <button type="button" className="btn-dark" onClick={() => onNavigate('auth')} style={{ padding: '13px 24px' }}>Demarrer entreprise</button>
+              <button type="button" className="btn-ghost" onClick={() => onNavigate('auth')} style={{ padding: '13px 24px', borderColor: 'rgba(255,255,255,.35)' }}>Demarrer travailleur</button>
             </motion.div>
             <motion.div variants={fadeUp} style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 28, flexWrap: 'wrap' }}>
               {['Inscription rapide', 'Execution tracee', 'Support 7j/7'].map(l => (

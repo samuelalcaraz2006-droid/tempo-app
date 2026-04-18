@@ -76,7 +76,7 @@ export default function Modal({
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div id={titleId} style={{ fontSize: 17, fontWeight: 600 }}>{title}</div>
             {closable && !loading && (
-              <button
+              <button type="button"
                 onClick={onClose}
                 aria-label="Fermer"
                 style={{ background: 'none', border: 'none', color: 'var(--g4)', cursor: 'pointer', padding: 4, borderRadius: 6, display: 'flex' }}

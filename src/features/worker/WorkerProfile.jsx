@@ -82,7 +82,7 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
             {(profileForm.skills || worker?.skills || []).map(s => (
               <span key={s} className="tag" style={{ display:'inline-flex', alignItems:'center', gap:4 }}>
                 {s}
-                <button onClick={() => setProfileForm(f => ({ ...f, skills: (f.skills || worker?.skills || []).filter(sk => sk !== s) }))}
+                <button type="button" onClick={() => setProfileForm(f => ({ ...f, skills: (f.skills || worker?.skills || []).filter(sk => sk !== s) }))}
                   aria-label="Supprimer" style={{ background:'none', border:'none', cursor:'pointer', color:'var(--g4)', padding:0, lineHeight:1, display:'flex', alignItems:'center' }}><X size={10} /></button>
               </span>
             ))}
@@ -91,7 +91,7 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
             <input className="input" placeholder="Ajouter une competence..." value={newSkill} onChange={e => setNewSkill(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && newSkill.trim()) { setProfileForm(f => ({ ...f, skills: [...(f.skills || worker?.skills || []), newSkill.trim()] })); setNewSkill('') } }}
               style={{ flex:1 }} />
-            <button className="btn-secondary" style={{ padding:'8px 12px', fontSize:12 }}
+            <button type="button" className="btn-secondary" style={{ padding:'8px 12px', fontSize:12 }}
               onClick={() => { if (newSkill.trim()) { setProfileForm(f => ({ ...f, skills: [...(f.skills || worker?.skills || []), newSkill.trim()] })); setNewSkill('') } }}>+</button>
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
             {(profileForm.certifications || worker?.certifications || []).map(c => (
               <span key={typeof c === 'string' ? c : c.name} className="tag" style={{ background:'var(--bl-l)', color:'var(--bl-d)', borderColor:'#BFDBFE', display:'inline-flex', alignItems:'center', gap:4 }}>
                 {typeof c === 'string' ? c : c.name}
-                <button onClick={() => setProfileForm(f => ({ ...f, certifications: (f.certifications || worker?.certifications || []).filter(ck => (typeof ck === 'string' ? ck : ck.name) !== (typeof c === 'string' ? c : c.name)) }))}
+                <button type="button" onClick={() => setProfileForm(f => ({ ...f, certifications: (f.certifications || worker?.certifications || []).filter(ck => (typeof ck === 'string' ? ck : ck.name) !== (typeof c === 'string' ? c : c.name)) }))}
                   aria-label="Supprimer" style={{ background:'none', border:'none', cursor:'pointer', color:'var(--bl-d)', padding:0, lineHeight:1, display:'flex', alignItems:'center' }}><X size={10} /></button>
               </span>
             ))}
@@ -112,12 +112,12 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
             <input className="input" placeholder="Ajouter une certification..." value={newCert} onChange={e => setNewCert(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && newCert.trim()) { setProfileForm(f => ({ ...f, certifications: [...(f.certifications || worker?.certifications || []), newCert.trim()] })); setNewCert('') } }}
               style={{ flex:1 }} />
-            <button className="btn-secondary" style={{ padding:'8px 12px', fontSize:12 }}
+            <button type="button" className="btn-secondary" style={{ padding:'8px 12px', fontSize:12 }}
               onClick={() => { if (newCert.trim()) { setProfileForm(f => ({ ...f, certifications: [...(f.certifications || worker?.certifications || []), newCert.trim()] })); setNewCert('') } }}>+</button>
           </div>
         </div>
 
-        <button className="btn-primary" style={{ width:'100%', justifyContent:'center' }} onClick={() => onSave(profileForm)} disabled={savingProfile}>
+        <button type="button" className="btn-primary" style={{ width:'100%', justifyContent:'center' }} onClick={() => onSave(profileForm)} disabled={savingProfile}>
           {savingProfile ? 'Sauvegarde...' : 'Sauvegarder mon profil'}
         </button>
       </div>
@@ -146,10 +146,10 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
         </div>
       )}
 
-      <button className="btn-secondary" style={{ width:'100%', justifyContent:'center', marginBottom:12 }} onClick={() => onNavigate('calendrier')}>
+      <button type="button" className="btn-secondary" style={{ width:'100%', justifyContent:'center', marginBottom:12 }} onClick={() => onNavigate('calendrier')}>
         📅 Calendrier de disponibilite
       </button>
-      <button className="btn-secondary" style={{ width:'100%', justifyContent:'center', marginBottom:12 }} onClick={() => onNavigate('alertes')}>
+      <button type="button" className="btn-secondary" style={{ width:'100%', justifyContent:'center', marginBottom:12 }} onClick={() => onNavigate('alertes')}>
         <Bell size={16} style={{ verticalAlign:'middle', marginRight:4 }} /> Gerer mes alertes ({savedAlerts.length})
       </button>
 
@@ -163,7 +163,7 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
           ))}
         </div>
       </div>
-      <button className="btn-secondary" style={{ width:'100%', justifyContent:'center' }} onClick={onLogout}>Se deconnecter</button>
+      <button type="button" className="btn-secondary" style={{ width:'100%', justifyContent:'center' }} onClick={onLogout}>Se deconnecter</button>
     </div>
   )
 }

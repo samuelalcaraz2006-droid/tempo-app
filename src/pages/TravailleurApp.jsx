@@ -136,7 +136,7 @@ function KycUploadSection({ worker, userId, onUpdate, showToast }) {
                   style={{ display: 'none' }}
                   onChange={(e) => handleFile(doc, e.target.files?.[0])}
                 />
-                <button
+                <button type="button"
                   className="btn-secondary"
                   style={{ padding: '6px 12px', fontSize: 11, opacity: isUp ? 0.6 : 1 }}
                   disabled={isUp}
@@ -529,7 +529,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
                 </div>
               </div>
             ))}
-            <button
+            <button type="button"
               className="btn-primary"
               style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}
               onClick={() => {
@@ -624,7 +624,7 @@ export default function TravailleurApp({ onNavigate, onLogoClick }) {
                   {savedMissions.length} mission{savedMissions.length !== 1 ? 's' : ''}
                 </div>
               </div>
-              <button
+              <button type="button"
                 onClick={() => setScreen('missions')}
                 style={{ fontSize: 13, color: 'var(--g4)', background: 'none', border: 'none', cursor: 'pointer' }}
               >

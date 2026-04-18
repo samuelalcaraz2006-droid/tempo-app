@@ -169,7 +169,7 @@ export default function CompanyProfile({
           </div>
         </div>
 
-        <button
+        <button type="button"
           className="btn-primary"
           style={{ width: '100%', justifyContent: 'center' }}
           onClick={() => onSave(profileForm)}
@@ -212,7 +212,7 @@ export default function CompanyProfile({
         </div>
       )}
 
-      <button
+      <button type="button"
         className="btn-secondary"
         style={{ width: '100%', justifyContent: 'center' }}
         onClick={onLogout}

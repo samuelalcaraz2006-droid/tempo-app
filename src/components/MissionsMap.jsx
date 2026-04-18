@@ -76,11 +76,11 @@ export default function MissionsMap({ missions, onSelectMission, onApply, hasApp
                   <div style={{ fontSize: 11, color: 'var(--gr)', fontWeight: 600, marginBottom: 6 }}>{m.matchScore}% de compatibilité</div>
                 )}
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button onClick={() => onSelectMission(m)}
+                  <button type="button" onClick={() => onSelectMission(m)}
                     style={{ flex: 1, padding: '5px 8px', fontSize: 11, background: '#fff', border: '1px solid var(--g2)', borderRadius: 6, cursor: 'pointer' }}>
                     Détails
                   </button>
-                  <button onClick={() => onApply(m)}
+                  <button type="button" onClick={() => onApply(m)}
                     disabled={hasApplied(m.id)}
                     style={{ flex: 1, padding: '5px 8px', fontSize: 11, background: hasApplied(m.id) ? 'var(--g2)' : 'var(--brand)', color: hasApplied(m.id) ? 'var(--g4)' : '#fff', border: 'none', borderRadius: 6, cursor: hasApplied(m.id) ? 'default' : 'pointer' }}>
                     {hasApplied(m.id) ? '✓ Postulé' : 'Postuler'}

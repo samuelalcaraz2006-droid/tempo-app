@@ -6,7 +6,7 @@ export default function WorkerCompanyProfile({ company, companyMissions, mission
 
   return (
     <div>
-      <button onClick={onBack} style={{ display:'flex', alignItems:'center', gap:6, fontSize:13, color:'var(--g4)', background:'none', border:'none', cursor:'pointer', marginBottom:16 }}>‹ Retour</button>
+      <button type="button" onClick={onBack} style={{ display:'flex', alignItems:'center', gap:6, fontSize:13, color:'var(--g4)', background:'none', border:'none', cursor:'pointer', marginBottom:16 }}>‹ Retour</button>
       <div className="card" style={{ padding:20, marginBottom:16 }}>
         <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
           <div style={{ width:52, height:52, borderRadius:12, background:'var(--or)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:600 }}>

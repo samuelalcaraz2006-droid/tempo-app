@@ -50,7 +50,7 @@ export default function WorkerAttestation({ worker, userId, showToast, onUpdate 
           J'atteste sur l'honneur que les informations ci-dessus sont exactes. Je comprends que toute fausse declaration peut entrainer la suspension de mon compte.
         </span>
       </label>
-      <button className="btn-primary" style={{ width:'100%', justifyContent:'center' }} onClick={handleSign} disabled={!confirmed || loading}>
+      <button type="button" className="btn-primary" style={{ width:'100%', justifyContent:'center' }} onClick={handleSign} disabled={!confirmed || loading}>
         {loading ? 'Signature...' : 'Signer l\'attestation'}
       </button>
     </div>

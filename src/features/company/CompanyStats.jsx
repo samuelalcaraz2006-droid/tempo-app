@@ -107,8 +107,8 @@ export default function CompanyStats({
 
       {/* Export buttons */}
       <div style={{ display: 'flex', gap: 10 }}>
-        <button className="btn-secondary" onClick={onExportMissions} style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}><Download size={16} /> Exporter missions (CSV)</button>
-        <button className="btn-secondary" onClick={onExportInvoices} style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}><Download size={16} /> Exporter factures (CSV)</button>
+        <button type="button" className="btn-secondary" onClick={onExportMissions} style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}><Download size={16} /> Exporter missions (CSV)</button>
+        <button type="button" className="btn-secondary" onClick={onExportInvoices} style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}><Download size={16} /> Exporter factures (CSV)</button>
       </div>
     </div>
   )

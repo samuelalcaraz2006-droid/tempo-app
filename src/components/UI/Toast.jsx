@@ -25,7 +25,7 @@ export default function Toast({ toast, onDismiss }) {
       {isError ? <XCircle size={18} style={{ flexShrink: 0 }} /> : <CheckCircle size={18} style={{ flexShrink: 0 }} />}
       <span style={{ flex: 1 }}>{toast.msg}</span>
       {onDismiss && (
-        <button
+        <button type="button"
           onClick={onDismiss}
           aria-label="Fermer la notification"
           style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 2, display: 'flex', opacity: 0.7 }}

@@ -17,7 +17,7 @@ export default function EmptyState({
       <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--bk)', marginBottom: 6 }}>{title}</div>
       {description && <div style={{ fontSize: 13, color: 'var(--g4)', marginBottom: action ? 20 : 0, lineHeight: 1.5, maxWidth: 320, margin: '0 auto' }}>{description}</div>}
       {action && (
-        <button className="btn-primary" onClick={action.onClick} style={{ marginTop: 20 }}>
+        <button type="button" className="btn-primary" onClick={action.onClick} style={{ marginTop: 20 }}>
           {action.label}
         </button>
       )}

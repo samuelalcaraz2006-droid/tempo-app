@@ -26,7 +26,7 @@ export default function RatingModal({ rateeName, onSubmit, onClose, loading }) {
         <div style={{ fontSize:13, color:'var(--g4)', marginBottom:24 }}>Comment s'est passée la collaboration avec <strong>{rateeName}</strong> ?</div>
         <div role="group" aria-label="Note de 1 à 5 étoiles" style={{ display:'flex', gap:6, justifyContent:'center', marginBottom:8 }}>
           {[1,2,3,4,5].map(i => (
-            <button
+            <button type="button"
               key={i}
               aria-label={`${i} étoile${i > 1 ? 's' : ''} — ${STAR_LABELS[i]}`}
               aria-pressed={score === i}
@@ -54,8 +54,8 @@ export default function RatingModal({ rateeName, onSubmit, onClose, loading }) {
           onChange={e => setComment(e.target.value)}
         />
         <div style={{ display:'flex', gap:10 }}>
-          <button className="btn-secondary" style={{ flex:1, justifyContent:'center' }} onClick={onClose} disabled={loading}>Plus tard</button>
-          <button
+          <button type="button" className="btn-secondary" style={{ flex:1, justifyContent:'center' }} onClick={onClose} disabled={loading}>Plus tard</button>
+          <button type="button"
             className="btn-primary"
             style={{ flex:2, justifyContent:'center' }}
             disabled={!score || loading}

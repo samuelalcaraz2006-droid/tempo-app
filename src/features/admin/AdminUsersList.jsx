@@ -64,7 +64,7 @@ export default function AdminUsersList({ users, searchUser, setSearchUser, page,
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, fontSize: 13, color: 'var(--g4)' }}>
         <span>Page {page + 1} — {users.length} résultats</span>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button
+          <button type="button"
             className="btn-secondary"
             style={{ padding: '6px 14px', fontSize: 12 }}
             onClick={() => setPage(p => Math.max(0, p - 1))}
@@ -72,7 +72,7 @@ export default function AdminUsersList({ users, searchUser, setSearchUser, page,
           >
             ← Préc.
           </button>
-          <button
+          <button type="button"
             className="btn-secondary"
             style={{ padding: '6px 14px', fontSize: 12 }}
             onClick={() => setPage(p => p + 1)}

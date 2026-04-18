@@ -32,7 +32,7 @@ export default function MissionCard({ mission, applied, saved, applying, onApply
         </div>
         <div style={{ display:'flex', alignItems:'flex-start', gap:6, flexShrink:0 }}>
           {onToggleSave && (
-            <button
+            <button type="button"
               onClick={e => { e.stopPropagation(); onToggleSave(mission.id) }}
               aria-label={saved ? 'Retirer des favoris' : 'Sauvegarder'}
               style={{ background:'none', border:'none', cursor:'pointer', color: saved ? 'var(--or)' : 'var(--g3)', padding:0, lineHeight:1, transition:'color .15s', display:'flex', alignItems:'center' }}
@@ -56,7 +56,7 @@ export default function MissionCard({ mission, applied, saved, applying, onApply
           </span>
         </span>
         {onApply && (
-          <button
+          <button type="button"
             className={applied ? 'btn-secondary' : 'btn-primary'}
             style={{ padding:'6px 14px', fontSize:12 }}
             onClick={e => { e.stopPropagation(); onApply(mission) }}

@@ -38,13 +38,13 @@ export default function RgpdPanel({ userId, showToast }) {
       </div>
 
       <div style={{ display:'flex', gap:8, marginBottom:12 }}>
-        <button className="btn-secondary" style={{ flex:1, justifyContent:'center', fontSize:12 }} onClick={handleExport} disabled={exportLoading}>
+        <button type="button" className="btn-secondary" style={{ flex:1, justifyContent:'center', fontSize:12 }} onClick={handleExport} disabled={exportLoading}>
           {exportLoading ? 'Demande...' : '📥 Telecharger mes donnees'}
         </button>
       </div>
 
       {!showDeleteConfirm ? (
-        <button onClick={() => setShowDeleteConfirm(true)} style={{ width:'100%', padding:'8px', border:'1px solid var(--rd)', borderRadius:8, background:'transparent', color:'var(--rd)', fontSize:12, cursor:'pointer' }}>
+        <button type="button" onClick={() => setShowDeleteConfirm(true)} style={{ width:'100%', padding:'8px', border:'1px solid var(--rd)', borderRadius:8, background:'transparent', color:'var(--rd)', fontSize:12, cursor:'pointer' }}>
           Supprimer mon compte
         </button>
       ) : (
@@ -62,8 +62,8 @@ export default function RgpdPanel({ userId, showToast }) {
             style={{ marginBottom:8, fontSize:12 }}
           />
           <div style={{ display:'flex', gap:8 }}>
-            <button className="btn-secondary" style={{ flex:1, fontSize:12 }} onClick={() => setShowDeleteConfirm(false)}>Annuler</button>
-            <button onClick={handleDelete} disabled={deleteLoading} style={{ flex:1, padding:'8px', border:'none', borderRadius:8, background:'var(--rd)', color:'#fff', fontSize:12, fontWeight:600, cursor:'pointer' }}>
+            <button type="button" className="btn-secondary" style={{ flex:1, fontSize:12 }} onClick={() => setShowDeleteConfirm(false)}>Annuler</button>
+            <button type="button" onClick={handleDelete} disabled={deleteLoading} style={{ flex:1, padding:'8px', border:'none', borderRadius:8, background:'var(--rd)', color:'#fff', fontSize:12, fontWeight:600, cursor:'pointer' }}>
               {deleteLoading ? 'Suppression...' : 'Confirmer'}
             </button>
           </div>
