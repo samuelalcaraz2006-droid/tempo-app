@@ -50,7 +50,6 @@ export default function EntrepriseApp({ onLogoClick }) {
   const [chatTarget, setChatTarget] = useState(null)
   const [viewedWorker, setViewedWorker] = useState(null) // { workerId, applicationId?, matchScore? }
 
-  const unreadNotifsCount = (data.notifs || []).filter(n => !n.read_at).length
   const setF = (k, v) => setForm((f) => ({ ...f, [k]: v }))
 
   const data = useCompanyData(user?.id)
@@ -61,6 +60,8 @@ export default function EntrepriseApp({ onLogoClick }) {
     missions: data.missions,
     refreshRoleData,
   })
+
+  const unreadNotifsCount = (data.notifs || []).filter(n => !n.read_at).length
 
   const company = roleData
   const displayName = company?.name || profile?.email || '—'
