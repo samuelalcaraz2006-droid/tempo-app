@@ -2,6 +2,7 @@ import { Briefcase, Check, CheckCheck, ChevronLeft } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useChat } from '../../hooks/shared/useChat'
 import { getMissionById } from '../../lib/supabase'
+import LoadingState from '../../components/UI/LoadingState'
 
 const MISSION_STATUS = {
   open: { label: 'Ouverte', color: 'var(--gr-d)', bg: 'var(--gr-l)' },
@@ -243,7 +244,7 @@ export default function ChatView({ userId, partnerId, partnerName, contextMissio
         }}
       >
         {loading ? (
-          <div style={{ textAlign: 'center', padding: 20, color: 'var(--g4)', fontSize: 12 }}>Chargement...</div>
+          <LoadingState compact />
         ) : messages.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--g4)', fontSize: 13 }}>Aucun message — commencez la conversation</div>
         ) : (

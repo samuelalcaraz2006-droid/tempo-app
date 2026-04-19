@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Search, X, Menu, Map as MapIcon, Heart } from 'lucide-react'
 import MissionCard from '../shared/MissionCard'
 import EmptyState from '../../components/UI/EmptyState'
+import LoadingState from '../../components/UI/LoadingState'
 
 const MissionsMap = lazy(() => import('../../components/MissionsMap'))
 
@@ -63,7 +64,7 @@ export default function WorkerMissionsList({ filters, hasApplied, applying, onAp
 
       {/* Results */}
       {mapView ? (
-        <Suspense fallback={<div style={{ textAlign:'center', padding:40, color:'var(--g4)', fontSize:13 }}>Chargement de la carte...</div>}>
+        <Suspense fallback={<LoadingState label="Chargement de la carte" />}>
           <MissionsMap missions={filters.filteredMissions} onSelectMission={m => onNavigate('mission-detail', m)} onApply={m => onApply(m, hasApplied(m.id))} hasApplied={hasApplied} />
         </Suspense>
       ) : filters.filteredMissions.length === 0
