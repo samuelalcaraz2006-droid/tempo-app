@@ -112,8 +112,8 @@ export default function PublicWorkerProfile({
               background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)',
               cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit',
             }}>Candidats</button>
-            <span>›</span>
-            {worker.city && <><span style={{ textTransform: 'capitalize' }}>{worker.city}</span><span>›</span></>}
+            <span aria-hidden="true">›</span>
+            {worker.city && <><span style={{ textTransform: 'capitalize' }}>{worker.city}</span><span aria-hidden="true">›</span></>}
             <span style={{ color: '#fff' }}>{displayName}</span>
           </div>
 

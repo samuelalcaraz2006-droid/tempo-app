@@ -152,7 +152,7 @@ export const AuthProvider = ({ children }) => {
       await supabase.auth.signOut()
     } catch (err) {
       captureError(err, { source: 'AuthContext.logout' })
-      // Forcer le reset local meme si signOut echoue
+      // Forcer le reset local même si signOut echoue
       setUser(null)
       setProfile(null)
       setRoleData(null)

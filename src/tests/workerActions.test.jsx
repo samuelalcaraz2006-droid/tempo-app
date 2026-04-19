@@ -282,7 +282,7 @@ describe('useWorkerActions', () => {
     }))
     expect(updateMock).not.toHaveBeenCalledWith(expect.objectContaining({ hacked_field: 'evil' }))
     expect(updateMock).not.toHaveBeenCalledWith(expect.objectContaining({ admin: true }))
-    expect(helpers.showToast).toHaveBeenCalledWith('Profil mis a jour !')
+    expect(helpers.showToast).toHaveBeenCalledWith('Profil mis à jour !')
     expect(helpers.refreshRoleData).toHaveBeenCalled()
   })
 

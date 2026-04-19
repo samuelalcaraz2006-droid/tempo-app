@@ -301,7 +301,7 @@ export const completeMission = async (missionId) => {
 
 // ── Helpers messages (chat) ──────────────────
 // Retourne les conversations groupees par partenaire (un interlocuteur = une conversation,
-// quelle que soit la mission). Enrichit avec le nom du partenaire et le titre de la derniere mission.
+// quelle que soit la mission). Enrichit avec le nom du partenaire et le titre de la dernière mission.
 export const getConversations = async (userId) => {
   if (!userId) return { data: [], error: null }
   const { data: msgs, error } = await supabase
@@ -433,7 +433,7 @@ export const subscribeToMessages = (userId, onInsert, onUpdate) => {
 }
 
 // Canal broadcast realtime pour l'indicateur "est en train d'ecrire" entre deux utilisateurs.
-// Le nom de canal est canonicalise a partir de la paire triee, les deux cotes rejoignent la meme room.
+// Le nom de canal est canonicalise a partir de la paire triee, les deux cotes rejoignent la même room.
 // Retourne { sendTyping, unsubscribe }. onTyping est declenche uniquement pour les events du partenaire.
 export const subscribeToChatPresence = (userId, partnerId, onTyping) => {
   if (!userId || !partnerId) {

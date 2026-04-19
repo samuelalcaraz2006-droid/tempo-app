@@ -91,7 +91,7 @@ export function useWorkerActions(userId, { showToast, setApplications, addSigned
       captureError(error, { source: 'WorkerActions' })
       showToast?.(`Erreur lors de la sauvegarde : ${error.message || 'erreur inconnue'}`, 'error')
     } else {
-      showToast?.('Profil mis a jour !')
+      showToast?.('Profil mis à jour !')
       refreshRoleData?.()
     }
   }, [userId, showToast, refreshRoleData])
