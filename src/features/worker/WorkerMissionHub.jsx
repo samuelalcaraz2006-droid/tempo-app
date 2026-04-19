@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { T } from '../../design/tokens'
 import { Pill, Eyebrow, LiveDot } from '../../design/primitives'
 import LoadingState from '../../components/UI/LoadingState'
+import ConfirmDialog from '../../components/UI/ConfirmDialog'
 import { useMissionTimeEntries } from '../../hooks/worker/useMissionTimeEntries'
 import { formatDate } from '../../lib/formatters'
 import { getContract } from '../../lib/supabase'
@@ -86,6 +87,8 @@ export default function WorkerMissionHub({
     note: '',
   })
   const [submitting, setSubmitting] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(null) // entry.id or null
+  const [deleting, setDeleting] = useState(false)
 
   const canSubmit = useMemo(() => {
     return entries.some(e => e.status === 'draft')
@@ -147,12 +150,20 @@ export default function WorkerMissionHub({
       breakMinutes: entry.break_minutes || 0,
       note: entry.note || '',
     })
-    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (typeof window !== 'undefined') {
+      // Respecte prefers-reduced-motion pour les users avec vestibular disorder
+      const reduceMotion = typeof window.matchMedia === 'function'
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
+    }
   }
 
-  const handleDelete = async (id) => {
-    if (!confirm('Supprimer cette saisie ?')) return
-    const { error } = await remove(id)
+  const handleDeleteConfirmed = async () => {
+    if (!confirmDelete) return
+    setDeleting(true)
+    const { error } = await remove(confirmDelete)
+    setDeleting(false)
+    setConfirmDelete(null)
     if (error) { showToast?.('Erreur suppression', 'error'); return }
     showToast?.('Saisie supprimée', 'success')
   }
@@ -194,13 +205,13 @@ export default function WorkerMissionHub({
         <Eyebrow color="rgba(255,255,255,0.55)" style={{ marginBottom: 8 }}>
           Mission en cours · {companyName}
         </Eyebrow>
-        <h1 style={{
+        <h2 style={{
           margin: 0, fontSize: T.size.xxl, fontWeight: 800,
           lineHeight: 1.08, letterSpacing: '-0.022em',
           fontFamily: T.font.body, color: '#fff',
         }}>
           {mission.title}
-        </h1>
+        </h2>
         <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Pill variant="white">{mission.city || 'Lieu à préciser'}</Pill>
           {mission.hourly_rate && <Pill variant="white">{mission.hourly_rate} €/h</Pill>}
@@ -320,7 +331,7 @@ export default function WorkerMissionHub({
                 key={entry.id}
                 entry={entry}
                 onEdit={handleEdit}
-                onDelete={handleDelete}
+                onDelete={(id) => setConfirmDelete(id)}
               />
             ))}
           </div>
@@ -364,6 +375,18 @@ export default function WorkerMissionHub({
           ← Retour
         </button>
       )}
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Supprimer cette saisie ?"
+        description="Le brouillon sera définitivement retiré. Les saisies déjà validées ne peuvent pas être supprimées."
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        danger
+        loading={deleting}
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </div>
   )
 }
@@ -371,6 +394,7 @@ export default function WorkerMissionHub({
 // ── Sous-composants ─────────────────────────────────────────────
 
 function Field({ label, children, style }) {
+  // biome-ignore lint/a11y/noLabelWithoutControl: input passé via children, biome ne peut pas l'inférer
   return (
     <label style={{ display: 'block', ...style }}>
       <span style={{

@@ -346,15 +346,29 @@ function QuickActionsBar({ mission, onPick }) {
   )
 }
 
-function formatMissionStart(mission) {
-  if (!mission?.start_date) return 'à la date prévue'
+// Formate la date de début en phrase relative localisée.
+// Utilise Intl.DateTimeFormat pour respecter la locale de l'utilisateur
+// (fr = « mardi 03/05 », en = « Tuesday 03/05 »).
+function formatMissionStart(mission, locale = typeof navigator !== 'undefined' ? navigator.language : 'fr-FR') {
+  if (!mission?.start_date) {
+    return locale.startsWith('fr') ? 'à la date prévue' : 'as scheduled'
+  }
   const d = new Date(mission.start_date)
   const today = new Date()
   const tomorrow = new Date(today)
   tomorrow.setDate(today.getDate() + 1)
   const isoDay = d.toISOString().slice(0, 10)
-  if (isoDay === today.toISOString().slice(0, 10)) return 'aujourd\'hui'
-  if (isoDay === tomorrow.toISOString().slice(0, 10)) return 'demain'
-  const days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
-  return days[d.getDay()] + ' ' + String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0')
+  if (isoDay === today.toISOString().slice(0, 10)) {
+    return locale.startsWith('fr') ? 'aujourd\'hui' : 'today'
+  }
+  if (isoDay === tomorrow.toISOString().slice(0, 10)) {
+    return locale.startsWith('fr') ? 'demain' : 'tomorrow'
+  }
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      weekday: 'long', day: '2-digit', month: '2-digit',
+    }).format(d)
+  } catch {
+    return d.toLocaleDateString(locale)
+  }
 }

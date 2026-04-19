@@ -59,16 +59,18 @@ export default function PWAInstallPrompt() {
     }
     window.addEventListener('beforeinstallprompt', handler)
 
-    // iOS Safari : pas d'event natif, on affiche après 10 s d'usage
+    // iOS Safari : pas d'event natif, on affiche après 10 s d'usage.
+    // Timer toujours cleanup au unmount (même si iOS et Chrome Android
+    // s'excluent via useragent, defensive pour éviter un re-set tardif).
+    let iosTimer = null
     if (isIOSSafari()) {
-      const timer = setTimeout(() => setVisible(true), 10000)
-      return () => {
-        clearTimeout(timer)
-        window.removeEventListener('beforeinstallprompt', handler)
-      }
+      iosTimer = setTimeout(() => setVisible(true), 10000)
     }
 
-    return () => window.removeEventListener('beforeinstallprompt', handler)
+    return () => {
+      if (iosTimer) clearTimeout(iosTimer)
+      window.removeEventListener('beforeinstallprompt', handler)
+    }
   }, [])
 
   const handleInstall = async () => {
@@ -145,9 +147,8 @@ export default function PWAInstallPrompt() {
   }
 
   return (
-    <div
-      role="region"
-      aria-label="Installation de l'application"
+    <section
+      aria-label={t('pwa_install_title')}
       style={{
         position: 'fixed', bottom: 20, left: 20, right: 20,
         zIndex: T.z.toast, maxWidth: 440, margin: '0 auto',
@@ -190,6 +191,6 @@ export default function PWAInstallPrompt() {
           {t('pwa_install_cta')}
         </button>
       </div>
-    </div>
+    </section>
   )
 }
