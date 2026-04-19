@@ -12,6 +12,19 @@ import {
 
 const SECTORS = ['logistique', 'btp', 'industrie', 'hotellerie', 'proprete']
 
+// Bump quand on change la structure de `form` (nouveau champ, rename,
+// type changé) → invalide les anciens brouillons au lieu d'injecter
+// des données corrompues.
+const DRAFT_VERSION = 1
+// Whitelist des clés autorisées à être restaurées — garde-fou
+// supplémentaire même si `version` matche.
+const DRAFT_ALLOWED_KEYS = new Set([
+  'title', 'objet_prestation', 'motif_recours', 'sector',
+  'pricing_mode', 'forfait_total', 'hourly_rate', 'total_hours',
+  'start_date', 'city', 'address', 'description',
+  'required_skills', 'required_certs', 'urgency', 'legal_confirmed',
+])
+
 // ─────────────────────────────────────────────────────────────
 // Champ compétences en mode « chips » : on tape une entrée,
 // Entrée ou virgule → chip. Backspace sur champ vide → retire le
@@ -264,12 +277,16 @@ export default function CompanyPublishMission({
   // ── Auto-save brouillon localStorage ────────────────────
   // Sauvegarde après 1.5s d'inactivité. Permet de reprendre une
   // saisie interrompue (navigation, crash tabs, fermeture mobile).
+  // Le `version` protège contre les changements de schéma : si on
+  // ajoute/renomme un champ dans `form`, on invalide les vieux brouillons
+  // plutôt que d'injecter des données corrompues via setF().
   useEffect(() => {
     if (published) return
     if (!form.title && !form.objet_prestation && !form.city) return
     const timer = setTimeout(() => {
       try {
         localStorage.setItem('tempo_mission_draft', JSON.stringify({
+          version: DRAFT_VERSION,
           savedAt: Date.now(),
           form,
         }))
@@ -291,9 +308,19 @@ export default function CompanyPublishMission({
     try {
       const raw = localStorage.getItem('tempo_mission_draft')
       if (!raw) return
-      const { form: saved } = JSON.parse(raw)
+      const parsed = JSON.parse(raw)
+      // Version mismatch → brouillon obsolète, on le jette.
+      if (parsed?.version !== DRAFT_VERSION) {
+        localStorage.removeItem('tempo_mission_draft')
+        return
+      }
+      const saved = parsed.form
       if (!saved) return
-      Object.keys(saved).forEach(k => setF(k, saved[k]))
+      // N'appliquer QUE les clés whitelistées — évite d'injecter des
+      // champs inconnus ou corrompus via setF().
+      Object.keys(saved).forEach(k => {
+        if (DRAFT_ALLOWED_KEYS.has(k)) setF(k, saved[k])
+      })
       setDraftRestored(true)
       setTimeout(() => setDraftRestored(false), 3000)
     } catch {}
@@ -303,7 +330,9 @@ export default function CompanyPublishMission({
     try {
       const raw = localStorage.getItem('tempo_mission_draft')
       if (!raw) return false
-      const { savedAt, form: saved } = JSON.parse(raw)
+      const parsed = JSON.parse(raw)
+      if (parsed?.version !== DRAFT_VERSION) return false
+      const { savedAt, form: saved } = parsed
       if (!saved?.title && !saved?.objet_prestation) return false
       // Brouillon expire après 7 jours
       return savedAt && (Date.now() - savedAt) < 7 * 24 * 60 * 60 * 1000

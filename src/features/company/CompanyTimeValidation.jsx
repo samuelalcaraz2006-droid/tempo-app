@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { T } from '../../design/tokens'
 import { Pill, Eyebrow } from '../../design/primitives'
 import LoadingState from '../../components/UI/LoadingState'
+import ConfirmDialog from '../../components/UI/ConfirmDialog'
 import {
   getTimeEntries,
   validateTimeEntries,
@@ -36,6 +37,7 @@ export default function CompanyTimeValidation({ companyId, showToast }) {
   const [actionLoadingContract, setActionLoadingContract] = useState(null)
   const [disputeModal, setDisputeModal] = useState(null) // { contractId, workerName }
   const [disputeNote, setDisputeNote] = useState('')
+  const [validateConfirm, setValidateConfirm] = useState(null) // contractId or null
 
   const load = async () => {
     if (!companyId) { setLoading(false); return }
@@ -84,11 +86,13 @@ export default function CompanyTimeValidation({ companyId, showToast }) {
     )
   }, [entries])
 
-  const handleValidate = async (contractId) => {
-    if (!confirm('Valider toutes les heures soumises pour ce contrat ?')) return
+  const handleValidateConfirmed = async () => {
+    const contractId = validateConfirm
+    if (!contractId) return
     setActionLoadingContract(contractId)
     const { error } = await validateTimeEntries(contractId)
     setActionLoadingContract(null)
+    setValidateConfirm(null)
     if (error) {
       showToast?.('Erreur lors de la validation', 'error')
       return
@@ -123,7 +127,7 @@ export default function CompanyTimeValidation({ companyId, showToast }) {
     <div>
       <div style={{ marginBottom: T.space[6] }}>
         <Eyebrow style={{ marginBottom: 8 }}>Heures à valider</Eyebrow>
-        <h1 style={{
+        <h2 style={{
           margin: 0, fontSize: T.size.xxl, fontWeight: 800,
           letterSpacing: '-0.022em', color: T.color.ink,
           lineHeight: 1.08,
@@ -132,7 +136,7 @@ export default function CompanyTimeValidation({ companyId, showToast }) {
             ? <>Aucune heure <span className="font-serif-italic" style={{ color: T.color.brand }}>à valider</span>.</>
             : <>{grouped.length} contrat{grouped.length > 1 ? 's' : ''} <span className="font-serif-italic" style={{ color: T.color.brand }}>en attente</span>.</>
           }
-        </h1>
+        </h2>
         {grouped.length > 0 && (
           <div style={{ marginTop: 8, fontSize: T.size.base, color: T.color.g5 }}>
             Validation sous 7 jours ou acceptation tacite automatique (L.3171-4).
@@ -157,7 +161,7 @@ export default function CompanyTimeValidation({ companyId, showToast }) {
               key={group.contractId}
               group={group}
               disabled={actionLoadingContract === group.contractId}
-              onValidate={handleValidate}
+              onValidate={(cid) => setValidateConfirm(cid)}
               onDispute={openDispute}
             />
           ))}
@@ -221,6 +225,17 @@ export default function CompanyTimeValidation({ companyId, showToast }) {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!validateConfirm}
+        title="Valider ces heures ?"
+        description="Les heures seront figées et servent de base à la facturation. Cette action est définitive."
+        confirmLabel="Valider"
+        cancelLabel="Annuler"
+        loading={actionLoadingContract === validateConfirm}
+        onConfirm={handleValidateConfirmed}
+        onCancel={() => setValidateConfirm(null)}
+      />
     </div>
   )
 }

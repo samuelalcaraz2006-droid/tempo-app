@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   getTimeEntries,
   createTimeEntry,
@@ -26,10 +26,19 @@ export function useMissionTimeEntries(workerId, { contractId } = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  // Guard contre les races : si workerId ou contractId change pendant
+  // un fetch en cours, la réponse obsolète ne doit pas écraser le state.
+  // On stocke la clé de scope courante dans un ref et on compare au retour.
+  const scopeKey = `${workerId || ''}::${contractId || ''}`
+  const latestScope = useRef(scopeKey)
+
   const refresh = useCallback(async () => {
     if (!workerId) { setLoading(false); return }
+    latestScope.current = scopeKey
     setLoading(true)
     const { data, error: err } = await getTimeEntries({ workerId, contractId })
+    // Si le scope a changé pendant le fetch, ignorer la réponse.
+    if (latestScope.current !== scopeKey) return
     if (err) {
       setError(err)
       captureError(err, { source: 'useMissionTimeEntries.refresh' })
@@ -38,9 +47,14 @@ export function useMissionTimeEntries(workerId, { contractId } = {}) {
       setError(null)
     }
     setLoading(false)
-  }, [workerId, contractId])
+  }, [workerId, contractId, scopeKey])
 
-  useEffect(() => { refresh() }, [refresh])
+  useEffect(() => {
+    let cancelled = false
+    refresh().catch(() => { /* handled in refresh */ })
+    return () => { cancelled = true }
+    // refresh dépend déjà de workerId + contractId
+  }, [refresh])
 
   const create = useCallback(async (payload) => {
     const { data, error: err } = await createTimeEntry(payload)
