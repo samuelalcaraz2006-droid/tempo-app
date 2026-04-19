@@ -340,7 +340,7 @@ export default function TravailleurApp({ onNavigate: _onNavigate, onLogoClick })
             <path d="M2 1.5L10 6L2 10.5Z" fill="white" />
           </svg>
         </div>
-        <div style={{ fontSize: 13, color: 'var(--g4)' }}>Chargement...</div>
+        <div style={{ fontSize: 13, color: 'var(--g4)' }}>Chargement…</div>
       </div>
     )
 

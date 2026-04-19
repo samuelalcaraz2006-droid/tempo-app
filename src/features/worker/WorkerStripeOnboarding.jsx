@@ -76,7 +76,7 @@ export default function WorkerStripeOnboarding({ worker, showToast }) {
 
       <div style={{ display:'flex', gap:8 }}>
         <button type="button" className="btn-primary" style={{ flex:1, justifyContent:'center', fontSize:13 }} onClick={handleSetup} disabled={loading}>
-          {loading ? 'Chargement...' : status === 'pending' ? 'Compléter la configuration' : 'Configurer mes paiements'}
+          {loading ? 'Chargement…' : status === 'pending' ? 'Compléter la configuration' : 'Configurer mes paiements'}
         </button>
         {status === 'pending' && (
           <button type="button" className="btn-secondary" style={{ fontSize:12 }} onClick={checkStatus}>

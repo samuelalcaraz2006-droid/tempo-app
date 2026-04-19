@@ -206,7 +206,7 @@ export default function AdminApp({ onLogoClick }) {
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: 40, color: 'var(--g4)' }}>Chargement...</div>
+          <div style={{ textAlign: 'center', padding: 40, color: 'var(--g4)' }}>Chargement…</div>
         ) : (
           <>
             {tab === 'stats' && <AdminStats stats={stats} />}

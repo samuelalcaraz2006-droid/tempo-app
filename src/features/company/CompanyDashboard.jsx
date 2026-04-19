@@ -5,6 +5,7 @@ import TopBarA from '../../design/TopBar'
 import { T } from '../../design/tokens'
 import { Pill, LiveDot, KpiCard, Eyebrow, Avatar, GridBg } from '../../design/primitives'
 import { getMissionApplications } from '../../lib/supabase'
+import LoadingState from '../../components/UI/LoadingState'
 
 // Helpers ─────────────────────────────────────────────────────
 
@@ -327,7 +328,7 @@ function MissionEnCoursCard({ mission, candidates, loading, onLoadCandidates, on
       {/* Candidate rows */}
       <div style={{ padding: '8px 12px 12px' }}>
         {loading && (
-          <div style={{ padding: '18px 14px', color: T.color.g5, fontSize: 13 }}>Chargement des candidats…</div>
+          <LoadingState label="Chargement des candidats" compact />
         )}
         {!loading && candidates.length === 0 && (
           <div style={{ padding: '18px 14px', color: T.color.g5, fontSize: 13 }}>
