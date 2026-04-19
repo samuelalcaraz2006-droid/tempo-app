@@ -3,6 +3,7 @@ import { T } from '../../design/tokens'
 import { Pill, Eyebrow, Avatar, GridBg } from '../../design/primitives'
 import { getPublicCompanyProfile } from '../../lib/supabase'
 import { formatDate, SECTOR_LABELS } from '../../lib/formatters'
+import LoadingState from '../../components/UI/LoadingState'
 import {
   companyBadges,
   companyAvgPaymentDelay,
@@ -36,13 +37,8 @@ export default function PublicCompanyProfile({
     return () => { cancelled = true }
   }, [companyId])
 
-  if (loading) {
-    return (
-      <div style={{ padding: '80px 40px', textAlign: 'center', color: T.color.g5 }}>
-        Chargement du profil…
-      </div>
-    )
-  }
+  if (loading) return <LoadingState label="Chargement du profil" />
+
   if (!data?.company) {
     return (
       <div style={{ padding: '80px 40px', textAlign: 'center' }}>

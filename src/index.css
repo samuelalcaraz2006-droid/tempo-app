@@ -508,6 +508,11 @@ a { text-decoration: none; color: inherit; }
 }
 .pulse { animation: pulse 2s infinite; }
 
+/* Spinner circulaire — utilisé par src/components/UI/LoadingState.jsx */
+@keyframes tempo-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Animated gradient background (hero) */
 @keyframes gradientShift {
   0%   { transform: translate(0, 0) scale(1); }

@@ -3,6 +3,7 @@ import { T } from '../../design/tokens'
 import { Pill, Eyebrow, Avatar, AvatarStack, GridBg } from '../../design/primitives'
 import { getPublicWorkerProfile } from '../../lib/supabase'
 import { formatDate, SECTOR_LABELS } from '../../lib/formatters'
+import LoadingState from '../../components/UI/LoadingState'
 import {
   workerBadges,
   workerReturnRate,
@@ -43,13 +44,8 @@ export default function PublicWorkerProfile({
     return () => { cancelled = true }
   }, [workerId, viewerCompanyId])
 
-  if (loading) {
-    return (
-      <div style={{ padding: '80px 40px', textAlign: 'center', color: T.color.g5 }}>
-        Chargement du profil…
-      </div>
-    )
-  }
+  if (loading) return <LoadingState label="Chargement du profil" />
+
   if (!data?.worker) {
     return (
       <div style={{ padding: '80px 40px', textAlign: 'center' }}>
