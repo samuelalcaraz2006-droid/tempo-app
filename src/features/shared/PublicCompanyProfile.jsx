@@ -121,14 +121,14 @@ export default function PublicCompanyProfile({
                     Profil · Entreprise
                   </Eyebrow>
                   <h1 style={{
-                    margin: 0, fontSize: 48, fontWeight: 800, lineHeight: 1.0,
+                    margin: 0, fontSize: T.size.display, fontWeight: 800, lineHeight: 1.0,
                     color: '#fff', letterSpacing: '-0.03em', fontFamily: T.font.body,
                   }}>
                     {companyName}
                     <br />
                     <span className="serif" style={{
                       fontFamily: T.font.serif, fontStyle: 'italic',
-                      fontWeight: 400, color: T.color.brandXL, fontSize: 32,
+                      fontWeight: 400, color: T.color.brandXL, fontSize: T.size.xxl,
                     }}>{tagline}</span>
                   </h1>
                 </div>
@@ -156,7 +156,7 @@ export default function PublicCompanyProfile({
                 fontFamily: T.font.body, letterSpacing: '-0.035em', lineHeight: 1,
               }}>
                 {openMissions.length}
-                <span style={{ color: T.color.brandXL, fontSize: 32 }}> en cours</span>
+                <span style={{ color: T.color.brandXL, fontSize: T.size.xxl }}> en cours</span>
               </div>
               <div style={{ marginTop: 10, fontSize: 12, color: 'rgba(255,255,255,0.65)' }}>
                 {openMissions.length > 0 ? 'Postulez dès maintenant.' : 'Aucune mission active pour l\'instant.'}
@@ -193,10 +193,10 @@ export default function PublicCompanyProfile({
               }}>
                 <Eyebrow style={{ fontSize: 10, letterSpacing: 1.4 }}>{l}</Eyebrow>
                 <div style={{
-                  marginTop: 8, fontSize: 24, fontWeight: 800, color: T.color.ink,
+                  marginTop: 8, fontSize: T.size.xl, fontWeight: 800, color: T.color.ink,
                   letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1,
                 }}>{v}</div>
-                {s && <div style={{ fontSize: 11, color: T.color.g5, marginTop: 5 }}>{s}</div>}
+                {s && <div style={{ fontSize: T.size.xs, color: T.color.g5, marginTop: 5 }}>{s}</div>}
               </div>
             ))}
           </div>
@@ -205,7 +205,7 @@ export default function PublicCompanyProfile({
           {company.description && (
             <section>
               <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>01 · À propos</Eyebrow>
-              <div className="a-card" style={{ padding: 22, marginTop: 8, fontSize: 14, lineHeight: 1.65, color: T.color.g8 }}>
+              <div className="a-card" style={{ padding: 22, marginTop: 8, fontSize: T.size.base, lineHeight: 1.65, color: T.color.g8 }}>
                 {company.description}
               </div>
             </section>
@@ -232,7 +232,7 @@ export default function PublicCompanyProfile({
             <section>
               <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>Missions en cours</Eyebrow>
               <h2 style={{
-                marginTop: 8, fontSize: 24, fontWeight: 700, color: T.color.ink,
+                marginTop: 8, fontSize: T.size.xl, fontWeight: 700, color: T.color.ink,
                 letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1.15,
               }}>
                 Postez votre candidature.
@@ -256,10 +256,10 @@ export default function PublicCompanyProfile({
                       width: 42, height: 42, borderRadius: 12,
                       background: '#fff', border: `1px solid ${T.color.g2}`,
                       display: 'grid', placeItems: 'center',
-                      color: T.color.brand, fontSize: 16, fontWeight: 800, fontFamily: T.font.mono, flexShrink: 0,
+                      color: T.color.brand, fontSize: T.size.md, fontWeight: 800, fontFamily: T.font.mono, flexShrink: 0,
                     }}>▤</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: T.color.ink }}>{m.title || 'Mission'}</div>
+                      <div style={{ fontSize: T.size.base, fontWeight: 700, color: T.color.ink }}>{m.title || 'Mission'}</div>
                       <div style={{ fontSize: 12, color: T.color.g5, marginTop: 3 }}>
                         {[m.sector, m.created_at ? `Publiée ${formatDate(m.created_at)}` : null].filter(Boolean).join(' · ')}
                       </div>
@@ -275,14 +275,14 @@ export default function PublicCompanyProfile({
           <section>
             <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>Avis récents</Eyebrow>
             <h2 style={{
-              marginTop: 8, fontSize: 24, fontWeight: 700, color: T.color.ink,
+              marginTop: 8, fontSize: T.size.xl, fontWeight: 700, color: T.color.ink,
               letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1.15,
             }}>
               Retours de prestataires.
             </h2>
             <div className="a-card" style={{ padding: 22, marginTop: 14 }}>
               {ratings.length === 0 ? (
-                <div style={{ fontSize: 12.5, color: T.color.g5 }}>Aucun avis pour l'instant.</div>
+                <div style={{ fontSize: T.size.sm, color: T.color.g5 }}>Aucun avis pour l'instant.</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                   {ratings.slice(0, 3).map((r, i) => {
@@ -295,15 +295,15 @@ export default function PublicCompanyProfile({
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                             <div style={{ fontSize: 13, fontWeight: 700, color: T.color.ink }}>{firstName} {lastInit}</div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <div style={{ fontSize: 11, color: T.color.amber, letterSpacing: 1 }}>
+                              <div style={{ fontSize: T.size.xs, color: T.color.amber, letterSpacing: 1 }}>
                                 {'★'.repeat(Math.round(r.score || 5))}
                               </div>
-                              <div style={{ fontSize: 11, color: T.color.g5, fontFamily: T.font.mono }}>
+                              <div style={{ fontSize: T.size.xs, color: T.color.g5, fontFamily: T.font.mono }}>
                                 {r.created_at ? formatDate(r.created_at) : ''}
                               </div>
                             </div>
                           </div>
-                          <div style={{ fontSize: 12.5, color: T.color.g8, marginTop: 4, lineHeight: 1.55 }}>
+                          <div style={{ fontSize: T.size.sm, color: T.color.g8, marginTop: 4, lineHeight: 1.55 }}>
                             {r.comment || 'Mission validée.'}
                           </div>
                         </div>

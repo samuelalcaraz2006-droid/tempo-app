@@ -202,7 +202,7 @@ export default function WorkerMissionDetail({
                     background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
                     color: isSaved ? T.color.brandXL : '#fff', cursor: 'pointer',
                     padding: '5px 10px', borderRadius: 999, display: 'inline-flex',
-                    alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600,
+                    alignItems: 'center', gap: 6, fontSize: T.size.xs, fontWeight: 600,
                     textTransform: 'uppercase', letterSpacing: 0.3,
                   }}
                 >
@@ -213,7 +213,7 @@ export default function WorkerMissionDetail({
 
               {/* H1 massif 2 lignes */}
               <h1 className="mission-detail-h1" style={{
-                margin: 0, fontSize: 60, fontWeight: 800, lineHeight: 0.96,
+                margin: 0, fontSize: T.size.hero, fontWeight: 800, lineHeight: 0.96,
                 color: '#fff', letterSpacing: '-0.04em', fontFamily: T.font.body,
                 maxWidth: 780,
               }}>
@@ -233,7 +233,7 @@ export default function WorkerMissionDetail({
                   style={{
                     width: 40, height: 40, borderRadius: 12,
                     background: '#fff', display: 'grid', placeItems: 'center',
-                    color: T.color.ink, fontSize: 16, fontWeight: 800,
+                    color: T.color.ink, fontSize: T.size.md, fontWeight: 800,
                     cursor: onViewCompany ? 'pointer' : 'default', flexShrink: 0,
                     border: 'none',
                   }}
@@ -243,7 +243,7 @@ export default function WorkerMissionDetail({
                     type="button"
                     onClick={() => onViewCompany?.(mission.company_id, mission.companies)}
                     style={{
-                      fontSize: 14, fontWeight: 700, color: '#fff',
+                      fontSize: T.size.base, fontWeight: 700, color: '#fff',
                       cursor: onViewCompany ? 'pointer' : 'default',
                       background: 'none', border: 'none', padding: 0,
                     }}
@@ -321,7 +321,7 @@ export default function WorkerMissionDetail({
                   marginTop: 10, fontSize: 28, fontWeight: 800, color: T.color.ink,
                   letterSpacing: '-0.03em', fontFamily: T.font.body, lineHeight: 1,
                 }}>{v}</div>
-                {s && <div style={{ fontSize: 11, color: T.color.g5, marginTop: 6 }}>{s}</div>}
+                {s && <div style={{ fontSize: T.size.xs, color: T.color.g5, marginTop: 6 }}>{s}</div>}
               </div>
             ))}
           </div>
@@ -353,7 +353,7 @@ export default function WorkerMissionDetail({
                 padding: '18px 20px', background: '#fff',
                 border: `1px solid ${T.color.g2}`, borderRadius: 12,
               }}>
-                <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
+                <div style={{ fontSize: T.size.sm, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
                   Compétences requises
                 </div>
                 {(mission.required_skills?.length ? mission.required_skills : ['Expérience secteur', 'Ponctualité', 'Autonomie']).map((it) => (
@@ -369,7 +369,7 @@ export default function WorkerMissionDetail({
                 padding: '18px 20px', background: '#fff',
                 border: `1px solid ${T.color.g2}`, borderRadius: 12,
               }}>
-                <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
+                <div style={{ fontSize: T.size.sm, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
                   Équipement fourni
                 </div>
                 {equipment.map((it) => (
@@ -430,7 +430,7 @@ export default function WorkerMissionDetail({
                       <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', marginTop: 3 }}>{s}</div>
                     </div>
                     <div style={{
-                      fontFamily: T.font.mono, fontSize: 14, fontWeight: 700,
+                      fontFamily: T.font.mono, fontSize: T.size.base, fontWeight: 700,
                       color: T.color.brandXL,
                     }}>{v}</div>
                   </div>
@@ -445,7 +445,7 @@ export default function WorkerMissionDetail({
               Avis récents · {companyName}
             </Eyebrow>
             {reviews.length === 0 ? (
-              <div style={{ marginTop: 14, fontSize: 12.5, color: T.color.g5 }}>
+              <div style={{ marginTop: 14, fontSize: T.size.sm, color: T.color.g5 }}>
                 Aucun avis pour l'instant.
               </div>
             ) : (
@@ -459,10 +459,10 @@ export default function WorkerMissionDetail({
                       <Avatar name={raterName} size={32} seed={i + 2} />
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink }}>
+                          <div style={{ fontSize: T.size.sm, fontWeight: 700, color: T.color.ink }}>
                             {firstName} {lastInit}
                           </div>
-                          <div style={{ fontSize: 11, color: T.color.amber, letterSpacing: 1 }}>
+                          <div style={{ fontSize: T.size.xs, color: T.color.amber, letterSpacing: 1 }}>
                             {'★'.repeat(Math.round(r.score || 5))}
                           </div>
                         </div>
