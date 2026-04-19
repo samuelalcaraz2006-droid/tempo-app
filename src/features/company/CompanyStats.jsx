@@ -43,7 +43,7 @@ export default function CompanyStats({
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+      <div className="grid-2-mobile-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
         {/* Spending over time */}
         <div className="card" style={{ padding: 16 }}>
           <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Dépenses mensuelles</div>

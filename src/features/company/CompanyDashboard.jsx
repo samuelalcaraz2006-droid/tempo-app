@@ -263,6 +263,11 @@ export default function CompanyDashboard({
           </div>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 900px) {
+          .company-dash-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+        }
+      `}</style>
     </>
   )
 }

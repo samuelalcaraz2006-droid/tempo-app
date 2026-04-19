@@ -397,6 +397,11 @@ export default function WorkerDashboard({
         </div>
         )}
       </div>
+      <style>{`
+        @media (max-width: 900px) {
+          .worker-dash-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+        }
+      `}</style>
     </>
   )
 }

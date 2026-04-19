@@ -51,8 +51,8 @@ export default function MissionCard({ mission, applied, saved, applying, onApply
         {(mission.required_skills || []).slice(0, 3).map(t => <span key={t} className="tag">{t}</span>)}
         {(mission.urgency === 'urgent' || mission.urgency === 'immediate') && <span className="badge badge-orange" style={{ fontSize:11 }}>Urgent</span>}
       </div>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <span style={{ fontSize:14, fontWeight:600 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:10, flexWrap:'wrap' }}>
+        <span style={{ fontSize:14, fontWeight:600, minWidth:0 }}>
           {mission.hourly_rate}€/h{' '}
           <span style={{ fontSize:12, color:'var(--g4)', fontWeight:400 }}>
             · {formatDate(mission.start_date)} {mission.total_hours ? `· ${mission.total_hours}h` : ''}

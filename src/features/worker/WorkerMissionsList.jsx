@@ -40,13 +40,13 @@ export default function WorkerMissionsList({ filters, hasApplied, applying, onAp
       {/* Advanced filters */}
       {filters.showFilters && (
         <div className="card" style={{ padding:16, marginBottom:14 }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
+          <div className="grid-2-mobile-1" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
             <div><label style={{ fontSize:11, fontWeight:500, color:'var(--g4)', marginBottom:3, display:'block' }}>Taux min (€)<input className="input" type="number" placeholder="0" value={filters.filterRateMin} onChange={e => filters.setFilterRateMin(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }} /></label></div>
             <div><label style={{ fontSize:11, fontWeight:500, color:'var(--g4)', marginBottom:3, display:'block' }}>Taux max (€)<input className="input" type="number" placeholder="100" value={filters.filterRateMax} onChange={e => filters.setFilterRateMax(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }} /></label></div>
             <div><label style={{ fontSize:11, fontWeight:500, color:'var(--g4)', marginBottom:3, display:'block' }}>Duree min (h)<input className="input" type="number" placeholder="0" value={filters.filterDurationMin} onChange={e => filters.setFilterDurationMin(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }} /></label></div>
             <div><label style={{ fontSize:11, fontWeight:500, color:'var(--g4)', marginBottom:3, display:'block' }}>Duree max (h)<input className="input" type="number" placeholder="500" value={filters.filterDurationMax} onChange={e => filters.setFilterDurationMax(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }} /></label></div>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
+          <div className="grid-2-mobile-1" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
             <div><label style={{ fontSize:11, fontWeight:500, color:'var(--g4)', marginBottom:3, display:'block' }}>Urgence<select className="input" value={filters.filterUrgency} onChange={e => filters.setFilterUrgency(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }}><option value="tous">Toutes</option><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="immediate">Immediat</option></select></label></div>
             <div><label style={{ fontSize:11, fontWeight:500, color:'var(--g4)', marginBottom:3, display:'block' }}>Periode<select className="input" value={filters.filterPeriod} onChange={e => filters.setFilterPeriod(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }}><option value="tous">Toutes</option><option value="semaine">Cette semaine</option><option value="mois">Ce mois</option><option value="3mois">3 prochains mois</option></select></label></div>
           </div>

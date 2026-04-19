@@ -416,7 +416,7 @@ export default function CompanyPublishMission({
             </div>
 
             {/* ─── Bloc 2 : Quand ─── */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div className="grid-2-mobile-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div>
                 <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Date de début *<input className="input" type="date" value={form.start_date} onChange={(e) => setF('start_date', e.target.value)} /></label>
               </div>
@@ -438,7 +438,7 @@ export default function CompanyPublishMission({
             </div>
 
             {/* ─── Bloc 4 : Qui ─── */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div className="grid-2-mobile-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div>
                 <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--g6)', marginBottom: 5, display: 'block' }}>Secteur<select className="input" value={form.sector} onChange={(e) => setF('sector', e.target.value)}>
                   {SECTORS.map((s) => <option key={s} value={s}>{SECTOR_LABELS[s]}</option>)}
@@ -491,7 +491,7 @@ export default function CompanyPublishMission({
               </div>
 
               {form.pricing_mode === 'forfait' ? (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <div className="grid-2-mobile-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
                     <label style={{ fontSize: 12, color: 'var(--g5)', marginBottom: 4, display: 'block' }}>Montant forfait *<input
                       className="input"
@@ -510,7 +510,7 @@ export default function CompanyPublishMission({
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <div className="grid-2-mobile-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
                     <label style={{ fontSize: 12, color: 'var(--g5)', marginBottom: 4, display: 'block' }}>Tarif horaire indicatif *<input
                       className="input"

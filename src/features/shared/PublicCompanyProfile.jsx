@@ -79,7 +79,7 @@ export default function PublicCompanyProfile({
   return (
     <>
       {/* HERO NAVY */}
-      <div style={{
+      <div className="public-profile-page-hero" style={{
         position: 'relative', background: T.color.navy,
         padding: '28px 48px 48px', overflow: 'hidden',
         borderBottom: '1px solid rgba(255,255,255,0.06)', color: '#fff',
@@ -93,7 +93,7 @@ export default function PublicCompanyProfile({
 
         <div style={{ position: 'relative', maxWidth: 1400, margin: '0 auto' }}>
           {/* Breadcrumb */}
-          <div style={{
+          <div className="public-profile-breadcrumb" style={{
             display: 'flex', alignItems: 'center', gap: 10, fontSize: 12,
             color: 'rgba(255,255,255,0.55)', fontFamily: T.font.mono, letterSpacing: 0.8,
           }}>
@@ -113,11 +113,12 @@ export default function PublicCompanyProfile({
             <div style={{ minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
                 {/* Logo carré blanc */}
-                <div style={{
+                <div className="public-profile-hero-logo" style={{
                   width: 72, height: 72, borderRadius: 16,
                   background: '#fff', display: 'grid', placeItems: 'center',
                   color: T.color.ink, fontSize: 28, fontWeight: 800,
                   boxShadow: '0 0 0 3px rgba(37,99,235,.3)',
+                  flexShrink: 0,
                 }}>{companyInitial}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Eyebrow color="rgba(255,255,255,0.5)" style={{ fontSize: 10.5, letterSpacing: 1.6 }}>
@@ -129,7 +130,7 @@ export default function PublicCompanyProfile({
                   }}>
                     {companyName}
                     <br />
-                    <span style={{
+                    <span className="serif" style={{
                       fontFamily: T.font.serif, fontStyle: 'italic',
                       fontWeight: 400, color: T.color.brandXL, fontSize: 32,
                     }}>{tagline}</span>
@@ -137,7 +138,7 @@ export default function PublicCompanyProfile({
                 </div>
               </div>
 
-              <div style={{ marginTop: 18, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <div className="hero-pills" style={{ marginTop: 18, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {ratingAvg && <Pill variant="white">★ {ratingAvg} · {ratingCount} avis</Pill>}
                 <Pill variant="white">{missionsPosted} mission{missionsPosted > 1 ? 's' : ''} publiée{missionsPosted > 1 ? 's' : ''}</Pill>
                 {sectorLabel && <Pill variant="white">{sectorLabel}</Pill>}
@@ -146,7 +147,7 @@ export default function PublicCompanyProfile({
             </div>
 
             {/* Carte contexte — CTA retour si depuis mission detail */}
-            <div style={{
+            <div className="public-profile-context-card" style={{
               padding: '22px 24px', borderRadius: 20,
               background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
               backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
@@ -154,7 +155,7 @@ export default function PublicCompanyProfile({
               <Eyebrow color="rgba(255,255,255,0.55)" style={{ fontSize: 10.5, letterSpacing: 1.6 }}>
                 Missions ouvertes
               </Eyebrow>
-              <div style={{
+              <div className="big-count" style={{
                 marginTop: 8, fontSize: 52, fontWeight: 800, color: '#fff',
                 fontFamily: T.font.body, letterSpacing: '-0.035em', lineHeight: 1,
               }}>
@@ -182,7 +183,7 @@ export default function PublicCompanyProfile({
         {/* Gauche */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
           {/* Key facts */}
-          <div className="a-card" style={{
+          <div className="a-card public-profile-keyfacts" style={{
             display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', overflow: 'hidden', padding: 0,
           }}>
             {[
@@ -383,8 +384,22 @@ export default function PublicCompanyProfile({
 
       <style>{`
         @media (max-width: 900px) {
-          .public-profile-hero { grid-template-columns: 1fr !important; }
-          .public-profile-grid { grid-template-columns: 1fr !important; }
+          .public-profile-hero { grid-template-columns: 1fr !important; gap: 24px !important; }
+          .public-profile-grid { grid-template-columns: 1fr !important; padding: 20px !important; gap: 20px !important; }
+        }
+        @media (max-width: 640px) {
+          .public-profile-page-hero { padding: 20px 16px 32px !important; }
+          .public-profile-hero h1 { font-size: 32px !important; }
+          .public-profile-hero h1 span.serif { font-size: 22px !important; }
+          .public-profile-hero .hero-pills { gap: 6px !important; }
+          .public-profile-breadcrumb { font-size: 11px !important; flex-wrap: wrap !important; }
+          .public-profile-keyfacts { grid-template-columns: 1fr 1fr !important; }
+          .public-profile-keyfacts > div { border-right: 0 !important; border-bottom: 1px solid var(--g2) !important; }
+          .public-profile-keyfacts > div:nth-child(2) { border-right: 0 !important; }
+          .public-profile-context-card { padding: 18px 20px !important; }
+          .public-profile-context-card .big-count { font-size: 38px !important; }
+          .public-profile-context-card .big-count span { font-size: 22px !important; }
+          .public-profile-hero-logo { width: 60px !important; height: 60px !important; font-size: 22px !important; }
         }
       `}</style>
     </>
