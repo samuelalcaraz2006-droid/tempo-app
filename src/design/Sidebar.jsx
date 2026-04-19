@@ -43,7 +43,7 @@ export default function SidebarA({
 
       {roleLabel && (
         <div style={{
-          fontSize: 10.5, color: 'rgba(255,255,255,0.4)', letterSpacing: 1.4,
+          fontSize: 10.5, color: 'rgba(255,255,255,0.62)', letterSpacing: 1.4,
           textTransform: 'uppercase', fontWeight: 700, padding: '14px 10px 10px',
           fontFamily: T.font.mono,
         }}>
@@ -88,11 +88,15 @@ export default function SidebarA({
             }}>{icon}</span>
             <span style={{ flex: 1 }}>{label}</span>
             {badge != null && badge !== 0 && (
-              <span style={{
-                background: T.color.brand, color: '#fff', fontSize: 10,
-                fontWeight: 700, borderRadius: 99, padding: '2px 7px',
-                fontFamily: T.font.mono,
-              }}>{badge}</span>
+              <span
+                className="badge-pulse"
+                aria-label={`${badge} nouveau${badge > 1 ? 'x' : ''}`}
+                style={{
+                  background: T.color.brand, color: '#fff', fontSize: 10,
+                  fontWeight: 700, borderRadius: 99, padding: '2px 7px',
+                  fontFamily: T.font.mono,
+                }}
+              >{badge}</span>
             )}
           </button>
         )
