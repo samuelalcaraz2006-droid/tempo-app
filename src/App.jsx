@@ -64,6 +64,7 @@ const Legal          = React.lazy(() => import('./pages/Legal.jsx'))
 const GodModePicker  = React.lazy(() => import('./pages/GodModePicker.jsx'))
 import CookieBanner from './components/CookieBanner'
 import FeedbackWidget from './components/FeedbackWidget'
+import PWAInstallPrompt from './components/PWAInstallPrompt'
 import ImpersonationBanner from './components/ImpersonationBanner'
 import { useUpdateChecker } from './hooks/useUpdateChecker'
 
@@ -184,6 +185,7 @@ export default function App() {
             <AppRouter />
             <CookieBanner />
             <FeedbackWidget />
+            <PWAInstallPrompt />
           </React.Suspense>
         </AuthProvider>
       </I18nProvider>
