@@ -239,7 +239,7 @@ export default function PublicCompanyProfile({
                 marginTop: 8, fontSize: 24, fontWeight: 700, color: T.color.ink,
                 letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1.15,
               }}>
-                Postez votre <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brand }}>candidature</span>.
+                Postez votre candidature.
               </h2>
               <div className="a-card" style={{ padding: 8, marginTop: 14 }}>
                 {openMissions.map((m, i) => (
@@ -282,7 +282,7 @@ export default function PublicCompanyProfile({
               marginTop: 8, fontSize: 24, fontWeight: 700, color: T.color.ink,
               letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1.15,
             }}>
-              Retours <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brand }}>de prestataires</span>.
+              Retours de prestataires.
             </h2>
             <div className="a-card" style={{ padding: 22, marginTop: 14 }}>
               {ratings.length === 0 ? (

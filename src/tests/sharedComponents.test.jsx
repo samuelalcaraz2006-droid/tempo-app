@@ -120,9 +120,9 @@ describe('MissionCard', () => {
     expect(btn.disabled).toBe(true)
   })
 
-  it('shows ... and disables button when applying', () => {
+  it('shows Envoi… and disables button when applying', () => {
     render(<MissionCard mission={baseMission} onApply={vi.fn()} applied={false} applying={true} />)
-    const btn = screen.getByText('...')
+    const btn = screen.getByText('Envoi…')
     expect(btn.disabled).toBe(true)
   })
 
