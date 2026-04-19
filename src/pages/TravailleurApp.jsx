@@ -3,19 +3,7 @@ import RatingModal from '../components/RatingModal'
 import Toast from '../components/UI/Toast'
 import { useI18n } from '../contexts/I18nContext'
 import { useAuth } from '../contexts/useAuth'
-import ChatView from '../features/shared/ChatView'
-import WorkerAlerts from '../features/worker/WorkerAlerts'
-import WorkerApplications from '../features/worker/WorkerApplications'
-import WorkerCalendar from '../features/worker/WorkerCalendar'
-import PublicCompanyProfile from '../features/shared/PublicCompanyProfile'
-import WorkerDashboard from '../features/worker/WorkerDashboard'
-import WorkerEarnings from '../features/worker/WorkerEarnings'
-import WorkerMessages from '../features/worker/WorkerMessages'
-import WorkerMissionDetail from '../features/worker/WorkerMissionDetail'
-import WorkerMissionsList from '../features/worker/WorkerMissionsList'
-import WorkerSavedMissions from '../features/worker/WorkerSavedMissions'
-import NotificationsView from '../features/shared/NotificationsView'
-import WorkerProfile from '../features/worker/WorkerProfile'
+import TravailleurRoutes from './travailleur/TravailleurRoutes'
 import { useToast } from '../hooks/useToast'
 import { useMissionFilters } from '../hooks/worker/useMissionFilters'
 import { useWorkerActions } from '../hooks/worker/useWorkerActions'
@@ -597,166 +585,48 @@ export default function TravailleurApp({ onNavigate: _onNavigate, onLogoClick })
         />
       )}
 
-      {screen === 'accueil' && (
-        <WorkerDashboard
-          worker={worker}
-          displayName={displayName}
-          missions={data.missions}
-          allMissions={data.allMissions}
-          invoices={data.invoices}
-          urgentMissions={urgentMissions}
-          applications={data.applications}
-          onNavigate={navigate}
-          onApply={actions.handleApply}
-          applying={actions.applying}
-          savedMissions={savedMissions}
-          onToggleSave={toggleSave}
-          onViewCompany={openCompanyProfile}
-        />
-      )}
-
-      {/* Mission detail a son propre hero full-width */}
-      {screen === 'mission-detail' && (
-        <WorkerMissionDetail
-          mission={selectedMission}
-          hasApplied={hasApplied(selectedMission?.id)}
-          applying={actions.applying[selectedMission?.id]}
-          onApply={actions.handleApply}
-          onBack={() => setScreen('missions')}
-          isSaved={savedMissions.includes(selectedMission?.id)}
-          onToggleSave={toggleSave}
-          onViewCompany={openCompanyProfile}
-        />
-      )}
-
-      <div className="app-main-container" style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px', display: (screen === 'accueil' || screen === 'mission-detail') ? 'none' : 'block' }}>
-
-        {screen === 'missions' && (
-          <WorkerMissionsList
-            filters={filters}
-            hasApplied={hasApplied}
-            applying={actions.applying}
-            onApply={actions.handleApply}
-            savedMissions={savedMissions}
-            onToggleSave={toggleSave}
-            onNavigate={navigate}
-            onViewCompany={openCompanyProfile}
-            mapView={mapView}
-            setMapView={setMapView}
-          />
-        )}
-
-        {screen === 'favoris' && (
-          <WorkerSavedMissions
-            missions={data.missions}
-            savedMissions={savedMissions}
-            hasApplied={hasApplied}
-            applying={actions.applying}
-            onApply={actions.handleApply}
-            onToggleSave={toggleSave}
-            onNavigate={navigate}
-            onViewCompany={openCompanyProfile}
-            onBack={() => setScreen('missions')}
-          />
-        )}
-
-        {screen === 'suivi' && (
-          <WorkerApplications
-            allMissions={data.allMissions}
-            signedContracts={data.signedContracts}
-            ratedMissions={actions.ratedMissions}
-            onWithdraw={(id) => actions.handleWithdraw(id, data.setAllMissions)}
-            onSignContract={(m) =>
-              actions.setContractModal({
-                missionId: m.id,
-                mission: m,
-                companyName: m?.companies?.name || 'Entreprise',
-                companyId: m?.company_id || m?.companies?.id,
-              })
-            }
-            onOpenChat={openChatNav}
-            onRate={(m) => actions.setRatingModal({ missionId: m.id, rateeId: m.companies?.id, companyName: m.companies?.name || "l'entreprise" })}
-            onNavigate={navigate}
-            onViewCompany={openCompanyProfile}
-            t={t}
-          />
-        )}
-
-        {screen === 'gains' && <WorkerEarnings worker={worker} invoices={data.invoices} allMissions={data.allMissions} t={t} />}
-
-        {screen === 'messages' && !chatTarget && <WorkerMessages userId={user?.id} onOpenChat={openChatNav} />}
-
-        {screen === 'chat' && chatTarget && (
-          <ChatView
-            userId={user?.id}
-            partnerId={chatTarget.partnerId}
-            partnerName={chatTarget.partnerName}
-            contextMissionId={chatTarget.missionId}
-            onBack={closeChat}
-            onOpenMission={(m) => {
-              setSelectedMission(m)
-              setChatTarget(null)
-              setScreen('mission-detail')
-            }}
-          />
-        )}
-
-        {screen === 'profil' && (
-          <WorkerProfile
-            worker={worker}
-            profile={profile}
-            profileForm={profileForm}
-            setProfileForm={setProfileForm}
-            onSave={actions.handleSaveProfile}
-            savingProfile={actions.savingProfile}
-            badges={badges}
-            initials={initials}
-            displayName={displayName}
-            onNavigate={navigate}
-            onLogout={logout}
-            savedAlerts={savedAlerts}
-            KycUploadSection={KycUploadSection}
-            userId={user?.id}
-            refreshRoleData={refreshRoleData}
-            showToast={showToast}
-          />
-        )}
-
-        {screen === 'notifs' && (
-          <NotificationsView
-            notifs={data.notifs}
-            setNotifs={data.setNotifs}
-            userId={user?.id}
-            unreadCount={unreadCount}
-            onBack={() => setScreen('accueil')}
-            onNavigate={handleNotifNavigate}
-          />
-        )}
-
-        {screen === 'company-profile' && (
-          <PublicCompanyProfile
-            companyId={viewCompanyId || viewCompany?.id || viewCompany?.company_id}
-            onBack={() => setScreen('missions')}
-            onSelectMission={(m) => {
-              setSelectedMission(m)
-              setScreen('mission-detail')
-            }}
-          />
-        )}
-
-        {screen === 'alertes' && (
-          <WorkerAlerts
-            savedAlerts={savedAlerts}
-            setSavedAlerts={setSavedAlerts}
-            filters={filters}
-            profileForm={profileForm}
-            showToast={showToast}
-            onBack={() => setScreen('missions')}
-          />
-        )}
-
-        {screen === 'calendrier' && <WorkerCalendar blockedDays={blockedDays} setBlockedDays={setBlockedDays} onBack={() => setScreen('profil')} />}
-      </div>
+      <TravailleurRoutes
+        screen={screen}
+        worker={worker}
+        profile={profile}
+        data={data}
+        displayName={displayName}
+        initials={initials}
+        badges={badges}
+        urgentMissions={urgentMissions}
+        selectedMission={selectedMission}
+        chatTarget={chatTarget}
+        viewCompany={viewCompany}
+        viewCompanyId={viewCompanyId}
+        profileForm={profileForm}
+        savedMissions={savedMissions}
+        savedAlerts={savedAlerts}
+        blockedDays={blockedDays}
+        mapView={mapView}
+        unreadCount={unreadCount}
+        filters={filters}
+        actions={actions}
+        user={user}
+        t={t}
+        hasApplied={hasApplied}
+        navigate={navigate}
+        toggleSave={toggleSave}
+        openCompanyProfile={openCompanyProfile}
+        openChatNav={openChatNav}
+        closeChat={closeChat}
+        setScreen={setScreen}
+        setSelectedMission={setSelectedMission}
+        setChatTarget={setChatTarget}
+        setProfileForm={setProfileForm}
+        setSavedAlerts={setSavedAlerts}
+        setBlockedDays={setBlockedDays}
+        setMapView={setMapView}
+        logout={logout}
+        refreshRoleData={refreshRoleData}
+        showToast={showToast}
+        handleNotifNavigate={handleNotifNavigate}
+        KycUploadSection={KycUploadSection}
+      />
     </DashboardLayout>
   )
 }
