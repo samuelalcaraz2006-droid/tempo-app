@@ -148,7 +148,7 @@ export default function WorkerMissionDetail({
   return (
     <>
       {/* ═══ HERO NAVY ═══ */}
-      <div style={{
+      <div className="mission-detail-hero" style={{
         position: 'relative', background: T.color.navy,
         padding: '28px 48px 48px', overflow: 'hidden',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
@@ -163,7 +163,7 @@ export default function WorkerMissionDetail({
 
         <div style={{ position: 'relative', maxWidth: 1400, margin: '0 auto' }}>
           {/* Breadcrumb */}
-          <div style={{
+          <div className="mission-detail-breadcrumb" style={{
             display: 'flex', alignItems: 'center', gap: 10,
             fontSize: 12, color: 'rgba(255,255,255,0.55)',
             fontFamily: T.font.mono, letterSpacing: 0.8,
@@ -180,7 +180,7 @@ export default function WorkerMissionDetail({
             <span style={{ color: '#fff' }}>TEMPO‑{mission.id ? mission.id.slice(0, 4).toUpperCase() : '—'}</span>
           </div>
 
-          <div style={{
+          <div className="mission-detail-hero-grid" style={{
             marginTop: 24, display: 'grid',
             gridTemplateColumns: '1fr 340px', gap: 40,
             alignItems: 'end',
@@ -212,14 +212,14 @@ export default function WorkerMissionDetail({
               </div>
 
               {/* H1 massif 2 lignes */}
-              <h1 style={{
+              <h1 className="mission-detail-h1" style={{
                 margin: 0, fontSize: 60, fontWeight: 800, lineHeight: 0.96,
                 color: '#fff', letterSpacing: '-0.04em', fontFamily: T.font.body,
                 maxWidth: 780,
               }}>
                 {mission.title}
                 <br />
-                <span style={{
+                <span className="serif" style={{
                   fontFamily: T.font.serif, fontStyle: 'italic',
                   fontWeight: 400, color: T.color.brandXL,
                 }}>{computedTagline}</span>
@@ -303,7 +303,7 @@ export default function WorkerMissionDetail({
         {/* ─── Gauche : key facts + description + skills/equipment ─── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
           {/* Key facts strip */}
-          <div className="a-card" style={{
+          <div className="a-card mission-detail-keyfacts" style={{
             display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', overflow: 'hidden', padding: 0,
           }}>
             {[
@@ -346,7 +346,7 @@ export default function WorkerMissionDetail({
             )}
 
             {/* 2 cards : Compétences + Équipement */}
-            <div style={{
+            <div className="mission-detail-cards-2col" style={{
               marginTop: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14,
             }}>
               <div style={{
@@ -482,7 +482,18 @@ export default function WorkerMissionDetail({
       {/* Responsive */}
       <style>{`
         @media (max-width: 900px) {
-          .mission-detail-grid { grid-template-columns: 1fr !important; }
+          .mission-detail-grid { grid-template-columns: 1fr !important; padding: 24px 20px !important; gap: 24px !important; }
+          .mission-detail-hero-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+        }
+        @media (max-width: 640px) {
+          .mission-detail-hero { padding: 20px 16px 32px !important; }
+          .mission-detail-breadcrumb { font-size: 11px !important; flex-wrap: wrap !important; }
+          .mission-detail-h1 { font-size: 32px !important; line-height: 1.05 !important; }
+          .mission-detail-h1 span.serif { font-size: 22px !important; }
+          .mission-detail-keyfacts { grid-template-columns: 1fr 1fr !important; }
+          .mission-detail-keyfacts > div { padding: 14px 16px !important; border-right: 0 !important; border-bottom: 1px solid var(--g2) !important; }
+          .mission-detail-keyfacts > div:nth-child(2) { border-right: 0 !important; }
+          .mission-detail-cards-2col { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </>

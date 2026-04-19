@@ -90,7 +90,7 @@ export default function PublicWorkerProfile({
   return (
     <>
       {/* HERO NAVY */}
-      <div style={{
+      <div className="public-profile-page-hero" style={{
         position: 'relative', background: T.color.navy,
         padding: '28px 48px 48px', overflow: 'hidden',
         borderBottom: '1px solid rgba(255,255,255,0.06)', color: '#fff',
@@ -104,7 +104,7 @@ export default function PublicWorkerProfile({
 
         <div style={{ position: 'relative', maxWidth: 1400, margin: '0 auto' }}>
           {/* Breadcrumb */}
-          <div style={{
+          <div className="public-profile-breadcrumb" style={{
             display: 'flex', alignItems: 'center', gap: 10, fontSize: 12,
             color: 'rgba(255,255,255,0.55)', fontFamily: T.font.mono, letterSpacing: 0.8,
           }}>
@@ -134,7 +134,7 @@ export default function PublicWorkerProfile({
                   }}>
                     {displayName}
                     <br />
-                    <span style={{
+                    <span className="serif" style={{
                       fontFamily: T.font.serif, fontStyle: 'italic',
                       fontWeight: 400, color: T.color.brandXL, fontSize: 36,
                     }}>{tagline}</span>
@@ -142,7 +142,7 @@ export default function PublicWorkerProfile({
                 </div>
               </div>
 
-              <div style={{ marginTop: 18, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <div className="hero-pills" style={{ marginTop: 18, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {ratingAvg && <Pill variant="white">★ {ratingAvg} · {ratingCount} avis</Pill>}
                 <Pill variant="white">{missionsDone} missions réalisées</Pill>
                 {worker.experience_years && <Pill variant="white">{worker.experience_years} ans d'exp.</Pill>}
@@ -153,7 +153,7 @@ export default function PublicWorkerProfile({
             </div>
 
             {/* Carte contexte : matching ou actions */}
-            <div style={{
+            <div className="public-profile-context-card" style={{
               padding: '22px 24px', borderRadius: 20,
               background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
               backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
@@ -163,7 +163,7 @@ export default function PublicWorkerProfile({
                   <Eyebrow color="rgba(255,255,255,0.55)" style={{ fontSize: 10.5, letterSpacing: 1.6 }}>
                     Matching mission
                   </Eyebrow>
-                  <div style={{
+                  <div className="match-score" style={{
                     marginTop: 8, fontSize: 52, fontWeight: 800, color: '#fff',
                     fontFamily: T.font.body, letterSpacing: '-0.035em', lineHeight: 1,
                   }}>
@@ -209,7 +209,7 @@ export default function PublicWorkerProfile({
         {/* Gauche */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
           {/* Key facts */}
-          <div className="a-card" style={{
+          <div className="a-card public-profile-keyfacts" style={{
             display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', overflow: 'hidden', padding: 0,
           }}>
             {[
@@ -251,7 +251,7 @@ export default function PublicWorkerProfile({
               Compétences <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brand }}>vérifiées</span>.
             </h2>
 
-            <div style={{
+            <div className="public-profile-expertise-grid" style={{
               marginTop: 14, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14,
             }}>
               {/* Certifications vérifiées */}
@@ -424,8 +424,21 @@ export default function PublicWorkerProfile({
 
       <style>{`
         @media (max-width: 900px) {
-          .public-profile-hero { grid-template-columns: 1fr !important; }
-          .public-profile-grid { grid-template-columns: 1fr !important; }
+          .public-profile-hero { grid-template-columns: 1fr !important; gap: 24px !important; }
+          .public-profile-grid { grid-template-columns: 1fr !important; padding: 20px !important; gap: 20px !important; }
+        }
+        @media (max-width: 640px) {
+          .public-profile-page-hero { padding: 20px 16px 32px !important; }
+          .public-profile-hero h1 { font-size: 32px !important; }
+          .public-profile-hero h1 span.serif { font-size: 24px !important; }
+          .public-profile-hero .hero-pills { gap: 6px !important; }
+          .public-profile-breadcrumb { font-size: 11px !important; flex-wrap: wrap !important; }
+          .public-profile-keyfacts { grid-template-columns: 1fr 1fr !important; }
+          .public-profile-keyfacts > div { border-right: 0 !important; border-bottom: 1px solid var(--g2) !important; }
+          .public-profile-keyfacts > div:nth-child(2) { border-right: 0 !important; }
+          .public-profile-expertise-grid { grid-template-columns: 1fr !important; }
+          .public-profile-context-card { padding: 18px 20px !important; }
+          .public-profile-context-card .match-score { font-size: 38px !important; }
         }
       `}</style>
     </>
