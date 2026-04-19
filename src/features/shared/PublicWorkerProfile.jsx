@@ -177,7 +177,7 @@ export default function PublicWorkerProfile({
                     Actions
                   </Eyebrow>
                   <div style={{ marginTop: 10, fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.4 }}>
-                    Interagir avec <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brandXL }}>ce profil</span>.
+                    Interagir avec ce profil.
                   </div>
                 </>
               )}
@@ -248,7 +248,7 @@ export default function PublicWorkerProfile({
               marginTop: 8, fontSize: 24, fontWeight: 700, color: T.color.ink,
               letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1.15,
             }}>
-              Compétences <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brand }}>vérifiées</span>.
+              Compétences vérifiées.
             </h2>
 
             <div className="public-profile-expertise-grid" style={{
@@ -303,7 +303,7 @@ export default function PublicWorkerProfile({
               marginTop: 8, fontSize: 24, fontWeight: 700, color: T.color.ink,
               letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1.15,
             }}>
-              Retours d'<span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brand }}>entreprises</span>.
+              Retours d'entreprises.
             </h2>
 
             <div className="a-card" style={{ padding: 22, marginTop: 14 }}>

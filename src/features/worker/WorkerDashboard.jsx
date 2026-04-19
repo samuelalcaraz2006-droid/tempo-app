@@ -196,7 +196,7 @@ export default function WorkerDashboard({
                 marginTop: 12, fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em',
                 lineHeight: 1.1, fontFamily: T.font.body,
               }}>
-                À <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: '#FCD34D' }}>saisir</span> maintenant.
+                À saisir maintenant.
               </div>
               <div style={{ marginTop: 6, fontSize: 12.5, color: 'rgba(255,255,255,0.6)' }}>
                 Cliquez pour voir les missions prioritaires du jour.
