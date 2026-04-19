@@ -10,6 +10,7 @@ import CompanyMessages from '../features/company/CompanyMessages'
 import CompanyProfile from '../features/company/CompanyProfile'
 import CompanyPublishMission from '../features/company/CompanyPublishMission'
 import CompanyStats from '../features/company/CompanyStats'
+import CompanyTimeValidation from '../features/company/CompanyTimeValidation'
 import ChatView from '../features/shared/ChatView'
 import PublicWorkerProfile from '../features/shared/PublicWorkerProfile'
 import NotificationsView from '../features/shared/NotificationsView'
@@ -90,6 +91,7 @@ export default function EntrepriseApp({ onLogoClick }) {
   const tabs = [
     ['dashboard', t('nav_dashboard'), '◎'],
     ['publier', t('nav_publish'), '✦'],
+    ['heures', 'Heures', '⏱'],
     ['messages-e', t('nav_messages'), '✉'],
     ['stats', t('nav_stats'), '▦'],
     ['contrats', t('nav_contracts'), '€'],
@@ -315,6 +317,10 @@ export default function EntrepriseApp({ onLogoClick }) {
           )}
 
           {screen === 'contrats' && <CompanyContracts invoices={data.invoices} onExportInvoices={() => actions.exportInvoicesCSV(data.invoices)} />}
+
+          {screen === 'heures' && (
+            <CompanyTimeValidation companyId={user?.id} showToast={showToast} />
+          )}
 
           {screen === 'profil-e' && (
             <CompanyProfile
