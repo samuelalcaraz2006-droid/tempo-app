@@ -32,6 +32,10 @@ vi.mock('../lib/sentry', () => ({
 vi.mock('../hooks/shared/useChat', () => ({
   useChat: () => ({ messages: [], loading: false, input: '', setInput: vi.fn(), sending: false, error: null, send: vi.fn(), partnerTyping: false }),
 }))
+vi.mock('../contexts/I18nContext', () => ({
+  useI18n: () => ({ locale: 'fr', switchLocale: vi.fn(), t: (k) => k }),
+  I18nProvider: ({ children }) => children,
+}))
 
 // ── Composants à tester ─────────────────────────────────────────
 

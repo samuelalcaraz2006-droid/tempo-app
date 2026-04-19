@@ -69,6 +69,7 @@ vi.mock('../contexts/AuthContext', () => ({
   AuthContext: React.createContext(null),
 }))
 vi.mock('../contexts/I18nContext', () => ({
+  useI18n: () => ({ locale: 'fr', switchLocale: vi.fn(), t: (k) => k }),
   I18nProvider: ({ children }) => <>{children}</>,
 }))
 

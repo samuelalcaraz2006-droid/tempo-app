@@ -184,4 +184,19 @@ export default {
   send_rating: "Envoyer l'évaluation",
   rating_sent: 'Évaluation envoyée — merci !',
   star_labels: ['', 'Insuffisant', 'Passable', 'Bien', 'Très bien', 'Excellent !'],
+
+  // ── PWA install ──
+  pwa_install_title: 'Installer TEMPO',
+  pwa_install_body: 'Accès rapide depuis l\'écran d\'accueil, sans barre de navigateur.',
+  pwa_install_cta: 'Installer',
+  pwa_install_ios_step1_label: 'Partager',
+  pwa_install_ios_step2_label: 'Sur l\'écran d\'accueil',
+  pwa_install_ios_step3_label: 'Ajouter',
+  pwa_install_got_it: 'Compris',
+  pwa_install_later: 'Plus tard',
+
+  // ── Common loading ──
+  loading_profile: 'Chargement du profil',
+  loading_candidates: 'Chargement des candidats',
+  loading_map: 'Chargement de la carte',
 }

@@ -1,4 +1,5 @@
 import { T } from '../../design/tokens'
+import { useI18n } from '../../contexts/I18nContext'
 
 // ════════════════════════════════════════════════════════════════
 // LoadingState — composant partagé pour les états de chargement.
@@ -15,12 +16,15 @@ import { T } from '../../design/tokens'
 // ════════════════════════════════════════════════════════════════
 
 export default function LoadingState({
-  label = 'Chargement',
+  label,
   compact = false,
   fullscreen = false,
   inline = false,
 }) {
-  const text = label.endsWith('…') ? label : `${label}…`
+  const { t } = useI18n()
+  // Si pas de label custom, utilise le fallback i18n « Chargement » / « Loading ».
+  const baseLabel = label || t('loading').replace('...', '').replace('…', '')
+  const text = baseLabel.endsWith('…') ? baseLabel : `${baseLabel}…`
 
   if (fullscreen) {
     return (

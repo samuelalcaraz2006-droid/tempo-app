@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { T } from '../design/tokens'
+import { useI18n } from '../contexts/I18nContext'
 
 // ═══════════════════════════════════════════════════════════════
 // PWAInstallPrompt — CTA discret pour installer TEMPO sur mobile.
@@ -42,6 +43,7 @@ function wasRecentlyDismissed() {
 }
 
 export default function PWAInstallPrompt() {
+  const { t } = useI18n()
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [visible, setVisible] = useState(false)
   const [showIOSInstructions, setShowIOSInstructions] = useState(false)
@@ -110,12 +112,12 @@ export default function PWAInstallPrompt() {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <div id="pwa-ios-title" style={{ fontSize: T.size.md, fontWeight: 700, color: T.color.ink }}>
-              Installer TEMPO
+              {t('pwa_install_title')}
             </div>
             <button
               type="button"
               onClick={dismiss}
-              aria-label="Fermer"
+              aria-label={t('close')}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: T.color.g5, padding: 4, display: 'flex',
@@ -125,9 +127,9 @@ export default function PWAInstallPrompt() {
             </button>
           </div>
           <ol style={{ paddingLeft: 20, fontSize: T.size.base, color: T.color.g8, lineHeight: 1.6 }}>
-            <li>Tapez sur <strong>Partager</strong> <span aria-hidden="true">⎙</span> en bas de Safari</li>
-            <li>Choisissez <strong>Sur l'écran d'accueil</strong></li>
-            <li>Validez avec <strong>Ajouter</strong></li>
+            <li><strong>{t('pwa_install_ios_step1_label')}</strong> <span aria-hidden="true">⎙</span></li>
+            <li><strong>{t('pwa_install_ios_step2_label')}</strong></li>
+            <li><strong>{t('pwa_install_ios_step3_label')}</strong></li>
           </ol>
           <button
             type="button"
@@ -135,7 +137,7 @@ export default function PWAInstallPrompt() {
             onClick={dismiss}
             style={{ width: '100%', marginTop: 16 }}
           >
-            Compris
+            {t('pwa_install_got_it')}
           </button>
         </div>
       </div>
@@ -157,17 +159,17 @@ export default function PWAInstallPrompt() {
     >
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: T.size.base, fontWeight: 600, marginBottom: 2 }}>
-          Installer TEMPO
+          {t('pwa_install_title')}
         </div>
         <div style={{ fontSize: T.size.sm, color: 'rgba(255,255,255,0.7)', lineHeight: 1.4 }}>
-          Accès rapide depuis l'écran d'accueil, sans barre de navigateur.
+          {t('pwa_install_body')}
         </div>
       </div>
       <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
         <button
           type="button"
           onClick={dismiss}
-          aria-label="Plus tard"
+          aria-label={t('pwa_install_later')}
           style={{
             background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)',
             cursor: 'pointer', padding: 6, display: 'flex', alignItems: 'center',
@@ -185,7 +187,7 @@ export default function PWAInstallPrompt() {
             whiteSpace: 'nowrap',
           }}
         >
-          Installer
+          {t('pwa_install_cta')}
         </button>
       </div>
     </div>

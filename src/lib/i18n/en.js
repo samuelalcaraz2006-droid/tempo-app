@@ -184,4 +184,19 @@ export default {
   send_rating: 'Send rating',
   rating_sent: 'Rating sent — thank you!',
   star_labels: ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent!'],
+
+  // ── PWA install ──
+  pwa_install_title: 'Install TEMPO',
+  pwa_install_body: 'Quick access from your home screen, no browser bar.',
+  pwa_install_cta: 'Install',
+  pwa_install_ios_step1_label: 'Share',
+  pwa_install_ios_step2_label: 'Add to Home Screen',
+  pwa_install_ios_step3_label: 'Add',
+  pwa_install_got_it: 'Got it',
+  pwa_install_later: 'Later',
+
+  // ── Common loading ──
+  loading_profile: 'Loading profile',
+  loading_candidates: 'Loading candidates',
+  loading_map: 'Loading map',
 }
