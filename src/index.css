@@ -187,16 +187,21 @@ button { cursor: pointer; font-family: inherit; }
 input, select, textarea { font-family: inherit; }
 a { text-decoration: none; color: inherit; }
 
+/* Alias legacy → Style A pill. Garde la compat avec le code existant
+   tout en uniformisant le rendu sur toute l'app. */
 .btn-primary {
-  display: inline-flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   background: var(--brand); color: #fff; border: none;
-  padding: 10px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 600;
+  padding: 13px 22px; border-radius: 999px;
+  font-size: 14.5px; font-weight: 600;
   letter-spacing: 0.01em;
-  transition: background .15s, transform .1s, box-shadow .15s;
-  box-shadow: 0 2px 8px rgba(37,99,235,.28);
+  font-family: inherit; white-space: nowrap;
+  transition: background .15s, transform .15s, box-shadow .15s;
+  box-shadow: 0 10px 24px rgba(37,99,235,.28);
+  cursor: pointer;
 }
-.btn-primary:hover:not(:disabled) { background: var(--brand-d); transform: translateY(-1px); box-shadow: var(--shadow-brand); }
-.btn-primary:active:not(:disabled) { transform: translateY(0) scale(.98); box-shadow: none; }
+.btn-primary:hover:not(:disabled) { transform: translateY(-1px); background: var(--brand-d); box-shadow: 0 14px 30px rgba(37,99,235,.35); }
+.btn-primary:active:not(:disabled) { transform: translateY(0); box-shadow: 0 6px 14px rgba(37,99,235,.25); }
 .btn-primary:focus-visible { outline: 3px solid rgba(37,99,235,.45); outline-offset: 2px; }
 .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
 
@@ -212,24 +217,30 @@ a { text-decoration: none; color: inherit; }
 }
 .btn-inline:hover { background: #DBEAFE; }
 
+/* Alias legacy → Style A outline. */
 .btn-secondary {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: var(--bk); border: 1.5px solid var(--g2);
-  padding: 9px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 500;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: #fff; color: var(--bk); border: 1.5px solid var(--g2);
+  padding: 12px 20px; border-radius: 999px;
+  font-size: 14px; font-weight: 600;
+  font-family: inherit; white-space: nowrap; cursor: pointer;
   transition: background .15s, border-color .15s, transform .1s;
 }
-.btn-secondary:hover:not(:disabled) { background: var(--g1); border-color: var(--g3); transform: translateY(-1px); }
+.btn-secondary:hover:not(:disabled) { background: var(--g1); border-color: var(--g3); }
 .btn-secondary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .btn-secondary:disabled { opacity: 0.55; cursor: not-allowed; }
 
+/* Alias legacy → Style A ghost dark. */
 .btn-ghost {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.09); color: #fff; border: 1px solid rgba(255,255,255,0.16);
-  padding: 10px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 500;
-  backdrop-filter: blur(10px);
-  transition: background .2s, transform .1s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: rgba(255,255,255,0.06); color: #fff; border: 1px solid rgba(255,255,255,0.18);
+  padding: 12px 20px; border-radius: 999px;
+  font-size: 14px; font-weight: 500;
+  font-family: inherit; white-space: nowrap; cursor: pointer;
+  transition: background .15s, border-color .15s;
 }
-.btn-ghost:hover { background: rgba(255,255,255,0.15); transform: translateY(-1px); }
+.btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); }
+.btn-ghost:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
 
 .btn-dark {
   display: inline-flex; align-items: center; gap: 8px;
@@ -717,6 +728,7 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
 }
 .a-btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(37,99,235,.35); background: var(--brand-d); }
 .a-btn-primary:active:not(:disabled) { transform: translateY(0); box-shadow: 0 6px 14px rgba(37,99,235,.25); }
+.a-btn-primary:focus-visible { outline: 3px solid rgba(37,99,235,.45); outline-offset: 2px; }
 .a-btn-primary:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
 
 /* Bouton outline clair — sur fond blanc */
@@ -729,6 +741,7 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   white-space: nowrap;
 }
 .a-btn-outline:hover:not(:disabled) { background: var(--g1); border-color: var(--g3); }
+.a-btn-outline:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .a-btn-outline:disabled { opacity: .55; cursor: not-allowed; }
 
 /* Bouton ghost sur fond sombre — pour topbar actions */
@@ -741,6 +754,7 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   white-space: nowrap;
 }
 .a-btn-ghost-dark:hover:not(:disabled) { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); }
+.a-btn-ghost-dark:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
 .a-btn-ghost-dark:disabled { opacity: .55; cursor: not-allowed; }
 
 /* Card soft — look Style A (radius 18, shadow douce) */
