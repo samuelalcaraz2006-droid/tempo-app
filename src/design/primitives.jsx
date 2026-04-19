@@ -117,7 +117,7 @@ export function GridBg({ opacity = 0.28, size = 56 }) {
 export function Eyebrow({ children, style, color }) {
   return (
     <div style={{
-      fontFamily: T.font.mono, fontSize: 10.5,
+      fontFamily: T.font.mono, fontSize: T.size.xs,
       color: color || T.color.g5, letterSpacing: 1.4,
       textTransform: 'uppercase', fontWeight: 600,
       ...style,
@@ -128,13 +128,15 @@ export function Eyebrow({ children, style, color }) {
 // H1 / H2 avec accent serif italique sur un ou plusieurs mots.
 // Usage : <HeadlineA>Bonjour, <em>2 missions</em> en cours.</HeadlineA>
 // Le <em> est automatiquement stylé.
-export function HeadlineA({ children, size = 'lg', color, style }) {
+// Les sizes reflètent `T.size.*` de tokens.js — une seule source de vérité.
+export function HeadlineA({ children, size = 'lg', color, style, as: Tag = 'h1' }) {
   const sizes = {
-    xxl: { fs: 48, lh: 1.02, tr: '-0.028em' },
-    xl:  { fs: 40, lh: 1.05, tr: '-0.025em' },
-    lg:  { fs: 32, lh: 1.08, tr: '-0.022em' },
-    md:  { fs: 24, lh: 1.15, tr: '-0.018em' },
-    sm:  { fs: 20, lh: 1.2,  tr: '-0.015em' },
+    hero: { fs: T.size.hero,    lh: 0.96, tr: '-0.04em' },
+    xxl:  { fs: T.size.display, lh: 1.02, tr: '-0.028em' },
+    xl:   { fs: 40,             lh: 1.05, tr: '-0.025em' },
+    lg:   { fs: T.size.xxl,     lh: 1.08, tr: '-0.022em' },
+    md:   { fs: T.size.xl,      lh: 1.15, tr: '-0.018em' },
+    sm:   { fs: T.size.lg,      lh: 1.2,  tr: '-0.015em' },
   }
   const s = sizes[size] || sizes.lg
   // Sur fond sombre (navy) la couleur de base est blanche → l'accent
@@ -163,13 +165,13 @@ export function HeadlineA({ children, size = 'lg', color, style }) {
   }
 
   return (
-    <h1 style={{
+    <Tag style={{
       margin: 0, fontSize: s.fs, fontWeight: 800, lineHeight: s.lh,
       color: color || '#fff', letterSpacing: s.tr, fontFamily: T.font.body,
       ...style,
     }}>
       {transform(children)}
-    </h1>
+    </Tag>
   )
 }
 
@@ -178,16 +180,17 @@ export function KpiCard({ label, value, sub, accentColor }) {
   return (
     <div style={{
       background: '#fff', border: `1px solid ${T.color.g2}`,
-      borderRadius: T.radius.lg, padding: '20px 22px', boxShadow: T.shadow.soft,
+      borderRadius: T.radius.lg, padding: `${T.space[5]}px ${T.space[6]}px`,
+      boxShadow: T.shadow.soft,
       position: 'relative', overflow: 'hidden',
     }}>
       <Eyebrow style={{ fontSize: 10, letterSpacing: 1.4 }}>{label}</Eyebrow>
       <div style={{
-        marginTop: 12, fontSize: 28, fontWeight: 700,
+        marginTop: T.space[3], fontSize: T.size.xl, fontWeight: 700,
         color: accentColor || T.color.ink, letterSpacing: '-0.02em',
         fontFamily: T.font.body, lineHeight: 1.05,
       }}>{value}</div>
-      {sub && <div style={{ marginTop: 6, fontSize: 11.5, color: T.color.g5 }}>{sub}</div>}
+      {sub && <div style={{ marginTop: T.space[1] + 2, fontSize: T.size.xs + 0.5, color: T.color.g5 }}>{sub}</div>}
     </div>
   )
 }
