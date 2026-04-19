@@ -255,11 +255,19 @@ export default function ChatView({ userId, partnerId, partnerName, contextMissio
         {partnerTyping && <TypingIndicator name={partnerName || 'Votre contact'} />}
       </div>
 
-      {/* Input */}
-      <div style={{ display: 'flex', gap: 8 }}>
-        <input
+      {/* Quick actions (suggestions contextuelles) */}
+      {messages.length === 0 && contextMission && (
+        <QuickActionsBar
+          mission={contextMission}
+          onPick={(text) => setInput((prev) => prev ? `${prev}\n${text}` : text)}
+        />
+      )}
+
+      {/* Input (textarea auto-resize pour multi-lignes) */}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+        <textarea
           className="input"
-          placeholder="Votre message..."
+          placeholder="Votre message…  (Shift+Entrée pour retour à la ligne)"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -268,12 +276,85 @@ export default function ChatView({ userId, partnerId, partnerName, contextMissio
               send()
             }
           }}
-          style={{ flex: 1 }}
+          rows={1}
+          style={{
+            flex: 1, resize: 'none', minHeight: 42, maxHeight: 140,
+            // hauteur dynamique : on recalcule via scrollHeight au rendu
+            // (géré via onInput + ref pour éviter un re-render additionnel)
+          }}
+          ref={(el) => {
+            if (el) {
+              el.style.height = 'auto'
+              el.style.height = `${Math.min(140, el.scrollHeight)}px`
+            }
+          }}
         />
-        <button type="button" className="btn-primary" style={{ padding: '10px 18px' }} onClick={send} disabled={sending || !input.trim()}>
-          {sending ? '...' : 'Envoyer'}
+        <button type="button" className="btn-primary"
+          style={{ padding: '10px 18px', alignSelf: 'flex-end' }}
+          onClick={send}
+          disabled={sending || !input.trim()}
+          aria-busy={sending ? 'true' : undefined}
+        >
+          {sending ? 'Envoi…' : 'Envoyer'}
         </button>
       </div>
     </div>
   )
+}
+
+// ── Quick actions (templates contextuels) ───────────────────────
+function QuickActionsBar({ mission, onPick }) {
+  if (!mission) return null
+
+  const actions = [
+    {
+      label: '📅 Proposer un créneau',
+      text: `Bonjour ! Je propose de démarrer ${formatMissionStart(mission)}. Ça vous convient ?`,
+    },
+    mission.address ? {
+      label: '📍 Confirmer l\'adresse',
+      text: `Bonjour, je confirme pour ${formatMissionStart(mission)}. Adresse : ${mission.address}${mission.city ? `, ${mission.city}` : ''}. Je serai à l\'heure.`,
+    } : {
+      label: '📍 Demander l\'adresse précise',
+      text: 'Bonjour, pourriez-vous me confirmer l\'adresse précise du lieu de mission ? Merci.',
+    },
+    {
+      label: '🕐 Je serai en retard',
+      text: 'Bonjour, je vais avoir un léger retard — je vous tiens informé dès que je suis en route.',
+    },
+  ]
+
+  return (
+    <div style={{
+      display: 'flex', gap: 6, flexWrap: 'wrap',
+      marginBottom: 10,
+    }}>
+      {actions.map((a, i) => (
+        <button
+          key={i}
+          type="button"
+          onClick={() => onPick(a.text)}
+          style={{
+            padding: '6px 12px', borderRadius: 999,
+            background: 'var(--g1)', border: '1px solid var(--g2)',
+            color: 'var(--g8)', fontSize: 12, cursor: 'pointer',
+            fontFamily: 'inherit', whiteSpace: 'nowrap',
+          }}
+        >{a.label}</button>
+      ))}
+    </div>
+  )
+}
+
+function formatMissionStart(mission) {
+  if (!mission?.start_date) return 'à la date prévue'
+  const d = new Date(mission.start_date)
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+  const isoDay = d.toISOString().slice(0, 10)
+  if (isoDay === today.toISOString().slice(0, 10)) return 'aujourd\'hui'
+  if (isoDay === tomorrow.toISOString().slice(0, 10)) return 'demain'
+  const days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
+  return days[d.getDay()] + ' ' + String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0')
 }
