@@ -173,7 +173,7 @@ export default function NotificationsView({ notifs = [], setNotifs, userId, unre
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
         <div>
-          <Eyebrow style={{ fontSize: 11, letterSpacing: 1.6, marginBottom: 8 }}>Notifications</Eyebrow>
+          <Eyebrow style={{ fontSize: T.size.xs, letterSpacing: 1.6, marginBottom: 8 }}>Notifications</Eyebrow>
           <div style={{ fontSize: 30, fontWeight: 800, color: T.color.ink, letterSpacing: '-0.025em', lineHeight: 1.05 }}>
             {unreadCount > 0
               ? <><span className="font-serif-italic" style={{ color: T.color.brand }}>{unreadCount}</span> {unreadCount > 1 ? 'nouvelles' : 'nouvelle'}.</>
@@ -206,7 +206,7 @@ export default function NotificationsView({ notifs = [], setNotifs, userId, unre
                 padding: '8px 14px', border: 'none',
                 background: active ? '#fff' : 'transparent',
                 color: active ? T.color.ink : T.color.g5,
-                fontSize: 12.5, fontWeight: 600, borderRadius: 999, cursor: 'pointer',
+                fontSize: T.size.sm, fontWeight: 600, borderRadius: 999, cursor: 'pointer',
                 boxShadow: active ? '0 1px 3px rgba(15,23,42,.08)' : 'none',
                 display: 'inline-flex', alignItems: 'center', gap: 6,
               }}>
@@ -226,7 +226,7 @@ export default function NotificationsView({ notifs = [], setNotifs, userId, unre
 
       {filtered.length === 0 ? (
         <div className="a-card" style={{ padding: '60px 20px', textAlign: 'center', color: T.color.g5 }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>✉</div>
+          <div style={{ fontSize: T.size.xxl, marginBottom: 12 }}>✉</div>
           <div style={{ fontSize: 15, fontWeight: 700, color: T.color.ink, marginBottom: 6 }}>Aucune notification</div>
           <div style={{ fontSize: 13 }}>
             {category === 'unread' ? 'Vous êtes à jour.' : 'Les événements apparaîtront ici en temps réel.'}
@@ -279,7 +279,7 @@ function NotifGroup({ title, notifs, onClick, role }) {
                 background: unread ? '#fff' : T.color.g1,
                 border: `1px solid ${unread ? 'rgba(37,99,235,0.18)' : T.color.g2}`,
                 display: 'grid', placeItems: 'center',
-                color: meta.color, fontSize: 14, fontWeight: 800,
+                color: meta.color, fontSize: T.size.base, fontWeight: 800,
                 fontFamily: T.font.mono,
               }}>{meta.icon}</div>
 
@@ -289,17 +289,17 @@ function NotifGroup({ title, notifs, onClick, role }) {
                   {unread && <LiveDot color={T.color.brand} size={5} />}
                 </div>
                 <div style={{
-                  fontSize: 14, fontWeight: unread ? 700 : 500,
+                  fontSize: T.size.base, fontWeight: unread ? 700 : 500,
                   color: unread ? T.color.ink : T.color.g8,
                   marginTop: 6, lineHeight: 1.4,
                 }}>{n.title || meta.label}</div>
                 {n.body && (
-                  <div style={{ fontSize: 12.5, color: T.color.g5, marginTop: 4, lineHeight: 1.5 }}>{n.body}</div>
+                  <div style={{ fontSize: T.size.sm, color: T.color.g5, marginTop: 4, lineHeight: 1.5 }}>{n.body}</div>
                 )}
               </div>
 
               <div style={{
-                fontSize: 11, color: T.color.g5, fontFamily: T.font.mono,
+                fontSize: T.size.xs, color: T.color.g5, fontFamily: T.font.mono,
                 flexShrink: 0, textAlign: 'right', paddingTop: 2,
               }}>
                 {formatRelative(n.created_at)}

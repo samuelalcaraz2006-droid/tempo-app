@@ -316,7 +316,7 @@ function MissionEnCoursCard({ mission, candidates, loading, onLoadCandidates, on
             marginTop: 4, fontSize: 19, fontWeight: 700, color: T.color.ink,
             letterSpacing: '-0.015em',
           }}>{missionTitleLine(mission)}</div>
-          <div style={{ marginTop: 4, fontSize: 12.5, color: T.color.g5 }}>
+          <div style={{ marginTop: 4, fontSize: T.size.sm, color: T.color.g5 }}>
             {missionSubtitle(mission)}
           </div>
         </div>
@@ -353,7 +353,7 @@ function MissionEnCoursCard({ mission, candidates, loading, onLoadCandidates, on
           onClick={() => mission?.id && onLoadCandidates?.(mission.id)}
           style={{
             background: 'none', border: 'none', color: T.color.brand,
-            fontWeight: 600, fontSize: 12.5, cursor: 'pointer', padding: 0,
+            fontWeight: 600, fontSize: T.size.sm, cursor: 'pointer', padding: 0,
           }}
         >Voir tous →</button>
       </div>
@@ -382,23 +382,23 @@ function CandidateRow({ application, highlighted, seed, onViewWorkerProfile }) {
     }}>
       <Avatar name={name} seed={seed} size={46} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: T.color.ink }}>{name}</div>
+        <div style={{ fontSize: T.size.base, fontWeight: 700, color: T.color.ink }}>{name}</div>
         <div style={{ fontSize: 12, color: T.color.g5, marginTop: 3 }}>
           {[role, loc].filter(Boolean).join(' · ')}
         </div>
         <div style={{ display: 'flex', gap: 10, marginTop: 6, alignItems: 'center' }}>
-          {stars && <span style={{ fontSize: 11, color: T.color.g6 }}>★ {stars}</span>}
-          {stars && rate && <span style={{ fontSize: 11, color: T.color.g3 }}>·</span>}
-          {rate && <span style={{ fontSize: 11, color: T.color.ink, fontWeight: 600 }}>{rate} €/h</span>}
+          {stars && <span style={{ fontSize: T.size.xs, color: T.color.g6 }}>★ {stars}</span>}
+          {stars && rate && <span style={{ fontSize: T.size.xs, color: T.color.g3 }}>·</span>}
+          {rate && <span style={{ fontSize: T.size.xs, color: T.color.ink, fontWeight: 600 }}>{rate} €/h</span>}
           {verified && <>
-            <span style={{ fontSize: 11, color: T.color.g3 }}>·</span>
+            <span style={{ fontSize: T.size.xs, color: T.color.g3 }}>·</span>
             <Pill variant="neutral" size="xs">Vérifié ✓</Pill>
           </>}
         </div>
       </div>
       {matchPct != null && (
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: T.color.brand, fontFamily: T.font.mono }}>{matchPct}%</div>
+          <div style={{ fontSize: T.size.base, fontWeight: 800, color: T.color.brand, fontFamily: T.font.mono }}>{matchPct}%</div>
           <div style={{ fontSize: 10, color: T.color.g5, marginTop: 2 }}>match</div>
         </div>
       )}
@@ -432,7 +432,7 @@ function MissionSuivanteCard({ mission }) {
           <div style={{ marginTop: 10, fontSize: 19, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.15 }}>
             Aucune <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brandXL }}>mission en attente</span>.
           </div>
-          <div style={{ marginTop: 10, fontSize: 12.5, color: 'rgba(255,255,255,0.55)' }}>
+          <div style={{ marginTop: 10, fontSize: T.size.sm, color: 'rgba(255,255,255,0.55)' }}>
             Publiez une nouvelle mission pour remplir votre calendrier.
           </div>
         </div>
@@ -466,17 +466,17 @@ function MissionSuivanteCard({ mission }) {
             <Avatar name={workerName} seed={2} size={36} />
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontSize: 13, fontWeight: 700 }}>{workerName}</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>
+              <div style={{ fontSize: T.size.xs, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>
                 {confirmed ? 'Confirmée' : 'En attente'}{rate ? ` · ${rate} €/h` : ''}
               </div>
             </div>
             <div style={{
-              fontSize: 11, color: confirmed ? T.color.green : T.color.amber,
+              fontSize: T.size.xs, color: confirmed ? T.color.green : T.color.amber,
               fontFamily: T.font.mono,
             }}>{confirmed ? '● OK' : '● WAIT'}</div>
           </div>
         ) : (
-          <div style={{ marginTop: 18, fontSize: 12.5, color: 'rgba(255,255,255,0.6)' }}>
+          <div style={{ marginTop: 18, fontSize: T.size.sm, color: 'rgba(255,255,255,0.6)' }}>
             Aucun prestataire confirmé pour l'instant.
           </div>
         )}
@@ -491,7 +491,7 @@ function ActivityCard({ items }) {
       <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.4 }}>Activité · 24 h</Eyebrow>
       <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 14 }}>
         {items.length === 0 && (
-          <div style={{ fontSize: 12.5, color: T.color.g5 }}>Aucune activité récente.</div>
+          <div style={{ fontSize: T.size.sm, color: T.color.g5 }}>Aucune activité récente.</div>
         )}
         {items.map((item, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -499,7 +499,7 @@ function ActivityCard({ items }) {
             <div style={{ fontSize: 13, color: T.color.ink, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {item.label}
             </div>
-            <div style={{ fontSize: 11, color: T.color.g5, fontFamily: T.font.mono, flexShrink: 0 }}>
+            <div style={{ fontSize: T.size.xs, color: T.color.g5, fontFamily: T.font.mono, flexShrink: 0 }}>
               {relativeFromNow(item.when)}
             </div>
           </div>

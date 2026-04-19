@@ -125,7 +125,7 @@ export default function PublicWorkerProfile({
                     Profil · Travailleur
                   </Eyebrow>
                   <h1 style={{
-                    margin: 0, fontSize: 48, fontWeight: 800, lineHeight: 1.0,
+                    margin: 0, fontSize: T.size.display, fontWeight: 800, lineHeight: 1.0,
                     color: '#fff', letterSpacing: '-0.03em', fontFamily: T.font.body,
                   }}>
                     {displayName}
@@ -219,10 +219,10 @@ export default function PublicWorkerProfile({
               }}>
                 <Eyebrow style={{ fontSize: 10, letterSpacing: 1.4 }}>{l}</Eyebrow>
                 <div style={{
-                  marginTop: 8, fontSize: 24, fontWeight: 800, color: T.color.ink,
+                  marginTop: 8, fontSize: T.size.xl, fontWeight: 800, color: T.color.ink,
                   letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1,
                 }}>{v}</div>
-                {s && <div style={{ fontSize: 11, color: T.color.g5, marginTop: 5 }}>{s}</div>}
+                {s && <div style={{ fontSize: T.size.xs, color: T.color.g5, marginTop: 5 }}>{s}</div>}
               </div>
             ))}
           </div>
@@ -231,7 +231,7 @@ export default function PublicWorkerProfile({
           {worker.bio && worker.bio.trim().length > 0 && (
             <section>
               <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>À propos</Eyebrow>
-              <div className="a-card" style={{ padding: 22, marginTop: 8, fontSize: 14, lineHeight: 1.65, color: T.color.g8, fontStyle: 'italic', fontFamily: T.font.serif, fontWeight: 400 }}>
+              <div className="a-card" style={{ padding: 22, marginTop: 8, fontSize: T.size.base, lineHeight: 1.65, color: T.color.g8, fontStyle: 'italic', fontFamily: T.font.serif, fontWeight: 400 }}>
                 « {worker.bio} »
               </div>
             </section>
@@ -241,7 +241,7 @@ export default function PublicWorkerProfile({
           <section>
             <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>01 · Expertise</Eyebrow>
             <h2 style={{
-              marginTop: 8, fontSize: 24, fontWeight: 700, color: T.color.ink,
+              marginTop: 8, fontSize: T.size.xl, fontWeight: 700, color: T.color.ink,
               letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1.15,
             }}>
               Compétences vérifiées.
@@ -255,7 +255,7 @@ export default function PublicWorkerProfile({
                 padding: '18px 20px', background: '#fff',
                 border: `1px solid ${T.color.g2}`, borderRadius: 12,
               }}>
-                <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
+                <div style={{ fontSize: T.size.sm, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
                   Certifications
                 </div>
                 {(() => {
@@ -269,7 +269,7 @@ export default function PublicWorkerProfile({
                     }}>
                       <span style={{ color: T.color.green, fontWeight: 700 }}>✓</span>{c}
                     </div>
-                  )) : <div style={{ fontSize: 12.5, color: T.color.g5 }}>Aucune certification validée</div>
+                  )) : <div style={{ fontSize: T.size.sm, color: T.color.g5 }}>Aucune certification validée</div>
                 })()}
               </div>
 
@@ -278,7 +278,7 @@ export default function PublicWorkerProfile({
                 padding: '18px 20px', background: '#fff',
                 border: `1px solid ${T.color.g2}`, borderRadius: 12,
               }}>
-                <div style={{ fontSize: 12.5, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
+                <div style={{ fontSize: T.size.sm, fontWeight: 700, color: T.color.ink, marginBottom: 10 }}>
                   Compétences
                 </div>
                 {(worker.skills && worker.skills.length > 0 ? worker.skills : [sectorLabel]).map((s) => (
@@ -296,7 +296,7 @@ export default function PublicWorkerProfile({
           <section>
             <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>02 · Avis récents</Eyebrow>
             <h2 style={{
-              marginTop: 8, fontSize: 24, fontWeight: 700, color: T.color.ink,
+              marginTop: 8, fontSize: T.size.xl, fontWeight: 700, color: T.color.ink,
               letterSpacing: '-0.02em', fontFamily: T.font.body, lineHeight: 1.15,
             }}>
               Retours d'entreprises.
@@ -304,7 +304,7 @@ export default function PublicWorkerProfile({
 
             <div className="a-card" style={{ padding: 22, marginTop: 14 }}>
               {ratings.length === 0 ? (
-                <div style={{ fontSize: 12.5, color: T.color.g5 }}>Aucun avis pour l'instant.</div>
+                <div style={{ fontSize: T.size.sm, color: T.color.g5 }}>Aucun avis pour l'instant.</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                   {ratings.slice(0, 3).map((r, i) => {
@@ -318,15 +318,15 @@ export default function PublicWorkerProfile({
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                             <div style={{ fontSize: 13, fontWeight: 700, color: T.color.ink }}>{firstName} {lastInit}</div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <div style={{ fontSize: 11, color: T.color.amber, letterSpacing: 1 }}>
+                              <div style={{ fontSize: T.size.xs, color: T.color.amber, letterSpacing: 1 }}>
                                 {'★'.repeat(Math.round(r.score || 5))}
                               </div>
-                              <div style={{ fontSize: 11, color: T.color.g5, fontFamily: T.font.mono }}>
+                              <div style={{ fontSize: T.size.xs, color: T.color.g5, fontFamily: T.font.mono }}>
                                 {r.created_at ? formatDate(r.created_at) : ''}
                               </div>
                             </div>
                           </div>
-                          <div style={{ fontSize: 12.5, color: T.color.g8, marginTop: 4, lineHeight: 1.55 }}>
+                          <div style={{ fontSize: T.size.sm, color: T.color.g8, marginTop: 4, lineHeight: 1.55 }}>
                             {r.comment || 'Mission validée.'}
                           </div>
                         </div>

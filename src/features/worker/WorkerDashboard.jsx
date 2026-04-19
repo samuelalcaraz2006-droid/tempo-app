@@ -198,7 +198,7 @@ export default function WorkerDashboard({
               }}>
                 À saisir maintenant.
               </div>
-              <div style={{ marginTop: 6, fontSize: 12.5, color: 'rgba(255,255,255,0.6)' }}>
+              <div style={{ marginTop: 6, fontSize: T.size.sm, color: 'rgba(255,255,255,0.6)' }}>
                 Cliquez pour voir les missions prioritaires du jour.
               </div>
             </div>
@@ -232,7 +232,7 @@ export default function WorkerDashboard({
               <div>
                 <Eyebrow style={{ fontSize: 10.5, letterSpacing: 1.6 }}>Pour vous · matching &gt; 90 %</Eyebrow>
                 <div style={{
-                  marginTop: 6, fontSize: 20, fontWeight: 700, color: T.color.ink,
+                  marginTop: 6, fontSize: T.size.lg, fontWeight: 700, color: T.color.ink,
                   letterSpacing: '-0.015em',
                 }}>
                   Missions sélectionnées <span style={{
@@ -297,7 +297,7 @@ export default function WorkerDashboard({
                       </span>
                     </div>
                     {(currentMission.companyName || currentMission.city) && (
-                      <div style={{ marginTop: 12, fontSize: 12.5, color: 'rgba(255,255,255,0.65)' }}>
+                      <div style={{ marginTop: 12, fontSize: T.size.sm, color: 'rgba(255,255,255,0.65)' }}>
                         {onViewCompany && currentMission.companyId && currentMission.companyName ? (
                           <button
                             type="button"
@@ -326,10 +326,10 @@ export default function WorkerDashboard({
                   </>
                 ) : (
                   <>
-                    <div style={{ marginTop: 10, fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.15, color: '#fff' }}>
+                    <div style={{ marginTop: 10, fontSize: T.size.lg, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.15, color: '#fff' }}>
                       Aucune <span style={{ fontFamily: T.font.serif, fontStyle: 'italic', fontWeight: 400, color: T.color.brandXL }}>mission active</span>.
                     </div>
-                    <div style={{ marginTop: 10, fontSize: 12.5, color: 'rgba(255,255,255,0.55)' }}>
+                    <div style={{ marginTop: 10, fontSize: T.size.sm, color: 'rgba(255,255,255,0.55)' }}>
                       Explorez les missions disponibles et postulez en 1 clic.
                     </div>
                     <button
@@ -372,7 +372,7 @@ export default function WorkerDashboard({
                       transition: 'width .6s ease-out',
                     }} />
                   </div>
-                  <div style={{ marginTop: 8, fontSize: 11, color: T.color.g5, fontFamily: T.font.mono }}>
+                  <div style={{ marginTop: 8, fontSize: T.size.xs, color: T.color.g5, fontFamily: T.font.mono }}>
                     {payment.label}
                   </div>
                 </>
