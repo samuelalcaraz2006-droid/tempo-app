@@ -251,13 +251,14 @@ export default function TravailleurRoutes({
         />
       )}
 
-      {screen === 'mission-hub' && selectedMission && (
+      {screen === 'mission-hub' && (
         <WorkerMissionHub
           mission={selectedMission}
           worker={worker}
           onBack={() => setScreen('accueil')}
           onOpenChat={openChatNav}
           onOpenContract={() => {
+            if (!selectedMission) return
             actions.setContractModal?.({
               missionId: selectedMission.id,
               mission: selectedMission,

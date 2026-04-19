@@ -270,7 +270,12 @@ export default function TravailleurApp({ onNavigate: _onNavigate, onLogoClick })
     })
 
   const navigate = (target, d) => {
-    if (d && target === 'mission-detail') setSelectedMission(d)
+    // Les écrans qui dépendent d'une mission sélectionnée doivent
+    // recevoir le payload via setSelectedMission — sinon TravailleurRoutes
+    // rend la page vide (guard `&& selectedMission`).
+    if (d && (target === 'mission-detail' || target === 'mission-hub')) {
+      setSelectedMission(d)
+    }
     setScreen(target)
   }
 
