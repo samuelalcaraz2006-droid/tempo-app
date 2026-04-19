@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ChevronDown, ChevronRight, Info, Sparkles, X } from 'lucide-react'
 import { SECTOR_LABELS } from '../../lib/formatters'
 import {
@@ -258,6 +258,57 @@ export default function CompanyPublishMission({
   const [templateName, setTemplateName] = useState('')
   const [showTemplateSave, setShowTemplateSave] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [draftSaved, setDraftSaved] = useState(false)
+  const [draftRestored, setDraftRestored] = useState(false)
+
+  // ── Auto-save brouillon localStorage ────────────────────
+  // Sauvegarde après 1.5s d'inactivité. Permet de reprendre une
+  // saisie interrompue (navigation, crash tabs, fermeture mobile).
+  useEffect(() => {
+    if (published) return
+    if (!form.title && !form.objet_prestation && !form.city) return
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem('tempo_mission_draft', JSON.stringify({
+          savedAt: Date.now(),
+          form,
+        }))
+        setDraftSaved(true)
+        setTimeout(() => setDraftSaved(false), 2000)
+      } catch {}
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [form, published])
+
+  // Nettoie le brouillon une fois publié
+  useEffect(() => {
+    if (published) {
+      try { localStorage.removeItem('tempo_mission_draft') } catch {}
+    }
+  }, [published])
+
+  const restoreDraft = () => {
+    try {
+      const raw = localStorage.getItem('tempo_mission_draft')
+      if (!raw) return
+      const { form: saved } = JSON.parse(raw)
+      if (!saved) return
+      Object.keys(saved).forEach(k => setF(k, saved[k]))
+      setDraftRestored(true)
+      setTimeout(() => setDraftRestored(false), 3000)
+    } catch {}
+  }
+
+  const hasDraft = (() => {
+    try {
+      const raw = localStorage.getItem('tempo_mission_draft')
+      if (!raw) return false
+      const { savedAt, form: saved } = JSON.parse(raw)
+      if (!saved?.title && !saved?.objet_prestation) return false
+      // Brouillon expire après 7 jours
+      return savedAt && (Date.now() - savedAt) < 7 * 24 * 60 * 60 * 1000
+    } catch { return false }
+  })()
 
   const marketRate = MARKET_RATES[form.sector]
   const objectExamples = MISSION_OBJECT_TEMPLATES[form.sector] || []
@@ -318,11 +369,41 @@ export default function CompanyPublishMission({
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <div className="a-eyebrow" style={{ marginBottom: 8, fontSize: 11 }}>Nouvelle mission</div>
-        <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div className="a-eyebrow" style={{ fontSize: 11 }}>Nouvelle mission</div>
+          <div style={{ fontSize: 11, color: 'var(--g4)', fontStyle: 'italic' }} aria-live="polite">
+            {draftSaved && '✓ Brouillon sauvegardé'}
+            {draftRestored && !draftSaved && '✓ Brouillon restauré'}
+          </div>
+        </div>
+        <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bk)', letterSpacing: '-0.025em', lineHeight: 1.05, marginTop: 8 }}>
           Publiez une <span className="font-serif-italic" style={{ color: 'var(--brand)' }}>prestation</span> B2B.
         </div>
         <div style={{ fontSize: 14, color: 'var(--g5)', marginTop: 8, maxWidth: 680, lineHeight: 1.55 }}>Décrivez une prestation ponctuelle et autonome — TEMPO génère le contrat de prestation B2B et sécurise la facturation.</div>
+
+        {/* Bouton restaurer brouillon — seulement si un brouillon existe et qu'on n'a encore rien saisi */}
+        {hasDraft && !form.title && !form.objet_prestation && (
+          <div style={{
+            marginTop: 12, padding: '10px 14px',
+            background: 'var(--brand-l)', border: '1px solid rgba(37,99,235,.18)',
+            borderRadius: 10, display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', gap: 10, flexWrap: 'wrap',
+          }}>
+            <div style={{ fontSize: 13, color: 'var(--bk)' }}>
+              💾 Vous avez un brouillon non publié. <span style={{ color: 'var(--g5)' }}>Reprendre là où vous en étiez ?</span>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button type="button" onClick={restoreDraft}
+                className="btn-primary" style={{ padding: '6px 14px', fontSize: 12 }}>
+                Restaurer
+              </button>
+              <button type="button" onClick={() => { try { localStorage.removeItem('tempo_mission_draft') } catch {}; setDraftRestored(false) }}
+                className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12 }}>
+                Ignorer
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="publish-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24 }}>
