@@ -1,0 +1,56 @@
+name: Lighthouse CI — Performance / A11y / Best Practices / SEO
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'vite.config.js'
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    # Ne bloque pas la CI principale si Lighthouse a un mauvais jour.
+    # Les seuils sont consultatifs — à durcir quand la baseline est stable.
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
+        env:
+          # Les vraies env vars pas nécessaires pour Lighthouse :
+          # la landing, auth et legal sont accessibles sans Supabase.
+          VITE_SUPABASE_URL: https://placeholder.supabase.co
+          VITE_SUPABASE_ANON_KEY: placeholder
+          VITE_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.14.x
+
+      - name: Run Lighthouse CI
+        run: lhci autorun --config=.lighthouserc.json
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Upload Lighthouse artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14
