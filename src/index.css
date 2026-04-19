@@ -142,6 +142,28 @@ body {
 [data-theme="dark"] .metric-card { background: var(--wh2); border-color: var(--g2); }
 [data-theme="dark"] .card-mission { background: var(--wh2); border-color: var(--g2); border-left-color: var(--g3); }
 
+/* Style A — dark mode overrides */
+[data-theme="dark"] .a-card { background: var(--wh2); border-color: var(--g2); color: var(--bk); }
+[data-theme="dark"] .a-input { background: var(--g1); border-color: var(--g3); color: var(--bk); }
+[data-theme="dark"] .a-input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(37,99,235,.2); }
+[data-theme="dark"] .a-input::placeholder { color: var(--g4); }
+[data-theme="dark"] .a-label { color: var(--g8); }
+[data-theme="dark"] .a-eyebrow { color: var(--g6); }
+[data-theme="dark"] .a-btn-outline { background: var(--wh2); color: var(--bk); border-color: var(--g3); }
+[data-theme="dark"] .a-btn-outline:hover:not(:disabled) { background: var(--g1); border-color: var(--g4); }
+
+/* Les heroes navy sont déjà sombres — on ne touche pas, sauf texte d'accompagnement */
+/* Cards à fond blanc dans les dashboards devraient aussi flipper */
+[data-theme="dark"] .public-profile-grid .a-card { background: var(--wh2); }
+[data-theme="dark"] .mission-detail-grid .a-card { background: var(--wh2); }
+
+/* Les KpiCard ont `background: '#fff'` en inline — le surcharge via scope */
+[data-theme="dark"] .app-main-container div[style*="background: rgb(255, 255, 255)"] {
+  background: var(--wh2) !important;
+}
+
+/* Table + form champs qui utilisent .input (classe existante) OK via cascades ci-dessus */
+
 /* ══════════════════════════════════════════════════════════════
    GLASS COMPONENTS
 ══════════════════════════════════════════════════════════════ */
