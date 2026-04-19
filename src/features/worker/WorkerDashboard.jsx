@@ -316,13 +316,24 @@ export default function WorkerDashboard({
                     )}
                     <button
                       type="button"
-                      onClick={() => onNavigate('mission-detail', currentMission.raw)}
+                      onClick={() => onNavigate('mission-hub', currentMission.raw)}
                       style={{
                         marginTop: 16, width: '100%', background: '#fff', color: T.color.ink,
                         border: 'none', padding: '11px 0', borderRadius: 999,
-                        fontWeight: 600, fontSize: 13, cursor: 'pointer',
+                        fontWeight: 700, fontSize: 13, cursor: 'pointer',
                       }}
-                    >Voir les détails →</button>
+                    >Déclarer mes heures →</button>
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('mission-detail', currentMission.raw)}
+                      style={{
+                        marginTop: 8, width: '100%', background: 'transparent',
+                        color: 'rgba(255,255,255,0.75)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        padding: '9px 0', borderRadius: 999,
+                        fontWeight: 500, fontSize: 12.5, cursor: 'pointer',
+                      }}
+                    >Voir les détails</button>
                   </>
                 ) : (
                   <>

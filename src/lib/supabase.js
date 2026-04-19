@@ -833,3 +833,89 @@ export const logAuditAction = async ({ actorId, action, targetId, targetType, pa
     .single()
   return { data, error }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// Time entries — saisie des heures réellement travaillées.
+// Table mission_time_entries (migration 018). RLS : worker voit +
+// modifie ses drafts, company voit celles de ses contrats, admin
+// voit tout. Submit / validate / dispute passent par des RPCs.
+// ═══════════════════════════════════════════════════════════════
+
+export const getTimeEntries = async ({ contractId, workerId, companyId, statuses } = {}) => {
+  let q = supabase
+    .from('mission_time_entries')
+    .select('*, contracts:contract_id(mission_id, missions:mission_id(title, city))')
+    .order('work_date', { ascending: false })
+    .order('started_at', { ascending: false })
+  if (contractId) q = q.eq('contract_id', contractId)
+  if (workerId) q = q.eq('worker_id', workerId)
+  if (companyId) q = q.eq('company_id', companyId)
+  if (statuses?.length) q = q.in('status', statuses)
+  const { data, error } = await q
+  return { data: data || [], error }
+}
+
+export const createTimeEntry = async ({
+  contractId, workerId, companyId,
+  workDate, startedAt, endedAt, breakMinutes = 0, note,
+}) => {
+  const { data, error } = await supabase
+    .from('mission_time_entries')
+    .insert({
+      contract_id: contractId,
+      worker_id: workerId,
+      company_id: companyId,
+      work_date: workDate,
+      started_at: startedAt,
+      ended_at: endedAt,
+      break_minutes: breakMinutes,
+      note: note || null,
+      declared_by: 'worker',
+      status: 'draft',
+    })
+    .select()
+    .single()
+  return { data, error }
+}
+
+export const updateTimeEntry = async (id, { startedAt, endedAt, breakMinutes, note, workDate }) => {
+  const patch = { updated_at: new Date().toISOString() }
+  if (startedAt !== undefined) patch.started_at = startedAt
+  if (endedAt !== undefined) patch.ended_at = endedAt
+  if (breakMinutes !== undefined) patch.break_minutes = breakMinutes
+  if (note !== undefined) patch.note = note
+  if (workDate !== undefined) patch.work_date = workDate
+  const { data, error } = await supabase
+    .from('mission_time_entries')
+    .update(patch)
+    .eq('id', id)
+    .select()
+    .single()
+  return { data, error }
+}
+
+export const deleteTimeEntry = async (id) => {
+  const { error } = await supabase.from('mission_time_entries').delete().eq('id', id)
+  return { error }
+}
+
+// Bascule toutes les drafts du contrat → submitted + notif company (via RPC).
+export const submitTimeEntries = async (contractId) => {
+  const { data, error } = await supabase.rpc('submit_time_entries', { p_contract_id: contractId })
+  return { data, error }
+}
+
+// Company valide explicitement toutes les entries submitted d'un contrat.
+export const validateTimeEntries = async (contractId) => {
+  const { data, error } = await supabase.rpc('validate_time_entries', { p_contract_id: contractId })
+  return { data, error }
+}
+
+// Company conteste — note obligatoire.
+export const disputeTimeEntries = async (contractId, note) => {
+  const { data, error } = await supabase.rpc('dispute_time_entries', {
+    p_contract_id: contractId,
+    p_note: note,
+  })
+  return { data, error }
+}

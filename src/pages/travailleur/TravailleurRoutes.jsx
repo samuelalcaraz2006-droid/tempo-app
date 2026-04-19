@@ -19,6 +19,7 @@ import WorkerDashboard from '../../features/worker/WorkerDashboard'
 import WorkerEarnings from '../../features/worker/WorkerEarnings'
 import WorkerMessages from '../../features/worker/WorkerMessages'
 import WorkerMissionDetail from '../../features/worker/WorkerMissionDetail'
+import WorkerMissionHub from '../../features/worker/WorkerMissionHub'
 import WorkerMissionsList from '../../features/worker/WorkerMissionsList'
 import WorkerProfile from '../../features/worker/WorkerProfile'
 import WorkerSavedMissions from '../../features/worker/WorkerSavedMissions'
@@ -247,6 +248,25 @@ export default function TravailleurRoutes({
           blockedDays={blockedDays}
           setBlockedDays={setBlockedDays}
           onBack={() => setScreen('profil')}
+        />
+      )}
+
+      {screen === 'mission-hub' && selectedMission && (
+        <WorkerMissionHub
+          mission={selectedMission}
+          worker={worker}
+          onBack={() => setScreen('accueil')}
+          onOpenChat={openChatNav}
+          onOpenContract={() => {
+            actions.setContractModal?.({
+              missionId: selectedMission.id,
+              mission: selectedMission,
+              companyName: selectedMission?.companies?.name || 'Entreprise',
+              companyId: selectedMission?.company_id || selectedMission?.companies?.id,
+            })
+          }}
+          onViewCompany={openCompanyProfile}
+          showToast={showToast}
         />
       )}
     </div>
