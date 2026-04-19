@@ -221,7 +221,7 @@ describe('ChatView', () => {
     mockUseChatReturn.input = 'test'
     mockUseChatReturn.sending = true
     render(<ChatView {...defaultProps} />)
-    const sendBtn = screen.getByText('...')
+    const sendBtn = screen.getByText('Envoi…')
     expect(sendBtn.disabled).toBe(true)
   })
 
@@ -234,7 +234,7 @@ describe('ChatView', () => {
 
   it('calls setInput on input change', () => {
     render(<ChatView {...defaultProps} />)
-    const input = screen.getByPlaceholderText('Votre message...')
+    const input = screen.getByPlaceholderText(/Votre message/)
     fireEvent.change(input, { target: { value: 'nouveau message' } })
     expect(mockSetInput).toHaveBeenCalledWith('nouveau message')
   })
