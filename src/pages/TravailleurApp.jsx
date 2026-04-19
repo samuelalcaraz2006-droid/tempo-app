@@ -4,7 +4,6 @@ import Toast from '../components/UI/Toast'
 import { useI18n } from '../contexts/I18nContext'
 import { useAuth } from '../contexts/useAuth'
 import ChatView from '../features/shared/ChatView'
-import MissionCard from '../features/shared/MissionCard'
 import WorkerAlerts from '../features/worker/WorkerAlerts'
 import WorkerApplications from '../features/worker/WorkerApplications'
 import WorkerCalendar from '../features/worker/WorkerCalendar'
@@ -14,6 +13,7 @@ import WorkerEarnings from '../features/worker/WorkerEarnings'
 import WorkerMessages from '../features/worker/WorkerMessages'
 import WorkerMissionDetail from '../features/worker/WorkerMissionDetail'
 import WorkerMissionsList from '../features/worker/WorkerMissionsList'
+import WorkerSavedMissions from '../features/worker/WorkerSavedMissions'
 import NotificationsView from '../features/shared/NotificationsView'
 import WorkerProfile from '../features/worker/WorkerProfile'
 import { useToast } from '../hooks/useToast'
@@ -320,6 +320,31 @@ export default function TravailleurApp({ onNavigate: _onNavigate, onLogoClick })
     setScreen('messages')
   }
 
+  // Routage deep-link depuis NotificationsView.onNavigate : mappe un
+  // (target, payload) vers l'écran + état nécessaire.
+  const handleNotifNavigate = (target, payload) => {
+    if (target === 'mission-detail' && payload?.missionId) {
+      const m = data.missions.find(x => x.id === payload.missionId)
+        || data.allMissions.find(x => (x?.missions?.id || x?.id) === payload.missionId)
+      if (m) {
+        setSelectedMission(m.missions || m)
+        setScreen('mission-detail')
+        return
+      }
+    }
+    if (target === 'chat' && payload?.partnerId) {
+      openChatNav(payload.partnerId, '', payload.missionId || null)
+      return
+    }
+    if (target === 'disputes') {
+      setScreen('suivi') // à défaut d'une page disputes dédiée
+      return
+    }
+    if (['missions', 'suivi', 'gains', 'profil', 'accueil', 'messages'].includes(target)) {
+      setScreen(target)
+    }
+  }
+
   if (data.loading)
     return (
       <div
@@ -622,41 +647,17 @@ export default function TravailleurApp({ onNavigate: _onNavigate, onLogoClick })
         )}
 
         {screen === 'favoris' && (
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div>
-                <div style={{ fontSize: 18, fontWeight: 600 }}>Missions sauvegardees</div>
-                <div style={{ fontSize: 13, color: 'var(--g4)' }}>
-                  {savedMissions.length} mission{savedMissions.length !== 1 ? 's' : ''}
-                </div>
-              </div>
-              <button type="button"
-                onClick={() => setScreen('missions')}
-                style={{ fontSize: 13, color: 'var(--g4)', background: 'none', border: 'none', cursor: 'pointer' }}
-              >
-                ‹ Retour
-              </button>
-            </div>
-            {savedMissions.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--g4)', fontSize: 13 }}>Aucune mission sauvegardee</div>
-            ) : (
-              data.missions
-                .filter((m) => savedMissions.includes(m.id))
-                .map((m) => (
-                  <MissionCard
-                    key={m.id}
-                    mission={m}
-                    applied={hasApplied(m.id)}
-                    saved={true}
-                    applying={actions.applying[m.id]}
-                    onApply={() => actions.handleApply(m, hasApplied(m.id))}
-                    onToggleSave={toggleSave}
-                    onSelect={() => navigate('mission-detail', m)}
-                    onViewCompany={openCompanyProfile}
-                  />
-                ))
-            )}
-          </div>
+          <WorkerSavedMissions
+            missions={data.missions}
+            savedMissions={savedMissions}
+            hasApplied={hasApplied}
+            applying={actions.applying}
+            onApply={actions.handleApply}
+            onToggleSave={toggleSave}
+            onNavigate={navigate}
+            onViewCompany={openCompanyProfile}
+            onBack={() => setScreen('missions')}
+          />
         )}
 
         {screen === 'suivi' && (
@@ -728,28 +729,7 @@ export default function TravailleurApp({ onNavigate: _onNavigate, onLogoClick })
             userId={user?.id}
             unreadCount={unreadCount}
             onBack={() => setScreen('accueil')}
-            onNavigate={(target, payload) => {
-              if (target === 'mission-detail' && payload?.missionId) {
-                const m = data.missions.find(x => x.id === payload.missionId)
-                  || data.allMissions.find(x => (x?.missions?.id || x?.id) === payload.missionId)
-                if (m) {
-                  setSelectedMission(m.missions || m)
-                  setScreen('mission-detail')
-                  return
-                }
-              }
-              if (target === 'chat' && payload?.partnerId) {
-                openChatNav(payload.partnerId, '', payload.missionId || null)
-                return
-              }
-              if (target === 'disputes') {
-                setScreen('suivi') // à défaut de page disputes dédiée
-                return
-              }
-              if (['missions', 'suivi', 'gains', 'profil', 'accueil', 'messages'].includes(target)) {
-                setScreen(target)
-              }
-            }}
+            onNavigate={handleNotifNavigate}
           />
         )}
 
