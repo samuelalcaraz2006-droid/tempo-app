@@ -228,7 +228,7 @@ export default function DashboardLayout({
               </div>
               {roleLabel && (
                 <div style={{
-                  fontSize: 10.5, color: 'rgba(255,255,255,0.4)', letterSpacing: 1.4,
+                  fontSize: 10.5, color: 'rgba(255,255,255,0.62)', letterSpacing: 1.4,
                   textTransform: 'uppercase', fontWeight: 700,
                   padding: '14px 20px 10px', fontFamily: T.font.mono,
                 }}>{roleLabel}</div>

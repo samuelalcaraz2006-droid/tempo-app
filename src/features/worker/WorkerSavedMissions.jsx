@@ -1,4 +1,6 @@
+import { Heart } from 'lucide-react'
 import MissionCard from '../shared/MissionCard'
+import EmptyState from '../../components/UI/EmptyState'
 
 // ═══════════════════════════════════════════════════════════════
 // WorkerSavedMissions — écran « Missions sauvegardées ».
@@ -35,9 +37,12 @@ export default function WorkerSavedMissions({
       </div>
 
       {savedList.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--g4)', fontSize: 13 }}>
-          Aucune mission sauvegardée
-        </div>
+        <EmptyState
+          icon={Heart}
+          title="Aucune mission sauvegardée"
+          description="Appuyez sur ♡ dans une mission pour la retrouver ici plus tard."
+          action={onNavigate ? { label: 'Voir les missions', onClick: () => onNavigate('missions') } : undefined}
+        />
       ) : (
         savedList.map((m) => (
           <MissionCard
