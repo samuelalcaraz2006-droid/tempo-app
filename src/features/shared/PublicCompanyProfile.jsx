@@ -101,8 +101,8 @@ export default function PublicCompanyProfile({
               background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)',
               cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit',
             }}>Entreprises</button>
-            <span>›</span>
-            {company.city && <><span style={{ textTransform: 'capitalize' }}>{company.city}</span><span>›</span></>}
+            <span aria-hidden="true">›</span>
+            {company.city && <><span style={{ textTransform: 'capitalize' }}>{company.city}</span><span aria-hidden="true">›</span></>}
             <span style={{ color: '#fff' }}>{companyName}</span>
           </div>
 

@@ -223,7 +223,7 @@ describe('WorkerApplications', () => {
     expect(screen.getByText('Toutes')).toBeTruthy()
     // Use getAllByText because "En attente" appears both in tab and in badge
     expect(screen.getAllByText(/En attente/).length).toBeGreaterThan(0)
-    expect(screen.getByText('Acceptees')).toBeTruthy()
+    expect(screen.getByText('Acceptées')).toBeTruthy()
   })
 
   it('renders application cards with mission title', () => {
@@ -619,8 +619,8 @@ describe('WorkerAlerts', () => {
 
   it('renders create alert form', () => {
     render(<WorkerAlerts {...defaultProps} />)
-    expect(screen.getByText("Creer une alerte")).toBeTruthy()
-    expect(screen.getByText("Creer l'alerte")).toBeTruthy()
+    expect(screen.getByText("Créer une alerte")).toBeTruthy()
+    expect(screen.getByText("Créer l'alerte")).toBeTruthy()
   })
 
   it('renders existing alerts list', () => {
@@ -634,7 +634,7 @@ describe('WorkerAlerts', () => {
     const setSavedAlerts = vi.fn()
     const showToast = vi.fn()
     render(<WorkerAlerts {...defaultProps} setSavedAlerts={setSavedAlerts} showToast={showToast} />)
-    fireEvent.click(screen.getByText("Creer l'alerte"))
+    fireEvent.click(screen.getByText("Créer l'alerte"))
     expect(setSavedAlerts).toHaveBeenCalled()
     expect(showToast).toHaveBeenCalledWith('Alerte sauvegardee !')
   })

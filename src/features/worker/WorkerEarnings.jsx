@@ -96,11 +96,11 @@ export default function WorkerEarnings({ worker, invoices, allMissions, t }) {
 
       {/* Invoices table */}
       {invoices.length === 0
-        ? <EmptyState icon={DollarSign} title="Aucun gain pour le moment" description="Vos gains apparaitront ici apres vos premieres missions" />
+        ? <EmptyState icon={DollarSign} title="Aucun gain pour le moment" description="Vos gains apparaitront ici après vos premieres missions" />
         : <div className="card" style={{ padding:0, overflowX:'auto' }}>
             <table style={{ width:'100%', borderCollapse:'collapse', minWidth:400 }}>
               <thead><tr style={{ background:'var(--g1)' }}>
-                {['Reference', 'Date', 'Montant', 'Statut'].map(h => <th key={h} style={{ padding:'10px 12px', textAlign:'left', fontSize:12, fontWeight:500, color:'var(--g4)', borderBottom:'1px solid var(--g2)' }}>{h}</th>)}
+                {['Référence', 'Date', 'Montant', 'Statut'].map(h => <th key={h} style={{ padding:'10px 12px', textAlign:'left', fontSize:12, fontWeight:500, color:'var(--g4)', borderBottom:'1px solid var(--g2)' }}>{h}</th>)}
               </tr></thead>
               <tbody>{invoices.map((inv, _i) => (
                 <tr key={inv.id}>

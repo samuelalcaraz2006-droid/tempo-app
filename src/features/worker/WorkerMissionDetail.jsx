@@ -172,10 +172,10 @@ export default function WorkerMissionDetail({
               background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)',
               cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit',
             }}>Missions</button>
-            <span>›</span>
+            <span aria-hidden="true">›</span>
             {mission.sector && <>
               <span style={{ textTransform: 'capitalize' }}>{mission.sector}</span>
-              <span>›</span>
+              <span aria-hidden="true">›</span>
             </>}
             <span style={{ color: '#fff' }}>TEMPO‑{mission.id ? mission.id.slice(0, 4).toUpperCase() : '—'}</span>
           </div>

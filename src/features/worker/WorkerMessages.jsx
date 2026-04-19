@@ -9,7 +9,7 @@ export default function WorkerMessages({ userId, onOpenChat }) {
       title="Messages"
       subtitle="Vos conversations avec les entreprises"
       emptyTitle="Aucune conversation"
-      emptyDescription="La messagerie s'ouvre apres acceptation d'une candidature. Depuis une candidature acceptee, touchez « Contacter » pour demarrer."
+      emptyDescription="La messagerie s'ouvre après acceptation d'une candidature. Depuis une candidature acceptée, touchez « Contacter » pour démarrer."
     />
   )
 }

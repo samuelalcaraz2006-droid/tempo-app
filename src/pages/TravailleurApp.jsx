@@ -123,7 +123,7 @@ function KycUploadSection({ worker, userId, onUpdate, showToast }) {
                 {!verified && <div style={{ fontSize: 11, color: 'var(--g4)', marginTop: 2 }}>{doc.hint}</div>}
               </div>
               <span className={`badge ${verified ? 'badge-green' : hasDoc ? 'badge-blue' : 'badge-orange'}`} style={{ fontSize: 10 }}>
-                {verified ? '✓ Verifie' : hasDoc ? 'En cours' : 'A deposer'}
+                {verified ? '✓ Vérifié' : hasDoc ? 'En cours' : 'A deposer'}
               </span>
             </div>
             {!verified && (
@@ -266,7 +266,7 @@ export default function TravailleurApp({ onNavigate: _onNavigate, onLogoClick })
     if (worker?.missions_completed >= 5) b.push({ icon: '⭐', label: 'Confirme', desc: '5 missions' })
     if (worker?.missions_completed >= 20) b.push({ icon: '🏆', label: 'Expert', desc: '20 missions' })
     if (worker?.rating_avg >= 4.5 && worker?.rating_count >= 3) b.push({ icon: '💎', label: 'Top performer', desc: 'Note >= 4.5' })
-    if (worker?.siret_verified) b.push({ icon: '✓', label: 'SIRET', desc: 'Verifie' })
+    if (worker?.siret_verified) b.push({ icon: '✓', label: 'SIRET', desc: 'Vérifié' })
     if (worker?.id_verified) b.push({ icon: '🪪', label: 'Identite', desc: 'Validee' })
     if (worker?.rc_pro_verified) b.push({ icon: '🛡️', label: 'RC Pro', desc: 'Validee' })
     if ((profileForm.skills || worker?.skills || []).length >= 5) b.push({ icon: '🔧', label: 'Multi-competent', desc: '5+ competences' })

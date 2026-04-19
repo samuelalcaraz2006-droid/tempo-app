@@ -4,7 +4,7 @@ import { formatDate } from '../../lib/formatters'
 
 const APP_STATUS = {
   pending:  { label:'En attente', cls:'badge-blue' },
-  accepted: { label:'✓ Accepte', cls:'badge-green' },
+  accepted: { label:'✓ Accepté', cls:'badge-green' },
   rejected: { label:'✗ Refuse', cls:'badge-gray' },
   active:   { label:'En cours', cls:'badge-orange' },
 }
@@ -30,7 +30,7 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
 
       {/* Status filter tabs */}
       <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:14 }}>
-        {[['tous', 'Toutes', allMissions.length], ['pending', 'En attente', allMissions.filter(a => a.status === 'pending').length], ['accepted', 'Acceptees', allMissions.filter(a => a.status === 'accepted').length], ['rejected', 'Refusees', allMissions.filter(a => a.status === 'rejected').length], ['completed', 'Terminees', allMissions.filter(a => a.missions?.status === 'completed').length]].map(([v, l, c]) => (
+        {[['tous', 'Toutes', allMissions.length], ['pending', 'En attente', allMissions.filter(a => a.status === 'pending').length], ['accepted', 'Acceptées', allMissions.filter(a => a.status === 'accepted').length], ['rejected', 'Refusées', allMissions.filter(a => a.status === 'rejected').length], ['completed', 'Terminées', allMissions.filter(a => a.missions?.status === 'completed').length]].map(([v, l, c]) => (
           <button type="button" key={v} onClick={() => setSuiviFilter(v)} style={{ padding:'5px 12px', borderRadius:99, border: suiviFilter === v ? '1.5px solid var(--or)' : '1px solid var(--g2)', background: suiviFilter === v ? 'var(--or-l)' : 'var(--wh)', color: suiviFilter === v ? 'var(--or-d)' : 'var(--g6)', fontSize:12, cursor:'pointer', fontWeight: suiviFilter === v ? 500 : 400 }}>
             {l} {c > 0 && <span style={{ marginLeft:3, opacity:0.6 }}>({c})</span>}
           </button>
@@ -75,13 +75,13 @@ export default function WorkerApplications({ allMissions, signedContracts, rated
                     {' · '}{m?.city || '—'}
                   </div>
                 </div>
-                <span className={`badge ${missionDone ? 'badge-blue' : st.cls}`} style={{ fontSize:11, flexShrink:0 }}>{missionDone ? 'Terminee' : st.label}</span>
+                <span className={`badge ${missionDone ? 'badge-blue' : st.cls}`} style={{ fontSize:11, flexShrink:0 }}>{missionDone ? 'Terminée' : st.label}</span>
               </div>
 
               {/* Timeline */}
               {app.status !== 'rejected' && app.status !== 'withdrawn' && (
                 <div style={{ display:'flex', alignItems:'center', gap:0, marginTop:10, marginBottom:4 }}>
-                  {[['pending', 'Candidature'], ['accepted', 'Accepte'], ['active', 'En cours'], ['completed', 'Terminee']].map(([step, label], i) => {
+                  {[['pending', 'Candidature'], ['accepted', 'Accepté'], ['active', 'En cours'], ['completed', 'Terminée']].map(([step, label], i) => {
                     const currentStep = missionDone ? 3 : app.status === 'accepted' ? 1 : app.status === 'pending' ? 0 : m?.status === 'active' ? 2 : 0
                     const done = i <= currentStep
                     return (

@@ -14,7 +14,7 @@ const TABS = [
 const CGU = () => (
   <div>
     <h2>Conditions Generales d'Utilisation</h2>
-    <p><em>Derniere mise a jour : avril 2026</em></p>
+    <p><em>Dernière mise à jour : avril 2026</em></p>
 
     <h3>1. Objet</h3>
     <p>Les presentes CGU regissent l'utilisation de la plateforme TEMPO, service de mise en relation entre entreprises et travailleurs independants pour des missions temporaires.</p>
@@ -50,7 +50,7 @@ const CGU = () => (
     </ul>
 
     <h3>7. Paiements et commission</h3>
-    <p>Les paiements sont securises via Stripe. TEMPO preleve une commission de 8% TTC sur le montant de chaque mission. Le Travailleur recoit le solde apres deduction de la commission.</p>
+    <p>Les paiements sont securises via Stripe. TEMPO preleve une commission de 8% TTC sur le montant de chaque mission. Le Travailleur recoit le solde après deduction de la commission.</p>
 
     <h3>8. Responsabilite</h3>
     <p>TEMPO ne garantit pas la disponibilite des Travailleurs ni le resultat des missions. La responsabilite de TEMPO est limitee au bon fonctionnement de la plateforme.</p>
@@ -69,7 +69,7 @@ const CGU = () => (
 const CGV = () => (
   <div>
     <h2>Conditions Generales de Vente</h2>
-    <p><em>Derniere mise a jour : avril 2026</em></p>
+    <p><em>Dernière mise à jour : avril 2026</em></p>
 
     <h3>1. Objet</h3>
     <p>Les presentes CGV definissent les conditions de facturation et de paiement des services de mise en relation fournis par TEMPO.</p>
@@ -120,7 +120,7 @@ const Mentions = () => (
 const RGPD = () => (
   <div>
     <h2>Politique de confidentialite (RGPD)</h2>
-    <p><em>Derniere mise a jour : avril 2026</em></p>
+    <p><em>Dernière mise à jour : avril 2026</em></p>
 
     <h3>1. Responsable du traitement</h3>
     <p>TEMPO SAS, [adresse], contact@tempo-app.fr</p>
@@ -130,8 +130,8 @@ const RGPD = () => (
       <thead><tr style={{ background:'var(--g1)' }}><th style={{ padding:8, textAlign:'left', borderBottom:'1px solid var(--g2)' }}>Donnee</th><th style={{ padding:8, textAlign:'left', borderBottom:'1px solid var(--g2)' }}>Finalite</th><th style={{ padding:8, textAlign:'left', borderBottom:'1px solid var(--g2)' }}>Base legale</th><th style={{ padding:8, textAlign:'left', borderBottom:'1px solid var(--g2)' }}>Duree</th></tr></thead>
       <tbody>
         {[
-          ['Email, mot de passe', 'Authentification', 'Contrat', '3 ans apres dernier usage'],
-          ['Nom, prenom, ville', 'Profil et matching', 'Contrat', '3 ans apres dernier usage'],
+          ['Email, mot de passe', 'Authentification', 'Contrat', '3 ans après dernier usage'],
+          ['Nom, prenom, ville', 'Profil et matching', 'Contrat', '3 ans après dernier usage'],
           ['SIRET, piece identite', 'Verification KYC', 'Obligation legale', '5 ans'],
           ['RC Pro, attestations', 'Conformite reglementaire', 'Obligation legale', '5 ans'],
           ['Geolocalisation (ville)', 'Matching geographique', 'Consentement', '3 ans'],
@@ -180,7 +180,7 @@ const RGPD = () => (
 const Cookies = () => (
   <div>
     <h2>Politique cookies</h2>
-    <p><em>Derniere mise a jour : avril 2026</em></p>
+    <p><em>Dernière mise à jour : avril 2026</em></p>
 
     <h3>Cookies utilises</h3>
     <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13, marginBottom:16 }}>
@@ -208,7 +208,7 @@ const Cookies = () => (
 const Charte = () => (
   <div>
     <h2>Charte du travailleur independant</h2>
-    <p><em>Derniere mise a jour : avril 2026</em></p>
+    <p><em>Dernière mise à jour : avril 2026</em></p>
 
     <h3>Statut d'independant</h3>
     <p>En utilisant TEMPO, vous confirmez exercer votre activite en tant que <strong>travailleur independant</strong> (auto-entrepreneur, micro-entreprise ou societe). TEMPO n'est pas votre employeur.</p>

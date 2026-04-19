@@ -7,8 +7,8 @@ const MISSION_STATUS = {
   open: { label: 'Ouverte', color: 'var(--gr-d)', bg: 'var(--gr-l)' },
   matched: { label: 'En cours', color: '#B45309', bg: '#FEF3C7' },
   active: { label: 'En cours', color: '#B45309', bg: '#FEF3C7' },
-  completed: { label: 'Terminee', color: '#1D4ED8', bg: 'var(--bl-l)' },
-  cancelled: { label: 'Annulee', color: '#B91C1C', bg: '#FEE2E2' },
+  completed: { label: 'Terminée', color: '#1D4ED8', bg: 'var(--bl-l)' },
+  cancelled: { label: 'Annulée', color: '#B91C1C', bg: '#FEE2E2' },
 }
 
 function formatTime(iso) {

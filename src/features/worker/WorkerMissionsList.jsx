@@ -50,7 +50,7 @@ export default function WorkerMissionsList({ filters, hasApplied, applying, onAp
             <div><label style={{ fontSize:11, fontWeight:500, color:'var(--g4)', marginBottom:3, display:'block' }}>Urgence<select className="input" value={filters.filterUrgency} onChange={e => filters.setFilterUrgency(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }}><option value="tous">Toutes</option><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="immediate">Immediat</option></select></label></div>
             <div><label style={{ fontSize:11, fontWeight:500, color:'var(--g4)', marginBottom:3, display:'block' }}>Periode<select className="input" value={filters.filterPeriod} onChange={e => filters.setFilterPeriod(e.target.value)} style={{ padding:'6px 10px', fontSize:12 }}><option value="tous">Toutes</option><option value="semaine">Cette semaine</option><option value="mois">Ce mois</option><option value="3mois">3 prochains mois</option></select></label></div>
           </div>
-          <button type="button" onClick={filters.resetFilters} style={{ fontSize:12, color:'var(--or)', background:'none', border:'none', cursor:'pointer', fontWeight:500 }}>Reinitialiser les filtres</button>
+          <button type="button" onClick={filters.resetFilters} style={{ fontSize:12, color:'var(--or)', background:'none', border:'none', cursor:'pointer', fontWeight:500 }}>Réinitialiser les filtres</button>
         </div>
       )}
 

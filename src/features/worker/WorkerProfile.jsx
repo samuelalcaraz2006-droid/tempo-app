@@ -31,7 +31,7 @@ export default function WorkerProfile({ worker, profile, profileForm, setProfile
 
         <div className="a-eyebrow" style={{ marginBottom: 12, fontSize: 10.5 }}>Informations personnelles</div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
-          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Prenom<input className="input" value={profileForm.first_name || ''} onChange={e => setProfileForm(f => ({ ...f, first_name: e.target.value }))} /></label></div>
+          <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Prénom<input className="input" value={profileForm.first_name || ''} onChange={e => setProfileForm(f => ({ ...f, first_name: e.target.value }))} /></label></div>
           <div><label style={{ fontSize:13, fontWeight:500, color:'var(--g6)', marginBottom:5, display:'block' }}>Nom<input className="input" value={profileForm.last_name || ''} onChange={e => setProfileForm(f => ({ ...f, last_name: e.target.value }))} /></label></div>
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>

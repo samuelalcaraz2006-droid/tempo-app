@@ -45,7 +45,7 @@ const replacementPillars = [
   {
     Icon: Gavel,
     title: 'Conformite native',
-    desc: 'Verification des profils, pieces, contrats et traces operationnelles au meme endroit.',
+    desc: 'Verification des profils, pieces, contrats et traces operationnelles au même endroit.',
     metric: 'Compliance-first',
   },
 ]

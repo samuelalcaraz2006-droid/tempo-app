@@ -65,7 +65,7 @@ export default function WorkerStripeOnboarding({ worker, showToast }) {
       <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>Configurer vos paiements</div>
       <div style={{ fontSize:13, color:'var(--g4)', marginBottom:12, lineHeight:1.5 }}>
         Pour recevoir vos revenus, vous devez configurer votre compte de paiement via Stripe.
-        C'est rapide (2 min) et securise.
+        C'est rapide (2 min) et sécurisé.
       </div>
 
       {status === 'pending' && (
@@ -76,7 +76,7 @@ export default function WorkerStripeOnboarding({ worker, showToast }) {
 
       <div style={{ display:'flex', gap:8 }}>
         <button type="button" className="btn-primary" style={{ flex:1, justifyContent:'center', fontSize:13 }} onClick={handleSetup} disabled={loading}>
-          {loading ? 'Chargement...' : status === 'pending' ? 'Completer la configuration' : 'Configurer mes paiements'}
+          {loading ? 'Chargement...' : status === 'pending' ? 'Compléter la configuration' : 'Configurer mes paiements'}
         </button>
         {status === 'pending' && (
           <button type="button" className="btn-secondary" style={{ fontSize:12 }} onClick={checkStatus}>

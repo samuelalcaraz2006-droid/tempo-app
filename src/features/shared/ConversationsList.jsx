@@ -44,7 +44,7 @@ export default function ConversationsList({
   title = 'Messages',
   subtitle,
   emptyTitle = 'Aucune conversation',
-  emptyDescription = "La messagerie s'ouvre quand une candidature est acceptee.",
+  emptyDescription = "La messagerie s'ouvre quand une candidature est acceptée.",
 }) {
   const { conversations, loading, error, refresh } = useConversations(userId)
   const [search, setSearch] = useState('')
